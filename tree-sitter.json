@@ -1,0 +1,42 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+  "grammars": [
+    {
+      "name": "smarty2",
+      "camelcase": "Smarty2",
+      "title": "Smarty2",
+      "scope": "source.smarty2",
+      "file-types": [
+        "tpl"
+      ],
+      "injection-regex": "^smarty2$",
+      "class-name": "TreeSitterSmarty2"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "Smarty2 grammar for tree-sitter",
+    "authors": [
+      {
+        "name": "roguecat0",
+        "email": "roguecat0@gmail.com",
+        "url": ""
+      }
+    ],
+    "links": {
+      "repository": "https://github.com/tree-sitter/tree-sitter-smarty2",
+      "funding": ""
+    }
+  },
+  "bindings": {
+    "c": true,
+    "go": true,
+    "java": false,
+    "node": true,
+    "python": true,
+    "rust": true,
+    "swift": true,
+    "zig": false
+  }
+}
