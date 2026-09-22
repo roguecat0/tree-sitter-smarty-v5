@@ -25,6 +25,12 @@ names, and modifier names) with the installed Smarty parser. Smarty's generated
 PHP fragments are not treated as Tree-sitter syntax trees.
 
 Not yet supported: other built-in blocks, comparisons, boolean operators,
-unary operators, calls/member access, config variables, arrays, interpolated
+unary operators, calls/member access, dynamic config variables/indexing, arrays, interpolated
 strings, comments, literal blocks, configurable delimiters, auto-literal braces,
 or HTML injection. This milestone does not claim to parse the application corpus.
+
+Static `#name#` expressions produce `config_variable` with a `name: (identifier)`
+field in outputs, conditions, tag arguments/attributes and modifier inputs/arguments.
+Names use the existing ASCII identifier subset; internal whitespace is rejected.
+Plain and quoted hash text stays text/string. Structural evidence:
+[test/corpus/config-variables.txt](corpus/config-variables.txt).

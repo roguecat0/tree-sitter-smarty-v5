@@ -22,6 +22,10 @@
             "named": true
           },
           {
+            "type": "config_variable",
+            "named": true
+          },
+          {
             "type": "modifier_expression",
             "named": true
           },
@@ -55,6 +59,10 @@
         "types": [
           {
             "type": "binary_expression",
+            "named": true
+          },
+          {
+            "type": "config_variable",
             "named": true
           },
           {
@@ -114,6 +122,10 @@
             "named": true
           },
           {
+            "type": "config_variable",
+            "named": true
+          },
+          {
             "type": "modifier_expression",
             "named": true
           },
@@ -131,6 +143,22 @@
           },
           {
             "type": "variable",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "config_variable",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
             "named": true
           }
         ]
@@ -163,6 +191,10 @@
         "types": [
           {
             "type": "binary_expression",
+            "named": true
+          },
+          {
+            "type": "config_variable",
             "named": true
           },
           {
@@ -297,6 +329,10 @@
             "named": true
           },
           {
+            "type": "config_variable",
+            "named": true
+          },
+          {
             "type": "modifier_expression",
             "named": true
           },
@@ -385,6 +421,10 @@
             "named": true
           },
           {
+            "type": "config_variable",
+            "named": true
+          },
+          {
             "type": "modifier_expression",
             "named": true
           },
@@ -416,6 +456,10 @@
         "multiple": true,
         "required": false,
         "types": [
+          {
+            "type": "config_variable",
+            "named": true
+          },
           {
             "type": "number",
             "named": true
@@ -450,6 +494,10 @@
         "types": [
           {
             "type": "binary_expression",
+            "named": true
+          },
+          {
+            "type": "config_variable",
             "named": true
           },
           {
@@ -489,6 +537,10 @@
             "named": true
           },
           {
+            "type": "config_variable",
+            "named": true
+          },
+          {
             "type": "modifier_expression",
             "named": true
           },
@@ -522,6 +574,10 @@
       "types": [
         {
           "type": "binary_expression",
+          "named": true
+        },
+        {
+          "type": "config_variable",
           "named": true
         },
         {
@@ -599,6 +655,10 @@
         ]
       }
     }
+  },
+  {
+    "type": "#",
+    "named": false
   },
   {
     "type": "$",

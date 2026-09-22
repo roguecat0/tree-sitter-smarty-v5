@@ -1,0 +1,41 @@
+==================
+Static config output
+==================
+{#title#}
+---
+(source_file (output value: (config_variable name: (identifier))))
+
+==================
+Config modifier input
+==================
+{#title#|escape:'htmlall'}
+---
+(source_file (output value: (modifier_expression value: (config_variable name: (identifier)) name: (identifier) argument: (string))))
+
+==================
+Config custom arguments
+==================
+{widget #title# label=#title#}
+---
+(source_file (custom_tag name: (identifier) argument: (config_variable name: (identifier)) (attribute name: (identifier) value: (config_variable name: (identifier)))))
+
+==================
+Config condition
+==================
+{if #title#}Y{/if}
+---
+(source_file (if_block (if_tag condition: (config_variable name: (identifier))) (text) (if_close_tag)))
+
+==================
+Config modifier argument
+==================
+{$x|escape:#title#}
+---
+(source_file (output value: (modifier_expression value: (variable name: (identifier)) name: (identifier) argument: (config_variable name: (identifier)))))
+
+==================
+Config text and adjacent outputs
+==================
+plain #title#{#name#}{#url#}{widget label="#title#"}
+---
+(source_file (text) (output value: (config_variable name: (identifier))) (output value: (config_variable name: (identifier))) (custom_tag name: (identifier) (attribute name: (identifier) value: (string))))

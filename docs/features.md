@@ -14,7 +14,7 @@ all Smarty variants are covered. `Partial` means only the described forms work.
 | Custom closing tags | Supported as independent tags; pairing deliberately unspecified | initial mismatched-name case |
 | Modifiers | Partial: chains and simple arguments; unrestricted names | initial trees; renamed-extension checks |
 | If/elseif/else | Partial: nested blocks using supported expression forms | initial trees; [edit tests](../test/incremental.test.mjs) |
-| Config variables | Ready: static names first | [001](tasks/001-config-variables.md) |
+| Config variables | Partial: static ASCII names in expressions; no dynamic names/indexing | [001](tasks/001-config-variables.md) |
 | Smarty comments | Ready: delimited comments first | [002](tasks/002-comments.md) |
 | Object properties | Ready: static `->name` chains first | [003](tasks/003-object-properties.md) |
 | Method/function calls | Unimplemented; next after property shape is established | Separate brief needed; corpus uses calls heavily |
@@ -40,3 +40,9 @@ favor small independent features over promising to clear the most files at once.
 
 Implement 001, 002, then 003 as separate changes. These are ready specifications,
 not permission to expand their scope into calls, interpolation, or literal blocks.
+
+## Config variables evidence (2026-09-22)
+
+Task 001 passes `npm test`: 15 trees, 27 Node checks, 3 mutation checks.
+Identical hashes across 467 local files: **6 → 13 clean**, **461 → 454 failing**,
+with no clean-to-failing regressions. See [001](tasks/001-config-variables.md).

@@ -33,10 +33,12 @@ export default grammar({
     else_tag: _ => seq("{", "else", "}"),
     if_close_tag: _ => seq("{/", "if", "}"),
     _expression: $ => choice(
-      $.variable, $.number, $.string, $.parenthesized_expression,
+      $.variable, $.config_variable, $.number, $.string, $.parenthesized_expression,
       $.binary_expression, $.modifier_expression,
     ),
     variable: $ => seq("$", field("name", alias(token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/), $.identifier))),
+    // Smarty requires both the name and closing hash to be adjacent.
+    config_variable: $ => seq("#", field("name", alias(token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/), $.identifier)), token.immediate("#")),
     identifier: _ => /[a-zA-Z_][a-zA-Z0-9_]*/,
     number: _ => /[0-9]+(?:\.[0-9]+)?/,
     string: _ => choice(/'[^'\\]*(?:\\.[^'\\]*)*'/, /"[^"\\$]*(?:\\.[^"\\$]*)*"/),
@@ -49,6 +51,6 @@ export default grammar({
       field("value", $._expression), "|", field("name", $.identifier),
       repeat(seq(":", field("argument", $._modifier_argument))),
     )),
-    _modifier_argument: $ => choice($.variable, $.number, $.string, $.parenthesized_expression),
+    _modifier_argument: $ => choice($.variable, $.config_variable, $.number, $.string, $.parenthesized_expression),
   }
 });
