@@ -16,8 +16,8 @@ all Smarty variants are covered. `Partial` means only the described forms work.
 | If/elseif/else | Partial: nested blocks using supported expression forms | initial trees; [edit tests](../test/incremental.test.mjs) |
 | Config variables | Partial: static ASCII names in expressions; no dynamic names/indexing | [001](tasks/001-config-variables.md) |
 | Smarty comments | Supported: `{* ... *}` through first terminator; non-nesting | [002](tasks/002-comments.md) |
-| Object properties | Ready: static `->name` chains first | [003](tasks/003-object-properties.md) |
-| Method/function calls | Unimplemented; next after property shape is established | Separate brief needed; corpus uses calls heavily |
+| Object properties | Partial: static ASCII `->name` chains from variables; no calls/dynamic members | [003](tasks/003-object-properties.md) |
+| Method/function calls | Unimplemented; next task to specify | Separate brief needed; corpus uses calls heavily |
 | Dot/index access, arrays | Unimplemented | Separate briefs needed |
 | Comparison/boolean/unary operators | Unimplemented | Specify precedence with additional Smarty evidence |
 | Other built-in blocks | Unimplemented structurally; some names parse as generic tags | `foreach`, inheritance, capture, etc. need explicit contracts |
@@ -38,8 +38,9 @@ The six clean files are not promoted wholesale: some contain `block`/`extends`
 that our generic rules accept without understanding inheritance. The first briefs
 favor small independent features over promising to clear the most files at once.
 
-Implement 001, 002, then 003 as separate changes. These are ready specifications,
-not permission to expand their scope into calls, interpolation, or literal blocks.
+Tasks 001, 002, and 003 are complete as separate changes within their bounded
+scopes. Next, specify method/function calls in a separate brief; interpolation
+and literal blocks still require their own tasks.
 
 ## Config variables evidence (2026-09-22)
 
@@ -52,3 +53,14 @@ with no clean-to-failing regressions. See [001](tasks/001-config-variables.md).
 Task 002 passes `npm test`: 25 trees, 40 Node checks, 4 mutation checks.
 Identical hashes across 467 local files: **13 → 15 clean**, **454 → 452 failing**,
 with no clean-to-failing regressions. See [002](tasks/002-comments.md).
+
+## Object properties evidence (2026-09-22)
+
+Task 003 passes `npm test`: 37 trees, 57 Node checks, 5 mutation checks.
+Identical hashes across 467 local files: **15 → 15 clean**, **452 → 452 failing**,
+with no clean-to-failing regressions. Static property structure is verified by
+explicit trees, including the minimized receiver from `toolbar.tpl`; method
+calls still prevent many full templates from parsing. See [003](tasks/003-object-properties.md).
+
+Across all three tasks the local result is **6 → 15 clean**, **461 → 452 failing**.
+Clean-file counts are triage evidence, not verified language coverage.

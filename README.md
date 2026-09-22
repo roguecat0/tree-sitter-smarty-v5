@@ -46,12 +46,12 @@ Dependency versions are recorded in `package-lock.json` and `composer.lock`.
 ## What is implemented
 
 Text, output tags, variables, numbers, simple quoted strings, arithmetic,
-parentheses, custom tags with positional/named arguments, modifier chains, and
-nested `if`/`elseif`/`else` blocks. Custom closing tags remain separate nodes and
+parentheses, static config variables, Smarty comments, static object property
+chains, custom tags with positional/named arguments, modifier chains, and nested `if`/`elseif`/`else` blocks. Custom closing tags remain separate nodes and
 do not imply a validated block relationship.
 
 See [the tree contract](test/CONTRACT.md) for the fields and exclusions. In
-particular, calls, interpolation, comments, literal blocks, and the remaining
+particular, calls, interpolation, dynamic members, literal blocks, and the remaining
 Smarty language features are future work. The 467 application templates have
 not been used as an acceptance gate for this milestone.
 
@@ -74,7 +74,7 @@ accepted from parser output.
 ## Expanding syntax
 
 Start with [AGENTS.md](AGENTS.md), the [feature inventory](docs/features.md), and
-the [expansion workflow](docs/expanding.md). Three ready task briefs cover static
+the [expansion workflow](docs/expanding.md). Three completed task briefs cover static
 configuration variables, comments, and static object properties. Each defines
 the tree shape, examples, exclusions, reference checks, and completion evidence.
 

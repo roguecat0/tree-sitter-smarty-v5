@@ -11,7 +11,7 @@ export default grammar({
   name: "smarty2",
   extras: _ => [/\s/],
   word: $ => $.identifier,
-  reserved: { global: _ => ["if", "else", "elseif"] },
+  reserved: { global: _ => ["if", "else", "elseif"], property: _ => [] },
   conflicts: $ => [[$.elseif_clause], [$.else_clause]],
   rules: {
     source_file: $ => repeat($._node),
@@ -36,12 +36,18 @@ export default grammar({
     else_tag: _ => seq("{", "else", "}"),
     if_close_tag: _ => seq("{/", "if", "}"),
     _expression: $ => choice(
-      $.variable, $.config_variable, $.number, $.string, $.parenthesized_expression,
+      $.variable, $.config_variable, $.member_expression, $.number, $.string, $.parenthesized_expression,
       $.binary_expression, $.modifier_expression,
     ),
     variable: $ => seq("$", field("name", alias(token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/), $.identifier))),
     // Smarty requires both the name and closing hash to be adjacent.
     config_variable: $ => seq("#", field("name", alias(token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/), $.identifier)), token.immediate("#")),
+    // Restrict receivers to variables/chains; calls and dynamic members are separate tasks.
+    // Left recursion preserves each member, binding above modifiers (3) and arithmetic.
+    // Control keywords are ordinary names after ->, while still reserved as tags.
+    member_expression: $ => prec.left(4, seq(
+      field("object", choice($.variable, $.member_expression)), "->", field("member", reserved("property", $.identifier)),
+    )),
     identifier: _ => /[a-zA-Z_][a-zA-Z0-9_]*/,
     number: _ => /[0-9]+(?:\.[0-9]+)?/,
     string: _ => choice(/'[^'\\]*(?:\\.[^'\\]*)*'/, /"[^"\\$]*(?:\\.[^"\\$]*)*"/),
@@ -54,6 +60,6 @@ export default grammar({
       field("value", $._expression), "|", field("name", $.identifier),
       repeat(seq(":", field("argument", $._modifier_argument))),
     )),
-    _modifier_argument: $ => choice($.variable, $.config_variable, $.number, $.string, $.parenthesized_expression),
+    _modifier_argument: $ => choice($.variable, $.config_variable, $.member_expression, $.number, $.string, $.parenthesized_expression),
   }
 });

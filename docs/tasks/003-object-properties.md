@@ -1,6 +1,6 @@
 # 003 — Static object property access
 
-Status: ready. Dependencies: initial baseline only; recommended after 001 and 002.
+Status: complete (2026-09-22). Dependencies: initial baseline only; recommended after 001 and 002.
 
 ## Scope and motivation
 
@@ -44,7 +44,30 @@ PHP receiver forms.
 - Run `npm test` and corpus reports. Preserve a minimized property-access fixture
   from the receiver in `toolbar.tpl`; do not claim the full method call is supported.
 
-## Completion evidence (fill when implemented)
+## Completion evidence
 
-Test paths; reference observations; commands/results; report comparison; explicit
-remaining call/indexing exclusions and any justified contract changes.
+- [Manual trees](../../test/corpus/object-properties.txt) and
+  [reference/range/recovery/edit checks](../../test/object-properties.test.mjs)
+  cover chains, fields, arithmetic/modifier binding, unknown extensions,
+  whitespace, unfinished chains, and composition with configs/comments.
+- `npm test` failed on all 11 original new fixtures before implementation.
+  An additional keyword-member fixture also failed before the scoped reserved-word
+  fix. Final acceptance passes 37 trees, 57 Node checks and all 5 mutation checks.
+  The new mutation verifies that a wrongly named receiver field is detected.
+- Smarty 5.8.4 accepts whitespace (including LF/CRLF) on either side of `->`,
+  matching the lexer's `ptr` rule. `objectchain` and `objectelement` productions
+  support repeated static members. Smarty accepts `{$user->if->else->elseif}`;
+  the grammar therefore clears reserved words only for property names, keeping
+  malformed control-tag rejection intact. No proposed contract correction needed.
+- `npm run corpus:report -- ./corpus /tmp/smarty-003-after.json` compared with
+  `/tmp/smarty-002-after.json`: identical hashes for all 467 templates; 15 → 15
+  clean, 452 → 452 failing; no clean-to-failing regressions. Reports remain local
+  temporary artifacts. No newly clean files to promote wholesale.
+- `corpus/toolbar.tpl:5` supplies `$app->template`, isolated from the later call
+  as `{$app->template}` in the tracked corpus-receiver fixture. Its explicit
+  variable receiver and member-name fields were inspected. This does not claim
+  support for the original method call or full template.
+- Calls, dynamic members, static `::`, null-safe access, dot/index access,
+  arbitrary expression receivers and runtime validation remain excluded.
+  Reference checks establish acceptance/events, not member structure or values;
+  manual trees establish structure. No existing expected trees changed.

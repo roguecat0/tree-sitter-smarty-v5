@@ -1,0 +1,89 @@
+==================
+Static property output
+==================
+{$user->name}
+---
+(source_file (output value: (member_expression object: (variable name: (identifier)) member: (identifier))))
+
+==================
+Left associated property chain
+==================
+{$user->profile->name}
+---
+(source_file (output value: (member_expression object: (member_expression object: (variable name: (identifier)) member: (identifier)) member: (identifier))))
+
+==================
+Property custom arguments
+==================
+{widget $user->name value=$user->name}
+---
+(source_file (custom_tag name: (identifier) argument: (member_expression object: (variable name: (identifier)) member: (identifier)) (attribute name: (identifier) value: (member_expression object: (variable name: (identifier)) member: (identifier)))))
+
+==================
+Property modifier input
+==================
+{$user->name|escape}
+---
+(source_file (output value: (modifier_expression value: (member_expression object: (variable name: (identifier)) member: (identifier)) name: (identifier))))
+
+==================
+Property modifier argument
+==================
+{$x|decorate:$user->name}
+---
+(source_file (output value: (modifier_expression value: (variable name: (identifier)) name: (identifier) argument: (member_expression object: (variable name: (identifier)) member: (identifier)))))
+
+==================
+Property condition
+==================
+{if $user->active}Y{/if}
+---
+(source_file (if_block (if_tag condition: (member_expression object: (variable name: (identifier)) member: (identifier))) (text) (if_close_tag)))
+
+==================
+Property arithmetic precedence
+==================
+{$item->price + $item->tax * 2}
+---
+(source_file (output value: (binary_expression left: (member_expression object: (variable name: (identifier)) member: (identifier)) right: (binary_expression left: (member_expression object: (variable name: (identifier)) member: (identifier)) right: (number)))))
+
+==================
+Property whitespace
+==================
+{$user 
+->	 profile -> name}
+---
+(source_file (output value: (member_expression object: (member_expression object: (variable name: (identifier)) member: (identifier)) member: (identifier))))
+
+==================
+Property corpus receiver
+==================
+{$app->template}
+---
+(source_file (output value: (member_expression object: (variable name: (identifier)) member: (identifier))))
+
+==================
+Properties compose with configs and comments
+==================
+{if $user->active}{* hidden {$x->y} *}{widget label=#title# value=$user->profile->name|decorate:#suffix#}{/widget}{/if}
+---
+(source_file (if_block (if_tag condition: (member_expression object: (variable name: (identifier)) member: (identifier))) (comment) (custom_tag name: (identifier) (attribute name: (identifier) value: (config_variable name: (identifier))) (attribute name: (identifier) value: (modifier_expression value: (member_expression object: (member_expression object: (variable name: (identifier)) member: (identifier)) member: (identifier)) name: (identifier) argument: (config_variable name: (identifier))))) (custom_close_tag name: (identifier)) (if_close_tag)))
+
+==================
+Property modifier arithmetic binding
+==================
+{$a->b|decorate + $c->d}
+---
+(source_file (output value: (binary_expression left: (modifier_expression value: (member_expression object: (variable name: (identifier)) member: (identifier)) name: (identifier)) right: (member_expression object: (variable name: (identifier)) member: (identifier)))))
+
+==================
+Control keywords are valid property names
+==================
+{$user->if->else->elseif}
+---
+(source_file
+  (output value: (member_expression
+    object: (member_expression
+      object: (member_expression object: (variable name: (identifier)) member: (identifier))
+      member: (identifier))
+    member: (identifier))))

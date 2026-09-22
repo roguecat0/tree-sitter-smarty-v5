@@ -26,6 +26,10 @@
             "named": true
           },
           {
+            "type": "member_expression",
+            "named": true
+          },
+          {
             "type": "modifier_expression",
             "named": true
           },
@@ -63,6 +67,10 @@
           },
           {
             "type": "config_variable",
+            "named": true
+          },
+          {
+            "type": "member_expression",
             "named": true
           },
           {
@@ -123,6 +131,10 @@
           },
           {
             "type": "config_variable",
+            "named": true
+          },
+          {
+            "type": "member_expression",
             "named": true
           },
           {
@@ -195,6 +207,10 @@
           },
           {
             "type": "config_variable",
+            "named": true
+          },
+          {
+            "type": "member_expression",
             "named": true
           },
           {
@@ -341,6 +357,10 @@
             "named": true
           },
           {
+            "type": "member_expression",
+            "named": true
+          },
+          {
             "type": "modifier_expression",
             "named": true
           },
@@ -437,6 +457,10 @@
             "named": true
           },
           {
+            "type": "member_expression",
+            "named": true
+          },
+          {
             "type": "modifier_expression",
             "named": true
           },
@@ -461,6 +485,36 @@
     }
   },
   {
+    "type": "member_expression",
+    "named": true,
+    "fields": {
+      "member": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "object": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "member_expression",
+            "named": true
+          },
+          {
+            "type": "variable",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "modifier_expression",
     "named": true,
     "fields": {
@@ -470,6 +524,10 @@
         "types": [
           {
             "type": "config_variable",
+            "named": true
+          },
+          {
+            "type": "member_expression",
             "named": true
           },
           {
@@ -513,6 +571,10 @@
             "named": true
           },
           {
+            "type": "member_expression",
+            "named": true
+          },
+          {
             "type": "modifier_expression",
             "named": true
           },
@@ -553,6 +615,10 @@
             "named": true
           },
           {
+            "type": "member_expression",
+            "named": true
+          },
+          {
             "type": "modifier_expression",
             "named": true
           },
@@ -590,6 +656,10 @@
         },
         {
           "type": "config_variable",
+          "named": true
+        },
+        {
+          "type": "member_expression",
           "named": true
         },
         {
@@ -702,6 +772,10 @@
   },
   {
     "type": "-",
+    "named": false
+  },
+  {
+    "type": "->",
     "named": false
   },
   {

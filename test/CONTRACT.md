@@ -1,4 +1,4 @@
-# First grammar milestone
+# Smarty grammar contract
 
 Target: a deliberately small Smarty 5 subset, with the package name `smarty2`.
 
@@ -18,15 +18,15 @@ nodes, optional `else_clause`, and `if_close_tag`. Conditions have a `condition`
 field. Branch clauses contain their opening tag and body nodes. Generic tags
 must not consume malformed built-in control tags.
 
-The manually specified trees in `test/corpus/initial.txt` are the structural
+The manually specified trees in `test/corpus/*.txt` are the structural
 contract. Do not regenerate their expectations from parser output to fix a failure.
 The reference tests compare a smaller projection (ordered tag names, argument
 names, and modifier names) with the installed Smarty parser. Smarty's generated
 PHP fragments are not treated as Tree-sitter syntax trees.
 
 Not yet supported: other built-in blocks, comparisons, boolean operators,
-unary operators, calls/member access, dynamic config variables/indexing, arrays, interpolated
-strings, literal blocks, configurable delimiters, auto-literal braces,
+unary operators, calls/dynamic member access, dynamic config variables/indexing,
+arrays, interpolated strings, literal blocks, configurable delimiters, auto-literal braces,
 or HTML injection. This milestone does not claim to parse the application corpus.
 
 Static `#name#` expressions produce `config_variable` with a `name: (identifier)`
@@ -42,3 +42,13 @@ markers remain strings. The existing simple double-quoted string rule over-accep
 `"{* ... *}"`, which Smarty rejects through its interpolation handling; this
 is a documented limitation, not supported Smarty syntax. See
 [comment trees](corpus/comments.txt) and [reference checks](comments.test.mjs).
+
+Static property access produces left-nested `member_expression` nodes with
+`object` (a variable or member expression) and `member: (identifier)` fields.
+It binds tighter than modifiers and arithmetic, and composes in tag arguments,
+attributes, conditions and modifier inputs/arguments. Whitespace, including
+newlines, is allowed around `->`. Static names use ASCII identifiers; control
+keywords such as `if` are valid members without becoming valid generic tag names.
+Calls, dynamic/static access, indexing, and arbitrary expression receivers remain
+outside this subset. Evidence: [property trees](corpus/object-properties.txt) and
+[reference/range/recovery/edit checks](object-properties.test.mjs).

@@ -8,6 +8,9 @@ import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const original = readFileSync(join(root, 'grammar.js'), 'utf8');
 const mutations = [
+  { name: 'property chain receiver gets the wrong field', fixture: 'Left associated property chain',
+    from: 'field("object", choice($.variable, $.member_expression))',
+    to: 'field("value", choice($.variable, $.member_expression))' },
   { name: 'comment swallowed as text', fixture: 'Comment hides tags and quotes',
     from: '$.if_block, $.comment)',
     to: '$.if_block, alias($.comment, $.text))' },
