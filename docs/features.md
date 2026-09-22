@@ -8,14 +8,14 @@ all Smarty variants are covered. `Partial` means only the described forms work.
 | --- | --- | --- |
 | Text/output boundaries | Partial: ordinary text and expression output; no raw braces/auto-literal | [initial trees](../test/corpus/initial.txt) |
 | Variables/numbers | Partial: simple variable names, unsigned decimal numbers | initial trees |
-| Strings | Partial: simple quotes/escapes; no interpolation | initial trees, quoted-brace case |
+| Strings | Partial: simple quotes/escapes; no interpolation (see [quoted-comment limitation](tasks/002-comments.md#reference-boundary-clarification)) | initial trees, quoted-brace case |
 | Arithmetic | Partial: binary `+ - * / %`, parentheses; no unary/boolean/comparison syntax | initial trees; precedence mutation; operator-field check |
 | Generic tags | Partial: names, positional expressions, named attributes; no bare-word values | initial trees; [reference tests](../test/reference.test.mjs) |
 | Custom closing tags | Supported as independent tags; pairing deliberately unspecified | initial mismatched-name case |
 | Modifiers | Partial: chains and simple arguments; unrestricted names | initial trees; renamed-extension checks |
 | If/elseif/else | Partial: nested blocks using supported expression forms | initial trees; [edit tests](../test/incremental.test.mjs) |
 | Config variables | Partial: static ASCII names in expressions; no dynamic names/indexing | [001](tasks/001-config-variables.md) |
-| Smarty comments | Ready: delimited comments first | [002](tasks/002-comments.md) |
+| Smarty comments | Supported: `{* ... *}` through first terminator; non-nesting | [002](tasks/002-comments.md) |
 | Object properties | Ready: static `->name` chains first | [003](tasks/003-object-properties.md) |
 | Method/function calls | Unimplemented; next after property shape is established | Separate brief needed; corpus uses calls heavily |
 | Dot/index access, arrays | Unimplemented | Separate briefs needed |
@@ -46,3 +46,9 @@ not permission to expand their scope into calls, interpolation, or literal block
 Task 001 passes `npm test`: 15 trees, 27 Node checks, 3 mutation checks.
 Identical hashes across 467 local files: **6 → 13 clean**, **461 → 454 failing**,
 with no clean-to-failing regressions. See [001](tasks/001-config-variables.md).
+
+## Comments evidence (2026-09-22)
+
+Task 002 passes `npm test`: 25 trees, 40 Node checks, 4 mutation checks.
+Identical hashes across 467 local files: **13 → 15 clean**, **454 → 452 failing**,
+with no clean-to-failing regressions. See [002](tasks/002-comments.md).

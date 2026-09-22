@@ -1,0 +1,75 @@
+==================
+Empty Smarty comment
+==================
+{**}
+---
+(source_file (comment))
+
+==================
+Comment hides tags and quotes
+==================
+A{* {$ignored} {widget} " ' {#title#} *}B
+---
+(source_file (text) (comment) (text))
+
+==================
+Multiline LF comment
+==================
+{*helper
+requires: id
+*}
+X
+---
+(source_file (comment) (text))
+
+==================
+Multiline CRLF comment
+==================
+{*helper
+requires: id
+*}
+X
+---
+(source_file (comment) (text))
+
+==================
+Adjacent comments
+==================
+{**}{*two*}
+---
+(source_file (comment) (comment))
+
+==================
+Comment in config condition
+==================
+{if #enabled#}{* {$ignored} *}{#title#}{/if}
+---
+(source_file (if_block (if_tag condition: (config_variable name: (identifier))) (comment) (output value: (config_variable name: (identifier))) (if_close_tag)))
+
+==================
+Quoted comment remains string
+==================
+{widget label="{* ignored *}"}
+---
+(source_file (custom_tag name: (identifier) (attribute name: (identifier) value: (string))))
+
+==================
+Comment ends at first terminator
+==================
+{* outer {* inner *}{$visible}
+---
+(source_file (comment) (output value: (variable name: (identifier))))
+
+==================
+Comment star runs
+==================
+{* * ** *** x ****}
+---
+(source_file (comment))
+
+==================
+Single quoted comment remains string
+==================
+{widget label='{* ignored *}'}
+---
+(source_file (custom_tag name: (identifier) (attribute name: (identifier) value: (string))))

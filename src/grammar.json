@@ -32,12 +32,40 @@
         {
           "type": "SYMBOL",
           "name": "if_block"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "comment"
         }
       ]
     },
     "text": {
       "type": "PATTERN",
       "value": "[^{}]+"
+    },
+    "comment": {
+      "type": "TOKEN",
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "{*"
+          },
+          {
+            "type": "PATTERN",
+            "value": "([^*]|\\*+[^*}])*"
+          },
+          {
+            "type": "PATTERN",
+            "value": "\\*+"
+          },
+          {
+            "type": "STRING",
+            "value": "}"
+          }
+        ]
+      }
     },
     "output": {
       "type": "SEQ",

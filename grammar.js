@@ -15,8 +15,11 @@ export default grammar({
   conflicts: $ => [[$.elseif_clause], [$.else_clause]],
   rules: {
     source_file: $ => repeat($._node),
-    _node: $ => choice($.text, $.output, $.custom_tag, $.custom_close_tag, $.if_block),
+    _node: $ => choice($.text, $.output, $.custom_tag, $.custom_close_tag, $.if_block, $.comment),
     text: _ => /[^{}]+/,
+    // A single token hides all template syntax and stops at the first *}.
+    // Star runs cannot consume a closing brace; the following newline is text.
+    comment: _ => token(seq("{*", /([^*]|\*+[^*}])*/, /\*+/, "}")),
     output: $ => seq("{", field("value", $._expression), "}"),
     custom_tag: $ => seq("{", field("name", $.identifier), repeat(choice(
       $.attribute, field("argument", $._expression),

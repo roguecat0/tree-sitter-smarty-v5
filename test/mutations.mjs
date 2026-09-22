@@ -8,6 +8,9 @@ import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const original = readFileSync(join(root, 'grammar.js'), 'utf8');
 const mutations = [
+  { name: 'comment swallowed as text', fixture: 'Comment hides tags and quotes',
+    from: '$.if_block, $.comment)',
+    to: '$.if_block, alias($.comment, $.text))' },
   { name: 'custom tag swallowed as text', fixture: 'Custom tag arguments',
     from: 'choice($.text, $.output, $.custom_tag,',
     to: 'choice($.text, $.output, alias($.custom_tag, $.text),' },

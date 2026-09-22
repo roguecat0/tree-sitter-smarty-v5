@@ -44,3 +44,6 @@ build.zig.zon linguist-generated
 # Java bindings
 pom.xml linguist-generated
 bindings/java/** linguist-generated
+
+# Keep the deliberate mixed LF/CRLF comment fixtures byte-for-byte.
+test/corpus/comments.txt -text

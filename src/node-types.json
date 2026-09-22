@@ -250,6 +250,10 @@
       "required": true,
       "types": [
         {
+          "type": "comment",
+          "named": true
+        },
+        {
           "type": "custom_close_tag",
           "named": true
         },
@@ -289,6 +293,10 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "comment",
+          "named": true
+        },
         {
           "type": "custom_close_tag",
           "named": true
@@ -364,6 +372,10 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "comment",
+          "named": true
+        },
         {
           "type": "custom_close_tag",
           "named": true
@@ -613,6 +625,10 @@
       "required": false,
       "types": [
         {
+          "type": "comment",
+          "named": true
+        },
+        {
           "type": "custom_close_tag",
           "named": true
         },
@@ -699,6 +715,10 @@
   {
     "type": "=",
     "named": false
+  },
+  {
+    "type": "comment",
+    "named": true
   },
   {
     "type": "else",

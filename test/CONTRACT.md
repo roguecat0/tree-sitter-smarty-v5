@@ -26,7 +26,7 @@ PHP fragments are not treated as Tree-sitter syntax trees.
 
 Not yet supported: other built-in blocks, comparisons, boolean operators,
 unary operators, calls/member access, dynamic config variables/indexing, arrays, interpolated
-strings, comments, literal blocks, configurable delimiters, auto-literal braces,
+strings, literal blocks, configurable delimiters, auto-literal braces,
 or HTML injection. This milestone does not claim to parse the application corpus.
 
 Static `#name#` expressions produce `config_variable` with a `name: (identifier)`
@@ -34,3 +34,11 @@ field in outputs, conditions, tag arguments/attributes and modifier inputs/argum
 Names use the existing ASCII identifier subset; internal whitespace is rejected.
 Plain and quoted hash text stays text/string. Structural evidence:
 [test/corpus/config-variables.txt](corpus/config-variables.txt).
+
+Smarty comments are named leaf `comment` nodes spanning `{*` through the first
+`*}`; they do not nest and contain no executable children. Following newlines
+remain text. Unterminated comments produce recovery errors. Single-quoted comment
+markers remain strings. The existing simple double-quoted string rule over-accepts
+`"{* ... *}"`, which Smarty rejects through its interpolation handling; this
+is a documented limitation, not supported Smarty syntax. See
+[comment trees](corpus/comments.txt) and [reference checks](comments.test.mjs).
