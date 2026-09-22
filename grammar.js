@@ -1,5 +1,5 @@
 /**
- * @file Smarty2 grammar for tree-sitter
+ * @file Initial Smarty 5 subset for tree-sitter (package name: smarty2)
  * @author roguecat0 <roguecat0@gmail.com>
  * @license MIT
  */
@@ -9,9 +9,46 @@
 
 export default grammar({
   name: "smarty2",
-
+  extras: _ => [/\s/],
+  word: $ => $.identifier,
+  reserved: { global: _ => ["if", "else", "elseif"] },
+  conflicts: $ => [[$.elseif_clause], [$.else_clause]],
   rules: {
-    // TODO: add the actual grammar rules
-    source_file: $ => "hello"
+    source_file: $ => repeat($._node),
+    _node: $ => choice($.text, $.output, $.custom_tag, $.custom_close_tag, $.if_block),
+    text: _ => /[^{}]+/,
+    output: $ => seq("{", field("value", $._expression), "}"),
+    custom_tag: $ => seq("{", field("name", $.identifier), repeat(choice(
+      $.attribute, field("argument", $._expression),
+    )), "}"),
+    custom_close_tag: $ => seq("{/", field("name", $.identifier), "}"),
+    attribute: $ => seq(field("name", $.identifier), "=", field("value", $._expression)),
+    if_block: $ => seq(
+      $.if_tag, repeat($._node), repeat($.elseif_clause), optional($.else_clause), $.if_close_tag,
+    ),
+    if_tag: $ => seq("{", "if", field("condition", $._expression), "}"),
+    elseif_clause: $ => seq($.elseif_tag, repeat($._node)),
+    elseif_tag: $ => seq("{", "elseif", field("condition", $._expression), "}"),
+    else_clause: $ => seq($.else_tag, repeat($._node)),
+    else_tag: _ => seq("{", "else", "}"),
+    if_close_tag: _ => seq("{/", "if", "}"),
+    _expression: $ => choice(
+      $.variable, $.number, $.string, $.parenthesized_expression,
+      $.binary_expression, $.modifier_expression,
+    ),
+    variable: $ => seq("$", field("name", alias(token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/), $.identifier))),
+    identifier: _ => /[a-zA-Z_][a-zA-Z0-9_]*/,
+    number: _ => /[0-9]+(?:\.[0-9]+)?/,
+    string: _ => choice(/'[^'\\]*(?:\\.[^'\\]*)*'/, /"[^"\\$]*(?:\\.[^"\\$]*)*"/),
+    parenthesized_expression: $ => seq("(", $._expression, ")"),
+    binary_expression: $ => choice(
+      ...[[1, ["+", "-"]], [2, ["*", "/", "%"]]].map(([precedence, operators]) =>
+        prec.left(precedence, seq(field("left", $._expression), field("operator", choice(...operators)), field("right", $._expression)))),
+    ),
+    modifier_expression: $ => prec.left(3, seq(
+      field("value", $._expression), "|", field("name", $.identifier),
+      repeat(seq(":", field("argument", $._modifier_argument))),
+    )),
+    _modifier_argument: $ => choice($.variable, $.number, $.string, $.parenthesized_expression),
   }
 });

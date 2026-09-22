@@ -1,0 +1,110 @@
+==================
+Plain text and output
+==================
+Hello {$name}!
+---
+(source_file
+  (text)
+  (output value: (variable name: (identifier)))
+  (text))
+
+==================
+Arithmetic precedence
+==================
+{$a + $b * 3}
+---
+(source_file
+  (output value: (binary_expression
+    left: (variable name: (identifier))
+    right: (binary_expression
+      left: (variable name: (identifier))
+      right: (number)))))
+
+==================
+Arithmetic associativity and parentheses
+==================
+{($a - 2 - 1) * 4}
+---
+(source_file
+  (output value: (binary_expression
+    left: (parenthesized_expression
+      (binary_expression
+        left: (binary_expression left: (variable name: (identifier)) right: (number))
+        right: (number)))
+    right: (number))))
+
+==================
+Custom tag arguments
+==================
+{widget $kind count=2 label='hello'}{/widget}
+---
+(source_file
+  (custom_tag
+    name: (identifier)
+    argument: (variable name: (identifier))
+    (attribute name: (identifier) value: (number))
+    (attribute name: (identifier) value: (string)))
+  (custom_close_tag name: (identifier)))
+
+==================
+Modifier chain
+==================
+{$price|my_money:2|decorate:'EUR'}
+---
+(source_file
+  (output value: (modifier_expression
+    value: (modifier_expression
+      value: (variable name: (identifier))
+      name: (identifier)
+      argument: (number))
+    name: (identifier)
+    argument: (string))))
+
+==================
+Nested if and branches
+==================
+{if $a}{if $b}B{else}C{/if}{elseif $c}D{else}E{/if}
+---
+(source_file
+  (if_block
+    (if_tag condition: (variable name: (identifier)))
+    (if_block
+      (if_tag condition: (variable name: (identifier)))
+      (text)
+      (else_clause (else_tag) (text))
+      (if_close_tag))
+    (elseif_clause (elseif_tag condition: (variable name: (identifier))) (text))
+    (else_clause (else_tag) (text))
+    (if_close_tag)))
+
+==================
+Custom tags inside a built-in block
+==================
+{if $ok}{switch $kind}{case value=1}One{/switch}{/if}
+---
+(source_file
+  (if_block
+    (if_tag condition: (variable name: (identifier)))
+    (custom_tag name: (identifier) argument: (variable name: (identifier)))
+    (custom_tag name: (identifier) (attribute name: (identifier) value: (number)))
+    (text)
+    (custom_close_tag name: (identifier))
+    (if_close_tag)))
+
+==================
+Quoted brace stays in its string
+==================
+{widget label="hello } world"}
+---
+(source_file
+  (custom_tag name: (identifier)
+    (attribute name: (identifier) value: (string))))
+
+==================
+Custom closing tags do not assert pairing
+==================
+{widget}{/different}
+---
+(source_file
+  (custom_tag name: (identifier))
+  (custom_close_tag name: (identifier)))

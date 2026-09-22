@@ -1,0 +1,30 @@
+name: Grammar
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  grammar:
+    name: Grammar checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist
+      - run: npm ci
+      - run: npm test
+      - name: Verify generated parser is committed
+        run: git diff --exit-code -- src/
