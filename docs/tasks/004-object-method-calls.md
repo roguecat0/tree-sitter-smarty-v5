@@ -1,6 +1,6 @@
 # 004 — Static object method calls
 
-Status: ready; not implemented. Dependencies: 001–003. Implement before 005.
+Status: complete (2026-09-22). Dependencies: 001–003. Implement before 005.
 
 ## Scope and motivation
 
@@ -96,8 +96,33 @@ imitate those tree assertions.
 7. Update the contract, feature inventory, this status and completion evidence.
    Do not claim function calls or runtime correctness from this work.
 
-## Completion evidence (fill when implemented)
+## Completion evidence
 
 Manual-tree/reference/edit test links; commands and outcomes; local report paths
 and hash comparison; corpus provenance; argument-list discrepancy; changed
 support-boundary assertion; remaining exclusions.
+
+Implemented static calls and property/call chains with explicit receiver, method,
+and argument fields. [Six manual trees](../../test/corpus/object-method-calls.txt)
+failed before implementation (`/tmp/smarty-004-red.log`). Dedicated
+[checks](../../test/object-method-calls.test.mjs) cover references, ranges,
+whitespace/control names, renamed extensions, exclusions and incremental repair.
+The method-argument mutation and existing property mutation both fail their
+intended trees. No prior tree changed. The property negative assertion for
+`{$user->name()}` was removed because this is now supported syntax.
+
+`npm test` passes: 43 trees, 68 Node checks, six mutation checks
+(`/tmp/smarty-004-green.log`). Calls bind above properties during reduction to
+prevent a generic-tag call being split into a property and parenthesized argument;
+the composed manual fixture exposed this before correction. The initial negative
+candidate `{f(1)}` already overlaps generic-tag syntax, so standalone-call
+exclusion is checked within an expression instead; no generic contract changed.
+Leading-comma recorder acceptance is explicitly retained as a discrepancy.
+
+Local reports `/tmp/smarty-004-before.json` and `/tmp/smarty-004-after.json` have
+identical hashes for all 467 inputs: **15 → 27 clean**, **452 → 440 failing**,
+no regressions. All 12 newly clean files were inspected for explicit method
+receiver/name fields (19 zero-argument calls total). The tracked toolbar fixture
+minimizes `corpus/toolbar.tpl:5-7`; repeated calls also minimize the cited action
+example. Corpus acceptance does not establish runtime behavior. Dynamic names,
+standalone calls, indexing, static access and the other listed exclusions remain.

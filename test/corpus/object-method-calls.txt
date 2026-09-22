@@ -1,0 +1,41 @@
+==================
+Zero argument method
+==================
+{$user->get_name()}
+---
+(source_file (output value: (method_call_expression object: (variable name: (identifier)) method: (identifier))))
+
+==================
+Method arguments preserve order
+==================
+{$user->find($id, #label#, 2 + 3)}
+---
+(source_file (output value: (method_call_expression object: (variable name: (identifier)) method: (identifier) argument: (variable name: (identifier)) argument: (config_variable name: (identifier)) argument: (binary_expression left: (number) right: (number)))))
+
+==================
+Toolbar method receiver and modifier
+==================
+{$app->template->get_buttons($id)|escape}
+---
+(source_file (output value: (modifier_expression value: (method_call_expression object: (member_expression object: (variable name: (identifier)) member: (identifier)) method: (identifier) argument: (variable name: (identifier))) name: (identifier))))
+
+==================
+Method property and repeated calls
+==================
+{$user->get_profile()->name}{$user->get_profile()->get_name()}
+---
+(source_file (output value: (member_expression object: (method_call_expression object: (variable name: (identifier)) method: (identifier)) member: (identifier))) (output value: (method_call_expression object: (method_call_expression object: (variable name: (identifier)) method: (identifier)) method: (identifier))))
+
+==================
+Nested method and parenthesized arguments
+==================
+{$a->f($b->g(), (2 + 3)) * 4}
+---
+(source_file (output value: (binary_expression left: (method_call_expression object: (variable name: (identifier)) method: (identifier) argument: (method_call_expression object: (variable name: (identifier)) method: (identifier)) argument: (parenthesized_expression (binary_expression left: (number) right: (number)))) right: (number))))
+
+==================
+Method composition in tags and conditions
+==================
+{widget $a->f() value=#label#|format:$b->g()}{*hidden*}{if $a->f()}{$b->g()}{elseif $a->h()}{/if}{/other}
+---
+(source_file (custom_tag name: (identifier) argument: (method_call_expression object: (variable name: (identifier)) method: (identifier)) (attribute name: (identifier) value: (modifier_expression value: (config_variable name: (identifier)) name: (identifier) argument: (method_call_expression object: (variable name: (identifier)) method: (identifier))))) (comment) (if_block (if_tag condition: (method_call_expression object: (variable name: (identifier)) method: (identifier))) (output value: (method_call_expression object: (variable name: (identifier)) method: (identifier))) (elseif_clause (elseif_tag condition: (method_call_expression object: (variable name: (identifier)) method: (identifier)))) (if_close_tag)) (custom_close_tag name: (identifier)))

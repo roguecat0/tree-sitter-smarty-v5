@@ -30,6 +30,10 @@
             "named": true
           },
           {
+            "type": "method_call_expression",
+            "named": true
+          },
+          {
             "type": "modifier_expression",
             "named": true
           },
@@ -71,6 +75,10 @@
           },
           {
             "type": "member_expression",
+            "named": true
+          },
+          {
+            "type": "method_call_expression",
             "named": true
           },
           {
@@ -135,6 +143,10 @@
           },
           {
             "type": "member_expression",
+            "named": true
+          },
+          {
+            "type": "method_call_expression",
             "named": true
           },
           {
@@ -211,6 +223,10 @@
           },
           {
             "type": "member_expression",
+            "named": true
+          },
+          {
+            "type": "method_call_expression",
             "named": true
           },
           {
@@ -361,6 +377,10 @@
             "named": true
           },
           {
+            "type": "method_call_expression",
+            "named": true
+          },
+          {
             "type": "modifier_expression",
             "named": true
           },
@@ -461,6 +481,10 @@
             "named": true
           },
           {
+            "type": "method_call_expression",
+            "named": true
+          },
+          {
             "type": "modifier_expression",
             "named": true
           },
@@ -507,6 +531,86 @@
             "named": true
           },
           {
+            "type": "method_call_expression",
+            "named": true
+          },
+          {
+            "type": "variable",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "method_call_expression",
+    "named": true,
+    "fields": {
+      "argument": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "binary_expression",
+            "named": true
+          },
+          {
+            "type": "config_variable",
+            "named": true
+          },
+          {
+            "type": "member_expression",
+            "named": true
+          },
+          {
+            "type": "method_call_expression",
+            "named": true
+          },
+          {
+            "type": "modifier_expression",
+            "named": true
+          },
+          {
+            "type": "number",
+            "named": true
+          },
+          {
+            "type": "parenthesized_expression",
+            "named": true
+          },
+          {
+            "type": "string",
+            "named": true
+          },
+          {
+            "type": "variable",
+            "named": true
+          }
+        ]
+      },
+      "method": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "object": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "member_expression",
+            "named": true
+          },
+          {
+            "type": "method_call_expression",
+            "named": true
+          },
+          {
             "type": "variable",
             "named": true
           }
@@ -528,6 +632,10 @@
           },
           {
             "type": "member_expression",
+            "named": true
+          },
+          {
+            "type": "method_call_expression",
             "named": true
           },
           {
@@ -575,6 +683,10 @@
             "named": true
           },
           {
+            "type": "method_call_expression",
+            "named": true
+          },
+          {
             "type": "modifier_expression",
             "named": true
           },
@@ -619,6 +731,10 @@
             "named": true
           },
           {
+            "type": "method_call_expression",
+            "named": true
+          },
+          {
             "type": "modifier_expression",
             "named": true
           },
@@ -660,6 +776,10 @@
         },
         {
           "type": "member_expression",
+          "named": true
+        },
+        {
+          "type": "method_call_expression",
           "named": true
         },
         {
@@ -768,6 +888,10 @@
   },
   {
     "type": "+",
+    "named": false
+  },
+  {
+    "type": ",",
     "named": false
   },
   {

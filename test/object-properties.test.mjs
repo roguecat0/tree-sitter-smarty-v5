@@ -52,7 +52,7 @@ test('Unfinished properties fail and unsupported forms do not become supported a
     assert.equal(parser().parse(source).rootNode.hasError, true, source);
     assert.match(reference(source).error, /Syntax error/);
   }
-  for (const source of ['{$user->name()}', '{$user->$name}', '{$user::name}', '{$user?.name}', '{$user->name[0]}', '{$user.name}', '{#user#->name}', '{($user)->name}']) {
+  for (const source of ['{$user->$name}', '{$user::name}', '{$user?.name}', '{$user->name[0]}', '{$user.name}', '{#user#->name}', '{($user)->name}']) {
     assert.equal(parser().parse(source).rootNode.hasError, true, source);
   }
 });

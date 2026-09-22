@@ -8,9 +8,12 @@ import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const original = readFileSync(join(root, 'grammar.js'), 'utf8');
 const mutations = [
+  { name: 'method arguments lose their field', fixture: 'Method arguments preserve order',
+    from: 'optional(seq(field("argument", $._expression), repeat(seq(",", field("argument", $._expression)))))',
+    to: 'optional(seq(field("value", $._expression), repeat(seq(",", field("value", $._expression)))))' },
   { name: 'property chain receiver gets the wrong field', fixture: 'Left associated property chain',
-    from: 'field("object", choice($.variable, $.member_expression))',
-    to: 'field("value", choice($.variable, $.member_expression))' },
+    from: 'member_expression: $ => prec.left(4, seq(\n      field("object", choice($.variable, $.member_expression, $.method_call_expression))',
+    to: 'member_expression: $ => prec.left(4, seq(\n      field("value", choice($.variable, $.member_expression, $.method_call_expression))' },
   { name: 'comment swallowed as text', fixture: 'Comment hides tags and quotes',
     from: '$.if_block, $.comment)',
     to: '$.if_block, alias($.comment, $.text))' },

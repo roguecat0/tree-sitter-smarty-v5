@@ -25,7 +25,7 @@ names, and modifier names) with the installed Smarty parser. Smarty's generated
 PHP fragments are not treated as Tree-sitter syntax trees.
 
 Not yet supported: other built-in blocks, comparisons, boolean operators,
-unary operators, calls/dynamic member access, dynamic config variables/indexing,
+unary operators, standalone calls/dynamic member access, dynamic config variables/indexing,
 arrays, interpolated strings, literal blocks, configurable delimiters, auto-literal braces,
 or HTML injection. This milestone does not claim to parse the application corpus.
 
@@ -44,11 +44,22 @@ is a documented limitation, not supported Smarty syntax. See
 [comment trees](corpus/comments.txt) and [reference checks](comments.test.mjs).
 
 Static property access produces left-nested `member_expression` nodes with
-`object` (a variable or member expression) and `member: (identifier)` fields.
+`object` (a variable, member expression or method call) and `member: (identifier)` fields.
 It binds tighter than modifiers and arithmetic, and composes in tag arguments,
 attributes, conditions and modifier inputs/arguments. Whitespace, including
 newlines, is allowed around `->`. Static names use ASCII identifiers; control
 keywords such as `if` are valid members without becoming valid generic tag names.
-Calls, dynamic/static access, indexing, and arbitrary expression receivers remain
+Dynamic/static access, indexing, and arbitrary expression receivers remain
 outside this subset. Evidence: [property trees](corpus/object-properties.txt) and
 [reference/range/recovery/edit checks](object-properties.test.mjs).
+
+Static object methods produce `method_call_expression` with `object`, `method`
+and repeated `argument` fields. Ordinary comma-separated lists permit zero
+arguments, require each supplied expression, and reject trailing/leading commas.
+Calls and properties form left-nested chains above modifiers and arithmetic.
+Whitespace around arrows, method names and argument punctuation is accepted.
+Smarty's recorder accepts a leading comma; this subset deliberately rejects it.
+Standalone functions remain unsupported; `{f(1)}` overlaps the existing generic
+tag syntax and is a custom tag with a parenthesized argument, not a function node.
+Evidence: [method trees](corpus/object-method-calls.txt) and
+[reference/range/edit checks](object-method-calls.test.mjs).

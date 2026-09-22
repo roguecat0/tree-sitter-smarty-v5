@@ -16,8 +16,8 @@ all Smarty variants are covered. `Partial` means only the described forms work.
 | If/elseif/else | Partial: nested blocks using supported expression forms | initial trees; [edit tests](../test/incremental.test.mjs) |
 | Config variables | Partial: static ASCII names in expressions; no dynamic names/indexing | [001](tasks/001-config-variables.md) |
 | Smarty comments | Supported: `{* ... *}` through first terminator; non-nesting | [002](tasks/002-comments.md) |
-| Object properties | Partial: static ASCII `->name` chains from variables; no calls/dynamic members | [003](tasks/003-object-properties.md) |
-| Object method calls | Ready: static names, ordinary arguments, property/call chains | [004](tasks/004-object-method-calls.md) |
+| Object properties | Partial: static ASCII `->name` chains from variables/calls; no dynamic members | [003](tasks/003-object-properties.md) |
+| Object method calls | Partial: static names, ordinary arguments, property/call chains | [004](tasks/004-object-method-calls.md) |
 | Standalone function calls | Unimplemented; excluded from 004 | Separate brief needed |
 | Dot/index access, arrays | Unimplemented | Separate briefs needed |
 | Comparison/boolean/unary operators | Ready: symbolic comparisons, `&&`/`\|\|`, prefix `! + -`; no word aliases | [005](tasks/005-condition-operators.md) |
@@ -70,3 +70,10 @@ calls still prevent many full templates from parsing. See [003](tasks/003-object
 
 Across all three tasks the local result is **6 → 15 clean**, **461 → 452 failing**.
 Clean-file counts are triage evidence, not verified language coverage.
+
+## Object method evidence (2026-09-22)
+
+Task [004](tasks/004-object-method-calls.md) passes `npm test`: 43 trees,
+68 Node checks, six mutations. Hash-matched local corpus: **15 → 27 clean**,
+**452 → 440 failing**, no regressions. Explicit call fields were inspected in
+all 12 newly clean files. Tasks 005 and 006 remain ready for sequential work.
