@@ -17,10 +17,12 @@ all Smarty variants are covered. `Partial` means only the described forms work.
 | Config variables | Partial: static ASCII names in expressions; no dynamic names/indexing | [001](tasks/001-config-variables.md) |
 | Smarty comments | Supported: `{* ... *}` through first terminator; non-nesting | [002](tasks/002-comments.md) |
 | Object properties | Partial: static ASCII `->name` chains from variables; no calls/dynamic members | [003](tasks/003-object-properties.md) |
-| Method/function calls | Unimplemented; next task to specify | Separate brief needed; corpus uses calls heavily |
+| Object method calls | Ready: static names, ordinary arguments, property/call chains | [004](tasks/004-object-method-calls.md) |
+| Standalone function calls | Unimplemented; excluded from 004 | Separate brief needed |
 | Dot/index access, arrays | Unimplemented | Separate briefs needed |
-| Comparison/boolean/unary operators | Unimplemented | Specify precedence with additional Smarty evidence |
-| Other built-in blocks | Unimplemented structurally; some names parse as generic tags | `foreach`, inheritance, capture, etc. need explicit contracts |
+| Comparison/boolean/unary operators | Ready: symbolic comparisons, `&&`/`\|\|`, prefix `! + -`; no word aliases | [005](tasks/005-condition-operators.md) |
+| Foreach blocks | Ready: modern `as` headers, optional key and `foreachelse` | [006](tasks/006-foreach-blocks.md) |
+| Other built-in blocks | Unimplemented structurally; some names parse as generic tags | Inheritance, capture, etc. need explicit contracts |
 | Literal blocks/auto-literal | Unimplemented | Separate boundary/recovery tasks |
 | Configurable delimiters | Unimplemented | Design decision needed |
 | HTML injections/queries | Unimplemented | Separate editor integration milestone |
@@ -39,8 +41,12 @@ that our generic rules accept without understanding inheritance. The first brief
 favor small independent features over promising to clear the most files at once.
 
 Tasks 001, 002, and 003 are complete as separate changes within their bounded
-scopes. Next, specify method/function calls in a separate brief; interpolation
-and literal blocks still require their own tasks.
+scopes. Implement [004](tasks/004-object-method-calls.md), then
+[005](tasks/005-condition-operators.md), then [006](tasks/006-foreach-blocks.md)
+as separate verified changes. These briefs are ready, not implemented. Each
+requires its own failing fixtures, acceptance run, corpus comparison and evidence
+update. Standalone functions, dot/index access, constants, interpolation and
+literal blocks still need separate briefs.
 
 ## Config variables evidence (2026-09-22)
 

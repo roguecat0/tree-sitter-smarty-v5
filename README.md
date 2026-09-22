@@ -77,6 +77,9 @@ Start with [AGENTS.md](AGENTS.md), the [feature inventory](docs/features.md), an
 the [expansion workflow](docs/expanding.md). Three completed task briefs cover static
 configuration variables, comments, and static object properties. Each defines
 the tree shape, examples, exclusions, reference checks, and completion evidence.
+The next ready briefs are [004: object method calls](docs/tasks/004-object-method-calls.md),
+[005: symbolic condition operators](docs/tasks/005-condition-operators.md), and
+[006: modern foreach blocks](docs/tasks/006-foreach-blocks.md), in that order.
 
 Measure the local corpus without requiring all files to pass:
 
