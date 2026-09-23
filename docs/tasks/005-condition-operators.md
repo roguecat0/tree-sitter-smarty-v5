@@ -1,6 +1,6 @@
 # 005 — Symbolic condition operators
 
-Status: ready; not implemented. Dependencies: 004 for call composition tests.
+Status: complete (2026-09-23). Dependencies: 004 for call composition tests.
 Implement before 006. This task is one bounded operator-precedence expansion.
 
 ## Scope and motivation
@@ -113,8 +113,36 @@ evaluate arbitrary corpus source to establish precedence.
 7. Update the contract, feature row, status and evidence. Record discrepancies
    between recorder acceptance and full execution instead of weakening checks.
 
-## Completion evidence (fill when implemented)
+## Completion evidence
 
-Trees/reference/full-engine/edit/mutation links; exact precedence observations;
-commands/results; report comparison and provenance; contract corrections if any;
-remaining aliases, constants and other exclusions.
+- [24 manual trees](../../test/corpus/condition-operators.txt) and
+  [reference/full-engine/range/edit checks](../../test/condition-operators.test.mjs).
+  The first 23 fixtures failed before grammar changes (`/tmp/smarty-005-red.log`).
+  Adjacent sign-pair exclusion also failed before its targeted fix.
+- `npm test` passes 67 trees, 98 Node checks and 7 mutation checks
+  (`/tmp/smarty-005-green.log`). A boolean-level swap generates successfully and
+  fails its expected tree; the original arithmetic mutation remains effective.
+- [Full-engine adapter](../../test/full-engine.php) and the helper in
+  [helpers.mjs](../../test/helpers.mjs) keep setup/process errors distinct from
+  compiler/PHP errors, use temporary directories, and test invalid mode failure.
+  Only fixed fixtures, primitive values and plain objects containing primitive
+  fields are used. No application template is executed.
+- Full Smarty establishes every adjacent precedence boundary; in particular
+  `{-2|strlen}` returns `-1`, `{(-2)|strlen}` returns `2`, and `{!0|strlen}`
+  returns an empty string. The proposed precedence requires no correction.
+  Same-level comparison chains produce PHP ParseError despite recorder
+  acceptance. Adjacent sign pairs are not nested unary signs; spaced signs are.
+- One new fixture exposed the already documented `{f(1)}` generic/function
+  overlap: Smarty classifies `{widget ($a > 0) ...}` as function output. Its
+  manual tree is retained with an explicit reference-discrepancy assertion;
+  a separate `{widget $a > 0 ...}` fixture verifies actual generic tag agreement.
+  No existing tree expectation changed or fixture was deleted.
+- Reports `/tmp/smarty-005-before.json` and `/tmp/smarty-005-after.json` have
+  identical hashes for all 467 inputs: **27 → 30 clean**, **440 → 437 failing**,
+  no regressions. All three newly clean files have explicit operator nodes:
+  `action_types/action_value_test_post.tpl` (`!`),
+  `action_types/action_value_textarea.tpl` (`!=`), and `app_doc.tpl` (`==`).
+  Local structure review is saved in `/tmp/smarty-005-review.json`.
+- The tracked icon condition minimizes `corpus/menu_button.tpl:5`. Word aliases,
+  bitwise operators, constants/literals, increment/decrement and the other scoped
+  exclusions remain unsupported. Clean parsing is not runtime validation.

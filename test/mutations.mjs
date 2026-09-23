@@ -8,12 +8,17 @@ import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const original = readFileSync(join(root, 'grammar.js'), 'utf8');
 const mutations = [
+  { name: 'boolean operator levels are swapped', fixture: 'Boolean precedence',
+    from: 'field("operator", "||"), field("right", $._logical_and)',
+    to: 'field("operator", "&&"), field("right", $._logical_and)',
+    alsoFrom: 'field("operator", "&&"), field("right", $._equality)',
+    alsoTo: 'field("operator", "||"), field("right", $._equality)' },
   { name: 'method arguments lose their field', fixture: 'Method arguments preserve order',
     from: 'optional(seq(field("argument", $._expression), repeat(seq(",", field("argument", $._expression)))))',
     to: 'optional(seq(field("value", $._expression), repeat(seq(",", field("value", $._expression)))))' },
   { name: 'property chain receiver gets the wrong field', fixture: 'Left associated property chain',
-    from: 'member_expression: $ => prec.left(4, seq(\n      field("object", choice($.variable, $.member_expression, $.method_call_expression))',
-    to: 'member_expression: $ => prec.left(4, seq(\n      field("value", choice($.variable, $.member_expression, $.method_call_expression))' },
+    from: 'member_expression: $ => prec.left(5, seq(\n      field("object", choice($.variable, $.member_expression, $.method_call_expression))',
+    to: 'member_expression: $ => prec.left(5, seq(\n      field("value", choice($.variable, $.member_expression, $.method_call_expression))' },
   { name: 'comment swallowed as text', fixture: 'Comment hides tags and quotes',
     from: '$.if_block, $.comment)',
     to: '$.if_block, alias($.comment, $.text))' },
@@ -42,7 +47,12 @@ for (const mutation of mutations) {
     execFileSync('tree-sitter', ['generate'], options);
     execFileSync('tree-sitter', ['test', '--show-fields', '--include', mutation.fixture], options);
     assert.equal(original.split(mutation.from).length, 2, 'Mutation must match exactly once');
-    writeFileSync(join(dir, 'grammar.js'), original.replace(mutation.from, mutation.to));
+    let modified = original.replace(mutation.from, mutation.to);
+    if (mutation.alsoFrom) {
+      assert.equal(original.split(mutation.alsoFrom).length, 2, 'Second mutation anchor must match once');
+      modified = modified.replace(mutation.alsoFrom, mutation.alsoTo);
+    }
+    writeFileSync(join(dir, 'grammar.js'), modified);
     execFileSync('tree-sitter', ['generate'], options);
     const result = spawnSync('tree-sitter', ['test', '--show-fields', '--include', mutation.fixture], options);
     assert.ifError(result.error);

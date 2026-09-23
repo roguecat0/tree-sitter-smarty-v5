@@ -1,0 +1,167 @@
+==================
+Boolean precedence
+==================
+{$a || $b && $c}
+---
+(source_file (output value: (binary_expression left: (variable name: (identifier)) right: (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier))))))
+
+==================
+Equality versus relational
+==================
+{$a == $b < $c}
+---
+(source_file (output value: (binary_expression left: (variable name: (identifier)) right: (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier))))))
+
+==================
+Relational versus arithmetic
+==================
+{$a + 2 >= $b * 3}
+---
+(source_file (output value: (binary_expression left: (binary_expression left: (variable name: (identifier)) right: (number)) right: (binary_expression left: (variable name: (identifier)) right: (number)))))
+
+==================
+Unary versus multiplication
+==================
+{-$a * +$b}
+---
+(source_file (output value: (binary_expression left: (unary_expression argument: (variable name: (identifier))) right: (unary_expression argument: (variable name: (identifier))))))
+
+==================
+Unary modifier binding
+==================
+{-2|strlen}
+---
+(source_file (output value: (unary_expression argument: (modifier_expression value: (number) name: (identifier)))))
+
+==================
+Parenthesized unary modifier
+==================
+{(-2)|strlen}
+---
+(source_file (output value: (modifier_expression value: (parenthesized_expression (unary_expression argument: (number))) name: (identifier))))
+
+==================
+Boolean left associativity
+==================
+{$a || $b || $c}
+---
+(source_file (output value: (binary_expression left: (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier))) right: (variable name: (identifier)))))
+
+==================
+Prefix nesting
+==================
+{! ! -$a}
+---
+(source_file (output value: (unary_expression argument: (unary_expression argument: (unary_expression argument: (variable name: (identifier)))))))
+
+==================
+Parenthesized comparison chain
+==================
+{($a < $b) < $c}
+---
+(source_file (output value: (binary_expression left: (parenthesized_expression (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier)))) right: (variable name: (identifier)))))
+
+==================
+Parenthesized equality chain
+==================
+{($a == $b) == $c}
+---
+(source_file (output value: (binary_expression left: (parenthesized_expression (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier)))) right: (variable name: (identifier)))))
+
+==================
+Symbolic operator ==
+==================
+{$a==$b}
+---
+(source_file (output value: (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier)))))
+
+==================
+Symbolic operator !=
+==================
+{$a!=$b}
+---
+(source_file (output value: (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier)))))
+
+==================
+Symbolic operator ===
+==================
+{$a===$b}
+---
+(source_file (output value: (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier)))))
+
+==================
+Symbolic operator !==
+==================
+{$a!==$b}
+---
+(source_file (output value: (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier)))))
+
+==================
+Symbolic operator <
+==================
+{$a<$b}
+---
+(source_file (output value: (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier)))))
+
+==================
+Symbolic operator <=
+==================
+{$a<=$b}
+---
+(source_file (output value: (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier)))))
+
+==================
+Symbolic operator >
+==================
+{$a>$b}
+---
+(source_file (output value: (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier)))))
+
+==================
+Symbolic operator >=
+==================
+{$a>=$b}
+---
+(source_file (output value: (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier)))))
+
+==================
+Symbolic operator &&
+==================
+{$a&&$b}
+---
+(source_file (output value: (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier)))))
+
+==================
+Symbolic operator ||
+==================
+{$a||$b}
+---
+(source_file (output value: (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier)))))
+
+==================
+Corpus icon condition
+==================
+{if $button->get_icon() != '' && $level > 0}Y{/if}
+---
+(source_file (if_block (if_tag condition: (binary_expression left: (binary_expression left: (method_call_expression object: (variable name: (identifier)) method: (identifier)) right: (string)) right: (binary_expression left: (variable name: (identifier)) right: (number)))) (text) (if_close_tag)))
+
+==================
+Operators in unknown tags and modifier arguments
+==================
+{widget ($a > 0) enabled=!$b value=$a|decorate:($b || #enabled#)}{*ignored &&*}{/other}
+---
+(source_file (custom_tag name: (identifier) argument: (parenthesized_expression (binary_expression left: (variable name: (identifier)) right: (number))) (attribute name: (identifier) value: (unary_expression argument: (variable name: (identifier)))) (attribute name: (identifier) value: (modifier_expression value: (variable name: (identifier)) name: (identifier) argument: (parenthesized_expression (binary_expression left: (variable name: (identifier)) right: (config_variable name: (identifier))))))) (comment) (custom_close_tag name: (identifier)))
+
+==================
+Operator elseif and method argument
+==================
+{if !$a->ready()}{elseif $a->check($b >= 2)}{/if}
+---
+(source_file (if_block (if_tag condition: (unary_expression argument: (method_call_expression object: (variable name: (identifier)) method: (identifier)))) (elseif_clause (elseif_tag condition: (method_call_expression object: (variable name: (identifier)) method: (identifier) argument: (binary_expression left: (variable name: (identifier)) right: (number))))) (if_close_tag)))
+
+==================
+Unparenthesized operators in generic arguments
+==================
+{widget $a > 0 enabled=!$b value=$a|decorate:($b || #enabled#)}
+---
+(source_file (custom_tag name: (identifier) argument: (binary_expression left: (variable name: (identifier)) right: (number)) (attribute name: (identifier) value: (unary_expression argument: (variable name: (identifier)))) (attribute name: (identifier) value: (modifier_expression value: (variable name: (identifier)) name: (identifier) argument: (parenthesized_expression (binary_expression left: (variable name: (identifier)) right: (config_variable name: (identifier))))))))

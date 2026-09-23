@@ -24,8 +24,8 @@ The reference tests compare a smaller projection (ordered tag names, argument
 names, and modifier names) with the installed Smarty parser. Smarty's generated
 PHP fragments are not treated as Tree-sitter syntax trees.
 
-Not yet supported: other built-in blocks, comparisons, boolean operators,
-unary operators, standalone calls/dynamic member access, dynamic config variables/indexing,
+Not yet supported: other built-in blocks, word operator aliases, bitwise operators,
+standalone calls/dynamic member access, dynamic config variables/indexing,
 arrays, interpolated strings, literal blocks, configurable delimiters, auto-literal braces,
 or HTML injection. This milestone does not claim to parse the application corpus.
 
@@ -63,3 +63,22 @@ Standalone functions remain unsupported; `{f(1)}` overlaps the existing generic
 tag syntax and is a custom tag with a parenthesized argument, not a function node.
 Evidence: [method trees](corpus/object-method-calls.txt) and
 [reference/range/edit checks](object-method-calls.test.mjs).
+
+Symbolic comparisons `== != === !== < <= > >=` and booleans `&& ||` reuse
+`binary_expression` with `left`, `operator`, and `right` fields. Prefix `! + -`
+produces `unary_expression` with `operator` and `argument` fields; numbers remain
+unsigned leaves. Binding from tight to loose is property/call chains, modifiers,
+prefixes, multiplicative arithmetic, additive arithmetic, relational comparisons,
+equality comparisons, `&&`, `||`. Arithmetic/booleans associate left, prefixes
+right. Relational and equality levels each forbid unparenthesized repeated
+comparisons; parentheses can make grouping explicit. Adjacent prefix sign pairs
+are excluded INCDEC syntax; spaced signs such as `+ +$a` are nested unary nodes.
+Modifier arguments retain the prior narrow subset; parenthesize full expressions.
+Evidence: [operator trees](corpus/condition-operators.txt) and
+[reference/full-engine/edit checks](condition-operators.test.mjs). The full-engine
+helper uses only controlled fixtures and temporary compile directories. It does
+not execute application corpus templates.
+
+The retained generic parenthesized-argument shape also means `{widget ($a > 0)}`
+overlaps Smarty's function-output syntax, just like `{f(1)}`. This limitation is
+explicitly recorded; `{widget $a > 0}` is the reference-backed generic tag form.

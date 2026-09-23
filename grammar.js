@@ -35,21 +35,43 @@ export default grammar({
     else_clause: $ => seq($.else_tag, repeat($._node)),
     else_tag: _ => seq("{", "else", "}"),
     if_close_tag: _ => seq("{/", "if", "}"),
-    _expression: $ => choice(
-      $.variable, $.config_variable, $.member_expression, $.method_call_expression, $.number, $.string, $.parenthesized_expression,
-      $.binary_expression, $.modifier_expression,
+    _expression: $ => $._logical_or,
+    // Layer comparison operands so an unparenthesized second comparison cannot
+    // silently acquire associativity. Aliases preserve the public binary tree.
+    _logical_or: $ => choice($._logical_and, alias($._or_expression, $.binary_expression)),
+    _or_expression: $ => prec.left(-4, seq(field("left", $._logical_or), field("operator", "||"), field("right", $._logical_and))),
+    _logical_and: $ => choice($._equality, alias($._and_expression, $.binary_expression)),
+    _and_expression: $ => prec.left(-3, seq(field("left", $._logical_and), field("operator", "&&"), field("right", $._equality))),
+    _equality: $ => choice($._relational, alias($._equality_expression, $.binary_expression)),
+    _equality_expression: $ => prec(-2, seq(field("left", $._relational), field("operator", choice("==", "!=", "===", "!==")), field("right", $._relational))),
+    _relational: $ => choice($._arithmetic, alias($._relational_expression, $.binary_expression)),
+    _relational_expression: $ => prec(-1, seq(field("left", $._arithmetic), field("operator", choice("<", "<=", ">", ">=")), field("right", $._arithmetic))),
+    _arithmetic: $ => choice($._unary, $.binary_expression),
+    _unary: $ => choice($._modified, $.unary_expression),
+    unary_expression: $ => choice($._not_expression, $._sign_expression),
+    _not_expression: $ => prec(3, seq(field("operator", "!"), field("argument", $._unary))),
+    // Adjacent sign pairs belong to Smarty's INCDEC token, not nested unary
+    // signs. A repeated prefix sign therefore needs an explicit whitespace gap.
+    _sign_expression: $ => prec(3, seq(field("operator", choice("+", "-")), choice(
+      field("argument", choice($._modified, alias($._not_expression, $.unary_expression))),
+      seq(token.immediate(/\s+/), field("argument", $.unary_expression)),
+    ))),
+    _modified: $ => choice($._primary, $.modifier_expression),
+    _primary: $ => choice(
+      $.variable, $.config_variable, $.member_expression, $.method_call_expression,
+      $.number, $.string, $.parenthesized_expression,
     ),
     variable: $ => seq("$", field("name", alias(token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/), $.identifier))),
     // Smarty requires both the name and closing hash to be adjacent.
     config_variable: $ => seq("#", field("name", alias(token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/), $.identifier)), token.immediate("#")),
     // Restrict receivers to variables and static property/call chains.
-    // Left recursion preserves each member, binding above modifiers (3) and arithmetic.
+    // Left recursion preserves each member, binding above modifiers (4) and arithmetic.
     // Control keywords are ordinary names after ->, while still reserved as tags.
-    member_expression: $ => prec.left(4, seq(
+    member_expression: $ => prec.left(5, seq(
       field("object", choice($.variable, $.member_expression, $.method_call_expression)), "->", field("member", reserved("property", $.identifier)),
     )),
     // Prefer a call over a property plus a separate parenthesized tag argument.
-    method_call_expression: $ => prec.left(5, seq(
+    method_call_expression: $ => prec.left(6, seq(
       field("object", choice($.variable, $.member_expression, $.method_call_expression)),
       "->", field("method", reserved("property", $.identifier)), "(",
       optional(seq(field("argument", $._expression), repeat(seq(",", field("argument", $._expression))))), ")",
@@ -60,10 +82,10 @@ export default grammar({
     parenthesized_expression: $ => seq("(", $._expression, ")"),
     binary_expression: $ => choice(
       ...[[1, ["+", "-"]], [2, ["*", "/", "%"]]].map(([precedence, operators]) =>
-        prec.left(precedence, seq(field("left", $._expression), field("operator", choice(...operators)), field("right", $._expression)))),
+        prec.left(precedence, seq(field("left", $._arithmetic), field("operator", choice(...operators)), field("right", $._arithmetic)))),
     ),
-    modifier_expression: $ => prec.left(3, seq(
-      field("value", $._expression), "|", field("name", $.identifier),
+    modifier_expression: $ => prec.left(4, seq(
+      field("value", $._modified), "|", field("name", $.identifier),
       repeat(seq(":", field("argument", $._modifier_argument))),
     )),
     _modifier_argument: $ => choice($.variable, $.config_variable, $.member_expression, $.method_call_expression, $.number, $.string, $.parenthesized_expression),

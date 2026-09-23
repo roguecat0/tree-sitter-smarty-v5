@@ -9,7 +9,7 @@ all Smarty variants are covered. `Partial` means only the described forms work.
 | Text/output boundaries | Partial: ordinary text and expression output; no raw braces/auto-literal | [initial trees](../test/corpus/initial.txt) |
 | Variables/numbers | Partial: simple variable names, unsigned decimal numbers | initial trees |
 | Strings | Partial: simple quotes/escapes; no interpolation (see [quoted-comment limitation](tasks/002-comments.md#reference-boundary-clarification)) | initial trees, quoted-brace case |
-| Arithmetic | Partial: binary `+ - * / %`, parentheses; no unary/boolean/comparison syntax | initial trees; precedence mutation; operator-field check |
+| Arithmetic | Partial: binary `+ - * / %`, parentheses and prefix `+ -`; see operator row | initial trees; precedence mutation; operator-field check |
 | Generic tags | Partial: names, positional expressions, named attributes; no bare-word values | initial trees; [reference tests](../test/reference.test.mjs) |
 | Custom closing tags | Supported as independent tags; pairing deliberately unspecified | initial mismatched-name case |
 | Modifiers | Partial: chains and simple arguments; unrestricted names | initial trees; renamed-extension checks |
@@ -20,7 +20,7 @@ all Smarty variants are covered. `Partial` means only the described forms work.
 | Object method calls | Partial: static names, ordinary arguments, property/call chains | [004](tasks/004-object-method-calls.md) |
 | Standalone function calls | Unimplemented; excluded from 004 | Separate brief needed |
 | Dot/index access, arrays | Unimplemented | Separate briefs needed |
-| Comparison/boolean/unary operators | Ready: symbolic comparisons, `&&`/`\|\|`, prefix `! + -`; no word aliases | [005](tasks/005-condition-operators.md) |
+| Comparison/boolean/unary operators | Partial: symbolic comparisons, `&&`/`\|\|`, prefix `! + -`; no word aliases | [005](tasks/005-condition-operators.md) |
 | Foreach blocks | Ready: modern `as` headers, optional key and `foreachelse` | [006](tasks/006-foreach-blocks.md) |
 | Other built-in blocks | Unimplemented structurally; some names parse as generic tags | Inheritance, capture, etc. need explicit contracts |
 | Literal blocks/auto-literal | Unimplemented | Separate boundary/recovery tasks |
@@ -76,4 +76,12 @@ Clean-file counts are triage evidence, not verified language coverage.
 Task [004](tasks/004-object-method-calls.md) passes `npm test`: 43 trees,
 68 Node checks, six mutations. Hash-matched local corpus: **15 → 27 clean**,
 **452 → 440 failing**, no regressions. Explicit call fields were inspected in
-all 12 newly clean files. Tasks 005 and 006 remain ready for sequential work.
+all 12 newly clean files.
+
+## Condition operator evidence (2026-09-23)
+
+Task [005](tasks/005-condition-operators.md) passes `npm test`: 67 trees,
+98 Node checks, seven mutations. Hash-matched local corpus: **27 → 30 clean**,
+**440 → 437 failing**, no regressions. All three newly clean files contain
+explicit operator fields. Full-engine checks supplement the narrower recorder
+for precedence and PHP comparison-chain rejection. Task 006 remains next.

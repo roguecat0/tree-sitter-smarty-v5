@@ -58,3 +58,10 @@ export function snapshot(node) {
     children: node.children.map((child, index) => [node.fieldNameForChild(index), snapshot(child)]),
   };
 }
+
+// Full compiler/rendering is reserved for fixed controlled fixtures, never the
+// application corpus. Nonzero process exits remain harness failures.
+export function fullEngine(source, {mode = 'render', values = {}, objects = {}} = {}) {
+  return JSON.parse(execFileSync('php', [new URL('./full-engine.php', import.meta.url).pathname,
+    JSON.stringify({source, mode, values, objects})], {encoding: 'utf8', timeout: 10_000}));
+}
