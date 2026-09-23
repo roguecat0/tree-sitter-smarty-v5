@@ -82,3 +82,17 @@ not execute application corpus templates.
 The retained generic parenthesized-argument shape also means `{widget ($a > 0)}`
 overlaps Smarty's function-output syntax, just like `{f(1)}`. This limitation is
 explicitly recorded; `{widget $a > 0}` is the reference-backed generic tag form.
+
+Modern foreach loops produce `foreach_block` with `foreach_tag`, direct body
+nodes, optional `foreachelse_clause` (opening tag plus body), and
+`foreach_close_tag`. Header fields are `source`, optional `key`, and `item` in
+source order; bindings are simple variables. Whitespace is required after
+`foreach` and on both sides of contextual `as`. Branches belong to their own
+nested block; missing or crossed closers are errors. Reserved control names
+cannot escape as generic tags, while `{as}`, variables/config names and property/
+method keywords remain valid in their established contexts. Legacy headers,
+extra attributes, metadata and runtime iteration semantics are outside the
+subset. Recorder events normalize names to `from`, `item`, then optional `key`
+and do not validate pairing; full-compiler checks supplement exact trees for
+that purpose. Evidence: [foreach trees](corpus/foreach.txt) and
+[reference/compiler/edit checks](foreach.test.mjs).

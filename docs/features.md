@@ -21,7 +21,7 @@ all Smarty variants are covered. `Partial` means only the described forms work.
 | Standalone function calls | Unimplemented; excluded from 004 | Separate brief needed |
 | Dot/index access, arrays | Unimplemented | Separate briefs needed |
 | Comparison/boolean/unary operators | Partial: symbolic comparisons, `&&`/`\|\|`, prefix `! + -`; no word aliases | [005](tasks/005-condition-operators.md) |
-| Foreach blocks | Ready: modern `as` headers, optional key and `foreachelse` | [006](tasks/006-foreach-blocks.md) |
+| Foreach blocks | Partial: modern `as` headers, optional key and `foreachelse` | [006](tasks/006-foreach-blocks.md) |
 | Other built-in blocks | Unimplemented structurally; some names parse as generic tags | Inheritance, capture, etc. need explicit contracts |
 | Literal blocks/auto-literal | Unimplemented | Separate boundary/recovery tasks |
 | Configurable delimiters | Unimplemented | Design decision needed |
@@ -40,13 +40,9 @@ The six clean files are not promoted wholesale: some contain `block`/`extends`
 that our generic rules accept without understanding inheritance. The first briefs
 favor small independent features over promising to clear the most files at once.
 
-Tasks 001, 002, and 003 are complete as separate changes within their bounded
-scopes. Implement [004](tasks/004-object-method-calls.md), then
-[005](tasks/005-condition-operators.md), then [006](tasks/006-foreach-blocks.md)
-as separate verified changes. These briefs are ready, not implemented. Each
-requires its own failing fixtures, acceptance run, corpus comparison and evidence
-update. Standalone functions, dot/index access, constants, interpolation and
-literal blocks still need separate briefs.
+Tasks 001–006 are complete as separate verified changes within their bounded
+scopes. Standalone functions, dot/index access, constants, interpolation and
+literal blocks remain outside those implementations.
 
 ## Config variables evidence (2026-09-22)
 
@@ -84,4 +80,13 @@ Task [005](tasks/005-condition-operators.md) passes `npm test`: 67 trees,
 98 Node checks, seven mutations. Hash-matched local corpus: **27 → 30 clean**,
 **440 → 437 failing**, no regressions. All three newly clean files contain
 explicit operator fields. Full-engine checks supplement the narrower recorder
-for precedence and PHP comparison-chain rejection. Task 006 remains next.
+for precedence and PHP comparison-chain rejection.
+
+## Foreach evidence (2026-09-23)
+
+Task [006](tasks/006-foreach-blocks.md) passes `npm test`: 75 trees, 111 Node
+checks, eight mutations. Hash-matched local corpus: **30 → 46 clean**,
+**437 → 421 failing**, no regressions. The 16 newly clean files contain 19
+explicit loops whose header fields, branch ownership and closers were reviewed.
+Across tasks 004–006 the result is **15 → 46 clean**, **452 → 421 failing**;
+this is still triage evidence rather than a language-coverage percentage.

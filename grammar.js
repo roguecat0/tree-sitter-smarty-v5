@@ -11,11 +11,11 @@ export default grammar({
   name: "smarty2",
   extras: _ => [/\s/],
   word: $ => $.identifier,
-  reserved: { global: _ => ["if", "else", "elseif"], property: _ => [] },
-  conflicts: $ => [[$.elseif_clause], [$.else_clause]],
+  reserved: { global: _ => ["if", "else", "elseif", "foreach", "foreachelse"], property: _ => [] },
+  conflicts: $ => [[$.elseif_clause], [$.else_clause], [$.foreachelse_clause]],
   rules: {
     source_file: $ => repeat($._node),
-    _node: $ => choice($.text, $.output, $.custom_tag, $.custom_close_tag, $.if_block, $.comment),
+    _node: $ => choice($.text, $.output, $.custom_tag, $.custom_close_tag, $.if_block, $.comment, $.foreach_block),
     text: _ => /[^{}]+/,
     // A single token hides all template syntax and stops at the first *}.
     // Star runs cannot consume a closing brace; the following newline is text.
@@ -35,6 +35,17 @@ export default grammar({
     else_clause: $ => seq($.else_tag, repeat($._node)),
     else_tag: _ => seq("{", "else", "}"),
     if_close_tag: _ => seq("{/", "if", "}"),
+    foreach_block: $ => seq($.foreach_tag, repeat($._node), optional($.foreachelse_clause), $.foreach_close_tag),
+    foreach_tag: $ => seq(
+      "{", "foreach", token.immediate(/\s+/), field("source", $._expression),
+      // Smarty requires whitespace around contextual `as`; generic tag names
+      // and keyword-named properties keep their ordinary identifier behavior.
+      alias(token.immediate(/\s+as\s+/), "as"),
+      optional(seq(field("key", $.variable), "=>")), field("item", $.variable), "}",
+    ),
+    foreachelse_clause: $ => seq($.foreachelse_tag, repeat($._node)),
+    foreachelse_tag: _ => seq("{", "foreachelse", "}"),
+    foreach_close_tag: _ => seq("{/", "foreach", "}"),
     _expression: $ => $._logical_or,
     // Layer comparison operands so an unparenthesized second comparison cannot
     // silently acquire associativity. Aliases preserve the public binary tree.

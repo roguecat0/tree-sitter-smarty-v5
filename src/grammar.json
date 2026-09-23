@@ -36,6 +36,10 @@
         {
           "type": "SYMBOL",
           "name": "comment"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "foreach_block"
         }
       ]
     },
@@ -323,6 +327,165 @@
         {
           "type": "STRING",
           "value": "if"
+        },
+        {
+          "type": "STRING",
+          "value": "}"
+        }
+      ]
+    },
+    "foreach_block": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "foreach_tag"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_node"
+          }
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "foreachelse_clause"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "foreach_close_tag"
+        }
+      ]
+    },
+    "foreach_tag": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "{"
+        },
+        {
+          "type": "STRING",
+          "value": "foreach"
+        },
+        {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "PATTERN",
+            "value": "\\s+"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "source",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_expression"
+          }
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "IMMEDIATE_TOKEN",
+            "content": {
+              "type": "PATTERN",
+              "value": "\\s+as\\s+"
+            }
+          },
+          "named": false,
+          "value": "as"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "FIELD",
+                  "name": "key",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "variable"
+                  }
+                },
+                {
+                  "type": "STRING",
+                  "value": "=>"
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "FIELD",
+          "name": "item",
+          "content": {
+            "type": "SYMBOL",
+            "name": "variable"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "}"
+        }
+      ]
+    },
+    "foreachelse_clause": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "foreachelse_tag"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_node"
+          }
+        }
+      ]
+    },
+    "foreachelse_tag": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "{"
+        },
+        {
+          "type": "STRING",
+          "value": "foreachelse"
+        },
+        {
+          "type": "STRING",
+          "value": "}"
+        }
+      ]
+    },
+    "foreach_close_tag": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "{/"
+        },
+        {
+          "type": "STRING",
+          "value": "foreach"
         },
         {
           "type": "STRING",
@@ -1179,6 +1342,9 @@
     ],
     [
       "else_clause"
+    ],
+    [
+      "foreachelse_clause"
     ]
   ],
   "precedences": [],
@@ -1198,6 +1364,14 @@
       {
         "type": "STRING",
         "value": "elseif"
+      },
+      {
+        "type": "STRING",
+        "value": "foreach"
+      },
+      {
+        "type": "STRING",
+        "value": "foreachelse"
       }
     ],
     "property": []

@@ -354,6 +354,10 @@
           "named": true
         },
         {
+          "type": "foreach_block",
+          "named": true
+        },
+        {
           "type": "if_block",
           "named": true
         },
@@ -395,6 +399,10 @@
         },
         {
           "type": "elseif_tag",
+          "named": true
+        },
+        {
+          "type": "foreach_block",
           "named": true
         },
         {
@@ -465,6 +473,182 @@
     }
   },
   {
+    "type": "foreach_block",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "comment",
+          "named": true
+        },
+        {
+          "type": "custom_close_tag",
+          "named": true
+        },
+        {
+          "type": "custom_tag",
+          "named": true
+        },
+        {
+          "type": "foreach_block",
+          "named": true
+        },
+        {
+          "type": "foreach_close_tag",
+          "named": true
+        },
+        {
+          "type": "foreach_tag",
+          "named": true
+        },
+        {
+          "type": "foreachelse_clause",
+          "named": true
+        },
+        {
+          "type": "if_block",
+          "named": true
+        },
+        {
+          "type": "output",
+          "named": true
+        },
+        {
+          "type": "text",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "foreach_close_tag",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "foreach_tag",
+    "named": true,
+    "fields": {
+      "item": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "variable",
+            "named": true
+          }
+        ]
+      },
+      "key": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "variable",
+            "named": true
+          }
+        ]
+      },
+      "source": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "binary_expression",
+            "named": true
+          },
+          {
+            "type": "config_variable",
+            "named": true
+          },
+          {
+            "type": "member_expression",
+            "named": true
+          },
+          {
+            "type": "method_call_expression",
+            "named": true
+          },
+          {
+            "type": "modifier_expression",
+            "named": true
+          },
+          {
+            "type": "number",
+            "named": true
+          },
+          {
+            "type": "parenthesized_expression",
+            "named": true
+          },
+          {
+            "type": "string",
+            "named": true
+          },
+          {
+            "type": "unary_expression",
+            "named": true
+          },
+          {
+            "type": "variable",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "foreachelse_clause",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "comment",
+          "named": true
+        },
+        {
+          "type": "custom_close_tag",
+          "named": true
+        },
+        {
+          "type": "custom_tag",
+          "named": true
+        },
+        {
+          "type": "foreach_block",
+          "named": true
+        },
+        {
+          "type": "foreachelse_tag",
+          "named": true
+        },
+        {
+          "type": "if_block",
+          "named": true
+        },
+        {
+          "type": "output",
+          "named": true
+        },
+        {
+          "type": "text",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "foreachelse_tag",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "if_block",
     "named": true,
     "fields": {},
@@ -490,6 +674,10 @@
         },
         {
           "type": "elseif_clause",
+          "named": true
+        },
+        {
+          "type": "foreach_block",
           "named": true
         },
         {
@@ -899,6 +1087,10 @@
           "named": true
         },
         {
+          "type": "foreach_block",
+          "named": true
+        },
+        {
           "type": "if_block",
           "named": true
         },
@@ -1085,11 +1277,19 @@
     "named": false
   },
   {
+    "type": "=>",
+    "named": false
+  },
+  {
     "type": ">",
     "named": false
   },
   {
     "type": ">=",
+    "named": false
+  },
+  {
+    "type": "as",
     "named": false
   },
   {
@@ -1102,6 +1302,14 @@
   },
   {
     "type": "elseif",
+    "named": false
+  },
+  {
+    "type": "foreach",
+    "named": false
+  },
+  {
+    "type": "foreachelse",
     "named": false
   },
   {

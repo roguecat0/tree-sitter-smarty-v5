@@ -1,6 +1,6 @@
 # 006 — Modern foreach blocks
 
-Status: ready; not implemented. Dependencies: 004–005 for composition fixtures.
+Status: complete (2026-09-23). Dependencies: 004–005 for composition fixtures.
 
 ## Scope and motivation
 
@@ -109,8 +109,35 @@ do not claim the existing recorder proves pairing.
    generic foreach trees exist, explain their explicit structural replacement;
    never auto-update expectations or claim all built-in blocks are supported.
 
-## Completion evidence (fill when implemented)
+## Completion evidence
 
-Tree/reference/full-compiler/edit/mutation links; projection ordering checks;
-commands/results; hash-matched corpus comparison and minimized provenance;
-changed generic expectations if any; remaining legacy/metadata exclusions.
+- [Eight manual trees](../../test/corpus/foreach.txt) and
+  [reference/compiler/range/edit checks](../../test/foreach.test.mjs). Seven new
+  structural fixtures failed before implementation; the contextual-identifier
+  fixture already passed. Expected-tree sibling whitespace was corrected during
+  authoring; no old tree shape or expected behavior changed.
+- `npm test` passes 75 trees, 111 Node checks and eight mutation checks
+  (`/tmp/smarty-006-green.log`). The new mutation corrupts the source field and
+  fails the simple loop tree; the comment mutation's anchor was updated without
+  changing its fault and remains effective.
+- [Projection](../../test/helpers.mjs) normalizes header names to the recorder's
+  from/item/key order while explicit range checks retain source/key/item order.
+  Full compiler rejects orphan/duplicate/crossed branches and missing closes
+  even where the recorder reports no error. Fixed full-engine populated/empty
+  loop tests exercise both branches without application data or plugins.
+- Required whitespace around `as` and after `foreach` is independently observed.
+  `{foreach $items asdf $item}` enters the recorder's legacy positional-header
+  path rather than reporting a syntax error; full compilation rejects its key
+  value. Tests preserve that recorder distinction and require a parser error.
+  Legacy attribute headers and extra attributes are also excluded deliberately.
+- `/tmp/smarty-006-before.json` and `/tmp/smarty-006-after.json` have identical
+  input hashes for all 467 files: **30 → 46 clean**, **437 → 421 failing**, no
+  regressions. All 16 newly clean files were inspected for explicit loop fields,
+  body/branch ownership and closing nodes (19 loops total). Local structure
+  evidence is `/tmp/smarty-006-review.json`; reports stay local.
+- The tracked toolbar composition minimizes `corpus/toolbar.tpl:5-16`. Newly
+  clean `action_types/action_value_instruction.tpl` additionally demonstrates
+  nested loops with an outer empty branch; synthetic nesting trees protect that
+  structure. No existing generic foreach expected tree required replacement.
+- Legacy headers, metadata, extra header attributes, break/continue semantics,
+  dynamic bindings and other built-in blocks remain outside this task.

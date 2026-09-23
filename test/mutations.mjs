@@ -8,6 +8,9 @@ import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const original = readFileSync(join(root, 'grammar.js'), 'utf8');
 const mutations = [
+  { name: 'foreach source gets the wrong field', fixture: 'Simple foreach',
+    from: 'field("source", $._expression)',
+    to: 'field("value", $._expression)' },
   { name: 'boolean operator levels are swapped', fixture: 'Boolean precedence',
     from: 'field("operator", "||"), field("right", $._logical_and)',
     to: 'field("operator", "&&"), field("right", $._logical_and)',
@@ -20,8 +23,8 @@ const mutations = [
     from: 'member_expression: $ => prec.left(5, seq(\n      field("object", choice($.variable, $.member_expression, $.method_call_expression))',
     to: 'member_expression: $ => prec.left(5, seq(\n      field("value", choice($.variable, $.member_expression, $.method_call_expression))' },
   { name: 'comment swallowed as text', fixture: 'Comment hides tags and quotes',
-    from: '$.if_block, $.comment)',
-    to: '$.if_block, alias($.comment, $.text))' },
+    from: '$.if_block, $.comment, $.foreach_block)',
+    to: '$.if_block, alias($.comment, $.text), $.foreach_block)' },
   { name: 'custom tag swallowed as text', fixture: 'Custom tag arguments',
     from: 'choice($.text, $.output, $.custom_tag,',
     to: 'choice($.text, $.output, alias($.custom_tag, $.text),' },

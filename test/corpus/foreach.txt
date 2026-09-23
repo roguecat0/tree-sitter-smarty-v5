@@ -1,0 +1,59 @@
+==================
+Simple foreach
+==================
+{foreach $items as $item}{$item}{/foreach}
+---
+(source_file (foreach_block (foreach_tag source: (variable name: (identifier)) item: (variable name: (identifier))) (output value: (variable name: (identifier))) (foreach_close_tag)))
+
+==================
+Keyed foreach with empty branch
+==================
+{foreach $items as $key => $item}{$key}{$item}{foreachelse}Empty{/foreach}
+---
+(source_file (foreach_block (foreach_tag source: (variable name: (identifier)) key: (variable name: (identifier)) item: (variable name: (identifier))) (output value: (variable name: (identifier)) ) (output value: (variable name: (identifier))) (foreachelse_clause (foreachelse_tag) (text)) (foreach_close_tag)))
+
+==================
+Empty foreach bodies
+==================
+{foreach $items as $item}{foreachelse}{/foreach}
+---
+(source_file (foreach_block (foreach_tag source: (variable name: (identifier)) item: (variable name: (identifier))) (foreachelse_clause (foreachelse_tag)) (foreach_close_tag)))
+
+==================
+Nested foreach branches
+==================
+{foreach $groups as $group}{foreach $group as $item}{$item}{foreachelse}Inner{/foreach}{foreachelse}Outer{/foreach}
+---
+(source_file (foreach_block (foreach_tag source: (variable name: (identifier)) item: (variable name: (identifier))) (foreach_block (foreach_tag source: (variable name: (identifier)) item: (variable name: (identifier))) (output value: (variable name: (identifier))) (foreachelse_clause (foreachelse_tag) (text)) (foreach_close_tag)) (foreachelse_clause (foreachelse_tag) (text)) (foreach_close_tag)))
+
+==================
+Foreach in if and else
+==================
+{if $ready}{foreach $a as $item}{/foreach}{else}{foreach $b as $item}{/foreach}{/if}
+---
+(source_file (if_block (if_tag condition: (variable name: (identifier))) (foreach_block (foreach_tag source: (variable name: (identifier)) item: (variable name: (identifier)))  (foreach_close_tag)) (else_clause (else_tag) (foreach_block (foreach_tag source: (variable name: (identifier)) item: (variable name: (identifier)))  (foreach_close_tag))) (if_close_tag)))
+
+==================
+Toolbar foreach composition
+==================
+{foreach $app->template->get_buttons($id) as $button}{*hidden*}{if !$button->ready()}{widget value=#label# count=$button->count()}{/other}{elseif $button->count() > 0}{$button->text()|escape}{/if}{/foreach}
+---
+(source_file (foreach_block (foreach_tag source: (method_call_expression object: (member_expression object: (variable name: (identifier)) member: (identifier)) method: (identifier) argument: (variable name: (identifier))) item: (variable name: (identifier))) (comment) (if_block (if_tag condition: (unary_expression argument: (method_call_expression object: (variable name: (identifier)) method: (identifier)))) (custom_tag name: (identifier) (attribute name: (identifier) value: (config_variable name: (identifier))) (attribute name: (identifier) value: (method_call_expression object: (variable name: (identifier)) method: (identifier)))) (custom_close_tag name: (identifier)) (elseif_clause (elseif_tag condition: (binary_expression left: (method_call_expression object: (variable name: (identifier)) method: (identifier)) right: (number))) (output value: (modifier_expression value: (method_call_expression object: (variable name: (identifier)) method: (identifier)) name: (identifier)))) (if_close_tag)) (foreach_close_tag)))
+
+==================
+Foreach whitespace
+==================
+{foreach
+$items
+as
+$key=>$item
+}{/foreach}
+---
+(source_file (foreach_block (foreach_tag source: (variable name: (identifier)) key: (variable name: (identifier)) item: (variable name: (identifier)))  (foreach_close_tag)))
+
+==================
+Foreach contextual identifiers
+==================
+{as}{foreach_widget}{/foreach_widget}{$foreach}{#foreach#}{$a->foreach()->foreachelse}
+---
+(source_file (custom_tag name: (identifier)) (custom_tag name: (identifier)) (custom_close_tag name: (identifier)) (output value: (variable name: (identifier))) (output value: (config_variable name: (identifier))) (output value: (member_expression object: (method_call_expression object: (variable name: (identifier)) method: (identifier)) member: (identifier))))

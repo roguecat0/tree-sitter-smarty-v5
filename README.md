@@ -47,11 +47,14 @@ Dependency versions are recorded in `package-lock.json` and `composer.lock`.
 
 Text, output tags, variables, numbers, simple quoted strings, arithmetic,
 parentheses, static config variables, Smarty comments, static object property
-chains, custom tags with positional/named arguments, modifier chains, and nested `if`/`elseif`/`else` blocks. Custom closing tags remain separate nodes and
+chains and static method calls, symbolic comparison/boolean/prefix operators,
+custom tags with positional/named arguments, modifier chains, modern foreach
+blocks, and nested `if`/`elseif`/`else` blocks. Custom closing tags remain separate nodes and
 do not imply a validated block relationship.
 
 See [the tree contract](test/CONTRACT.md) for the fields and exclusions. In
-particular, calls, interpolation, dynamic members, literal blocks, and the remaining
+particular, standalone functions, interpolation, dynamic members, legacy loops,
+literal blocks, and the remaining
 Smarty language features are future work. The 467 application templates have
 not been used as an acceptance gate for this milestone.
 
@@ -77,7 +80,7 @@ Start with [AGENTS.md](AGENTS.md), the [feature inventory](docs/features.md), an
 the [expansion workflow](docs/expanding.md). Three completed task briefs cover static
 configuration variables, comments, and static object properties. Each defines
 the tree shape, examples, exclusions, reference checks, and completion evidence.
-The next ready briefs are [004: object method calls](docs/tasks/004-object-method-calls.md),
+Further completed briefs are [004: object method calls](docs/tasks/004-object-method-calls.md),
 [005: symbolic condition operators](docs/tasks/005-condition-operators.md), and
 [006: modern foreach blocks](docs/tasks/006-foreach-blocks.md), in that order.
 

@@ -38,6 +38,17 @@ export function observations(node) {
         if_tag: 'if', elseif_tag: 'elseif', else_tag: 'else', if_close_tag: 'ifclose',
       }[node.type], arguments: [] });
       break;
+    case 'foreach_tag':
+      // Smarty normalizes header names and emits item before key, even though
+      // a keyed header's source order is source/key/item. Trees check that order.
+      events.push({ kind: 'tag', name: 'foreach', arguments: [
+        { name: 'from' }, { name: 'item' },
+        ...(node.childForFieldName('key') ? [{ name: 'key' }] : []),
+      ] });
+      break;
+    case 'foreachelse_tag': case 'foreach_close_tag':
+      events.push({ kind: 'tag', name: node.type === 'foreachelse_tag' ? 'foreachelse' : 'foreachclose', arguments: [] });
+      break;
     case 'modifier_expression':
       events.push({ kind: 'modifier', name, arguments: node.childrenForFieldName('argument').length });
       break;
