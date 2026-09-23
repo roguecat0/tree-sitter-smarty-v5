@@ -19,7 +19,10 @@ all Smarty variants are covered. `Partial` means only the described forms work.
 | Object properties | Partial: static ASCII `->name` chains from variables/calls; no dynamic members | [003](tasks/003-object-properties.md) |
 | Object method calls | Partial: static names, ordinary arguments, property/call chains | [004](tasks/004-object-method-calls.md) |
 | Standalone function calls | Unimplemented; excluded from 004 | Separate brief needed |
-| Dot/index access, arrays | Unimplemented | Separate briefs needed |
+| Dot/index read access | Ready: static dot keys and bounded bracket-index chains | [007](tasks/007-index-access.md) |
+| Boolean/null literals | Ready: case-insensitive literals, contextual keyword boundaries | [008](tasks/008-primitive-literals.md) |
+| Static class constants | Ready: adjacent static `Class::NAME` expressions | [009](tasks/009-class-constants.md) |
+| Array literals | Unimplemented | Separate brief needed |
 | Comparison/boolean/unary operators | Partial: symbolic comparisons, `&&`/`\|\|`, prefix `! + -`; no word aliases | [005](tasks/005-condition-operators.md) |
 | Foreach blocks | Partial: modern `as` headers, optional key and `foreachelse` | [006](tasks/006-foreach-blocks.md) |
 | Other built-in blocks | Unimplemented structurally; some names parse as generic tags | Inheritance, capture, etc. need explicit contracts |
@@ -41,8 +44,13 @@ that our generic rules accept without understanding inheritance. The first brief
 favor small independent features over promising to clear the most files at once.
 
 Tasks 001–006 are complete as separate verified changes within their bounded
-scopes. Standalone functions, dot/index access, constants, interpolation and
-literal blocks remain outside those implementations.
+scopes. Implement [007](tasks/007-index-access.md), then
+[008](tasks/008-primitive-literals.md), then [009](tasks/009-class-constants.md)
+as separate verified changes. These are ready briefs, not implemented features.
+They target access chains, commonly used literal arguments, and constant-bearing
+conditions; their corpus hints overlap and do not predict clean-file gains.
+Standalone functions, array literals, interpolation, bitwise/word operators and
+literal blocks still need separate briefs.
 
 ## Config variables evidence (2026-09-22)
 

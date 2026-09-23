@@ -17,20 +17,17 @@ npm test
 
 `npm test` regenerates the parser and rebuilds its Node binding, then runs:
 
-1. **Nine expected-tree cases.** Each template has a manually written expected
-   tree, including fields, in [test/corpus/initial.txt](test/corpus/initial.txt).
-2. **Smarty comparisons and focused checks.** The same templates go through
-   Smarty's real lexer/parser with plugin compilation intercepted. Ordered tag
-   names, positional/named arguments, and modifier names/argument counts must
-   agree. Additional checks cover unfamiliar names and malformed expressions.
-3. **An edit sequence.** Eight edits include incomplete expressions, branch
-   insertion, closing-tag deletion/restoration, Unicode, and newlines. Every
-   incremental tree must match a fresh tree, including fields, punctuation,
-   ranges, and error/missing-node state.
-4. **Three deliberate grammar bugs.** Temporary copies swallow a tag as text,
-   mislabel an attribute value, and reverse arithmetic precedence. Each must
-   generate successfully and then fail the intended expected-tree check. The
-   working grammar is never modified by these experiments.
+1. **75 expected-tree cases.** Manually written trees, including fields, cover
+   the initial subset and completed features in [test/corpus/](test/corpus/).
+2. **111 Node checks.** Reference projections compare accepted syntax and tag/
+   modifier events with Smarty. Controlled full-engine checks separately cover
+   precedence and block validation; range and negative checks protect boundaries.
+3. **Incremental edit checks.** Each feature includes edits through valid,
+   incomplete and repaired syntax. Incremental trees must match fresh trees,
+   including fields, punctuation, ranges and error/missing-node state.
+4. **Eight deliberate grammar bugs.** Temporary copies corrupt node types,
+   fields or precedence. Each must generate and fail its intended tree assertion.
+   The working grammar is never modified by these experiments.
 
 The end of a successful run includes:
 
@@ -54,14 +51,14 @@ do not imply a validated block relationship.
 
 See [the tree contract](test/CONTRACT.md) for the fields and exclusions. In
 particular, standalone functions, interpolation, dynamic members, legacy loops,
-literal blocks, and the remaining
-Smarty language features are future work. The 467 application templates have
+literal blocks, and the remaining Smarty language features are future work. The 467 application templates have
 not been used as an acceptance gate for this milestone.
 
 Smarty comparisons deliberately cover less than the exact-tree tests: the
 recording compiler does not check plugin availability, block semantics, argument
-values, or expression precedence. Expected trees provide structural checks;
-this first milestone does not yet compare expression evaluation with Smarty.
+values, or expression precedence. Expected trees provide structural checks.
+A separate full-engine helper verifies selected fixed expressions and loop
+validation; it never executes application corpus templates.
 
 The original small PHP demonstration remains available:
 
@@ -82,7 +79,10 @@ configuration variables, comments, and static object properties. Each defines
 the tree shape, examples, exclusions, reference checks, and completion evidence.
 Further completed briefs are [004: object method calls](docs/tasks/004-object-method-calls.md),
 [005: symbolic condition operators](docs/tasks/005-condition-operators.md), and
-[006: modern foreach blocks](docs/tasks/006-foreach-blocks.md), in that order.
+[006: modern foreach blocks](docs/tasks/006-foreach-blocks.md).
+The next ready briefs are [007: index access](docs/tasks/007-index-access.md),
+[008: primitive literals](docs/tasks/008-primitive-literals.md), and
+[009: class constants](docs/tasks/009-class-constants.md), in that order.
 
 Measure the local corpus without requiring all files to pass:
 
