@@ -69,21 +69,37 @@ export default grammar({
     ))),
     _modified: $ => choice($._primary, $.modifier_expression),
     _primary: $ => choice(
-      $.variable, $.config_variable, $.member_expression, $.method_call_expression,
+      $.variable, $.config_variable, $.member_expression, $.method_call_expression, $.index_expression, alias($._config_index, $.index_expression),
       $.number, $.string, $.parenthesized_expression,
     ),
     variable: $ => seq("$", field("name", alias(token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/), $.identifier))),
     // Smarty requires both the name and closing hash to be adjacent.
     config_variable: $ => seq("#", field("name", alias(token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/), $.identifier)), token.immediate("#")),
-    // Restrict receivers to variables and static property/call chains.
+    // Separate config indices from object-capable receivers. A method result may
+    // acquire a property/call, but cannot directly acquire an index in Smarty.
+    index_expression: $ => prec.left(7, seq(
+      field("object", choice($.variable, $.member_expression, $.index_expression)), $._index_suffix,
+    )),
+    _config_index: $ => prec.left(7, seq(
+      field("object", choice($.config_variable, alias($._config_index, $.index_expression))), $._index_suffix,
+    )),
+    _index_suffix: $ => choice(
+      seq(token.immediate("."), field("index", choice(
+        alias(token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/), $.identifier),
+        // Integer-only tokens prevent .1.2 from collapsing into a decimal key.
+        alias(token.immediate(/[0-9]+/), $.number),
+      ))),
+      seq("[", field("index", $._expression), "]"),
+    ),
+    // Restrict receivers to variables and static property/call/index chains.
     // Left recursion preserves each member, binding above modifiers (4) and arithmetic.
     // Control keywords are ordinary names after ->, while still reserved as tags.
     member_expression: $ => prec.left(5, seq(
-      field("object", choice($.variable, $.member_expression, $.method_call_expression)), "->", field("member", reserved("property", $.identifier)),
+      field("object", choice($.variable, $.member_expression, $.method_call_expression, $.index_expression)), "->", field("member", reserved("property", $.identifier)),
     )),
     // Prefer a call over a property plus a separate parenthesized tag argument.
     method_call_expression: $ => prec.left(6, seq(
-      field("object", choice($.variable, $.member_expression, $.method_call_expression)),
+      field("object", choice($.variable, $.member_expression, $.method_call_expression, $.index_expression)),
       "->", field("method", reserved("property", $.identifier)), "(",
       optional(seq(field("argument", $._expression), repeat(seq(",", field("argument", $._expression))))), ")",
     )),
@@ -99,6 +115,6 @@ export default grammar({
       field("value", $._modified), "|", field("name", $.identifier),
       repeat(seq(":", field("argument", $._modifier_argument))),
     )),
-    _modifier_argument: $ => choice($.variable, $.config_variable, $.member_expression, $.method_call_expression, $.number, $.string, $.parenthesized_expression),
+    _modifier_argument: $ => choice($.variable, $.config_variable, $.member_expression, $.method_call_expression, $.index_expression, alias($._config_index, $.index_expression), $.number, $.string, $.parenthesized_expression),
   }
 });

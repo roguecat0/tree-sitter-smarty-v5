@@ -80,8 +80,8 @@ the tree shape, examples, exclusions, reference checks, and completion evidence.
 Further completed briefs are [004: object method calls](docs/tasks/004-object-method-calls.md),
 [005: symbolic condition operators](docs/tasks/005-condition-operators.md), and
 [006: modern foreach blocks](docs/tasks/006-foreach-blocks.md).
-The next ready briefs are [007: index access](docs/tasks/007-index-access.md),
-[008: primitive literals](docs/tasks/008-primitive-literals.md), and
+Task [007: index access](docs/tasks/007-index-access.md) is also complete.
+The next ready briefs are [008: primitive literals](docs/tasks/008-primitive-literals.md), and
 [009: class constants](docs/tasks/009-class-constants.md), in that order.
 
 Measure the local corpus without requiring all files to pass:

@@ -1,6 +1,6 @@
 # 007 — Dot and bracket read access
 
-Status: ready; not implemented. Dependencies: 004–006. Implement before 008.
+Status: complete (2026-09-23). Dependencies: 004–006.
 
 ## Scope and motivation
 
@@ -103,8 +103,21 @@ comparisons establish surrounding syntax only.
    minimized examples, and update contract, feature row, status and evidence.
    No clean-file quota; no implicit runtime `$smarty` semantics.
 
-## Completion evidence (fill when implemented)
+## Completion evidence (2026-09-23)
 
-Trees/reference/range/edit/mutation links; commands and outcomes; saved report
-paths and hash comparison; cited minimized examples; changed exclusions; remaining
-append, dynamic, section and direct method-result indexing boundaries.
+- [Nine manual trees](../../test/corpus/index-access.txt) and
+  [reference/field/range/boundary/edit checks](../../test/index-access.test.mjs).
+  Minimized module access and `$smarty.const.LABEL` promote the cited local
+  examples; no runtime special-variable behavior is implied.
+- Initial `npm test` failed all nine new fixtures; final `npm test` passes
+  84 trees, 124 Node checks and nine mutations. The added mutation changes the
+  bracket index field and fails the mixed-index tree. The prior property mutation
+  anchor now includes indexed receivers while preserving the identical fault.
+- Hash-matched reports: `/tmp/smarty-007-before.json` and
+  `/tmp/smarty-007-after.json`: 467 templates, **46 → 57 clean**, **421 → 410
+  failing**, no regressions. `/tmp/smarty-007-review.json` records explicit
+  object/index inspection in all eleven newly clean files (60 index nodes).
+- Removed only the prior property checks rejecting `$user.name` and
+  `$user->name[0]`; positive exact trees now cover both. Existing expected trees
+  remain unchanged. Append, section/bare-name, dynamic-dot and direct method-result
+  indexing remain excluded, as do config-to-object chains.

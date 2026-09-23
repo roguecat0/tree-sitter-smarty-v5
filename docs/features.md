@@ -14,12 +14,12 @@ all Smarty variants are covered. `Partial` means only the described forms work.
 | Custom closing tags | Supported as independent tags; pairing deliberately unspecified | initial mismatched-name case |
 | Modifiers | Partial: chains and simple arguments; unrestricted names | initial trees; renamed-extension checks |
 | If/elseif/else | Partial: nested blocks using supported expression forms | initial trees; [edit tests](../test/incremental.test.mjs) |
-| Config variables | Partial: static ASCII names in expressions; no dynamic names/indexing | [001](tasks/001-config-variables.md) |
+| Config variables | Partial: static ASCII names in expressions; bounded read indices; no dynamic names | [001](tasks/001-config-variables.md) |
 | Smarty comments | Supported: `{* ... *}` through first terminator; non-nesting | [002](tasks/002-comments.md) |
 | Object properties | Partial: static ASCII `->name` chains from variables/calls; no dynamic members | [003](tasks/003-object-properties.md) |
 | Object method calls | Partial: static names, ordinary arguments, property/call chains | [004](tasks/004-object-method-calls.md) |
 | Standalone function calls | Unimplemented; excluded from 004 | Separate brief needed |
-| Dot/index read access | Ready: static dot keys and bounded bracket-index chains | [007](tasks/007-index-access.md) |
+| Dot/index read access | Partial: static dot keys and bounded bracket-index chains | [007](tasks/007-index-access.md) |
 | Boolean/null literals | Ready: case-insensitive literals, contextual keyword boundaries | [008](tasks/008-primitive-literals.md) |
 | Static class constants | Ready: adjacent static `Class::NAME` expressions | [009](tasks/009-class-constants.md) |
 | Array literals | Unimplemented | Separate brief needed |
@@ -43,9 +43,8 @@ The six clean files are not promoted wholesale: some contain `block`/`extends`
 that our generic rules accept without understanding inheritance. The first briefs
 favor small independent features over promising to clear the most files at once.
 
-Tasks 001–006 are complete as separate verified changes within their bounded
-scopes. Implement [007](tasks/007-index-access.md), then
-[008](tasks/008-primitive-literals.md), then [009](tasks/009-class-constants.md)
+Tasks 001–007 are complete as separate verified changes within their bounded
+scopes. Implement [008](tasks/008-primitive-literals.md), then [009](tasks/009-class-constants.md)
 as separate verified changes. These are ready briefs, not implemented features.
 They target access chains, commonly used literal arguments, and constant-bearing
 conditions; their corpus hints overlap and do not predict clean-file gains.
@@ -98,3 +97,11 @@ checks, eight mutations. Hash-matched local corpus: **30 → 46 clean**,
 explicit loops whose header fields, branch ownership and closers were reviewed.
 Across tasks 004–006 the result is **15 → 46 clean**, **452 → 421 failing**;
 this is still triage evidence rather than a language-coverage percentage.
+
+## Index access evidence (2026-09-23)
+
+Task [007](tasks/007-index-access.md) passes `npm test`: 84 trees, 124 Node
+checks, nine mutations. Hash-matched local corpus: **46 → 57 clean**, **421 →
+410 failing**, no regressions. All eleven newly clean files retain explicit
+object/index fields (60 index nodes). Remaining failures are reported separately
+from supported syntax; no runtime `$smarty` behavior is claimed.

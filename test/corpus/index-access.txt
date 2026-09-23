@@ -1,0 +1,72 @@
+==========
+Static dot and integer keys
+==========
+{$rows.name}{$a.1.2}
+---
+(source_file
+(output value: (index_expression object: (variable name: (identifier)) index: (identifier)))
+(output value: (index_expression object: (index_expression object: (variable name: (identifier)) index: (number)) index: (number))))
+
+==========
+Mixed indices preserve receiver
+==========
+{$rows[0]['name'].if}
+---
+(source_file (output value: (index_expression object: (index_expression object: (index_expression object: (variable name: (identifier)) index: (number)) index: (string)) index: (identifier))))
+
+==========
+Expression bracket and modifier binding
+==========
+{$rows[$key + 1]|escape:$other.name}
+---
+(source_file (output value: (modifier_expression value: (index_expression object: (variable name: (identifier)) index: (binary_expression left: (variable name: (identifier)) right: (number))) name: (identifier) argument: (index_expression object: (variable name: (identifier)) index: (identifier)))))
+
+==========
+Indexed module method
+==========
+{$row['module']->get_status()}
+---
+(source_file (output value: (method_call_expression object: (index_expression object: (variable name: (identifier)) index: (string)) method: (identifier))))
+
+==========
+Property index and method transitions
+==========
+{$user->get_profile()->rows[$key]->get_name()}{$user->rows[0].name}
+---
+(source_file
+(output value: (method_call_expression object: (index_expression object: (member_expression object: (method_call_expression object: (variable name: (identifier)) method: (identifier)) member: (identifier)) index: (variable name: (identifier))) method: (identifier)))
+(output value: (index_expression object: (index_expression object: (member_expression object: (variable name: (identifier)) member: (identifier)) index: (number)) index: (identifier))))
+
+==========
+Config index chains
+==========
+{#settings#.name}{#settings#[0][($key)]}
+---
+(source_file
+(output value: (index_expression object: (config_variable name: (identifier)) index: (identifier)))
+(output value: (index_expression object: (index_expression object: (config_variable name: (identifier)) index: (number)) index: (parenthesized_expression (variable name: (identifier))))))
+
+==========
+Index composition in loop and condition
+==========
+{foreach $data.rows as $row}{if $row.active}{$row.name}{elseif $row[0]}{$row[1]}{/if}{/foreach}
+---
+(source_file (foreach_block
+(foreach_tag source: (index_expression object: (variable name: (identifier)) index: (identifier)) item: (variable name: (identifier)))
+(if_block (if_tag condition: (index_expression object: (variable name: (identifier)) index: (identifier)))
+(output value: (index_expression object: (variable name: (identifier)) index: (identifier)))
+(elseif_clause (elseif_tag condition: (index_expression object: (variable name: (identifier)) index: (number))) (output value: (index_expression object: (variable name: (identifier)) index: (number)))) (if_close_tag)) (foreach_close_tag)))
+
+==========
+Index unknown tags and opaque neighbors
+==========
+{widget $a[0] value=$b.name}{/different}{* $a.bad *}{'literal.name'}
+---
+(source_file (custom_tag name: (identifier) argument: (index_expression object: (variable name: (identifier)) index: (number)) (attribute name: (identifier) value: (index_expression object: (variable name: (identifier)) index: (identifier)))) (custom_close_tag name: (identifier)) (comment) (output value: (string)))
+
+==========
+Smarty const path
+==========
+{$smarty.const.LABEL}
+---
+(source_file (output value: (index_expression object: (index_expression object: (variable name: (identifier)) index: (identifier)) index: (identifier))))

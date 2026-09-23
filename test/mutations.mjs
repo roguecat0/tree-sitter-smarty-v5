@@ -8,6 +8,9 @@ import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const original = readFileSync(join(root, 'grammar.js'), 'utf8');
 const mutations = [
+  { name: 'index key loses its field', fixture: 'Mixed indices preserve receiver',
+    from: 'seq("[", field("index", $._expression), "]")',
+    to: 'seq("[", field("value", $._expression), "]")' },
   { name: 'foreach source gets the wrong field', fixture: 'Simple foreach',
     from: 'field("source", $._expression)',
     to: 'field("value", $._expression)' },
@@ -20,8 +23,8 @@ const mutations = [
     from: 'optional(seq(field("argument", $._expression), repeat(seq(",", field("argument", $._expression)))))',
     to: 'optional(seq(field("value", $._expression), repeat(seq(",", field("value", $._expression)))))' },
   { name: 'property chain receiver gets the wrong field', fixture: 'Left associated property chain',
-    from: 'member_expression: $ => prec.left(5, seq(\n      field("object", choice($.variable, $.member_expression, $.method_call_expression))',
-    to: 'member_expression: $ => prec.left(5, seq(\n      field("value", choice($.variable, $.member_expression, $.method_call_expression))' },
+    from: 'member_expression: $ => prec.left(5, seq(\n      field("object", choice($.variable, $.member_expression, $.method_call_expression, $.index_expression))',
+    to: 'member_expression: $ => prec.left(5, seq(\n      field("value", choice($.variable, $.member_expression, $.method_call_expression, $.index_expression))' },
   { name: 'comment swallowed as text', fixture: 'Comment hides tags and quotes',
     from: '$.if_block, $.comment, $.foreach_block)',
     to: '$.if_block, alias($.comment, $.text), $.foreach_block)' },
