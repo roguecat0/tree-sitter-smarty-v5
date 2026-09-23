@@ -130,6 +130,9 @@ evaluate arbitrary corpus source to establish precedence.
 - Full Smarty establishes every adjacent precedence boundary; in particular
   `{-2|strlen}` returns `-1`, `{(-2)|strlen}` returns `2`, and `{!0|strlen}`
   returns an empty string. The proposed precedence requires no correction.
+  `0 == 2 < 3` is false while `(0 == 2) < 3` is true, independently
+  distinguishing relational/equality binding (the earlier exploratory
+  `1 == 2 < 3` observation alone does not distinguish those groupings).
   Same-level comparison chains produce PHP ParseError despite recorder
   acceptance. Adjacent sign pairs are not nested unary signs; spaced signs are.
 - One new fixture exposed the already documented `{f(1)}` generic/function

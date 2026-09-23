@@ -26,10 +26,10 @@ for (const {name, source} of examples) test(`Operator reference: ${name}`, () =>
 
 test('Full Smarty distinguishes every new adjacent precedence boundary', () => {
   for (const [expression, expected] of [
-    ['1 || 0 && 0', '1'], ['0 && 1 == 0', ''], ['1 == 2 < 3', '1'],
+    ['1 || 0 && 0', '1'], ['0 && 1 == 0', ''], ['0 == 2 < 3', ''],
     ['1 + 2 < 4', '1'], ['1 + 2 * 3', '7'], ['!2 * 0', '0'],
     ['-2|strlen', '-1'], ['(-2)|strlen', '2'], ['!0|strlen', ''],
-    ['(1 || 0) && 0', ''], ['(1 == 2) < 3', '1'],
+    ['(1 || 0) && 0', ''], ['(0 == 2) < 3', '1'],
     ['-2 * +3', '-6'], ['! ! 2', '1'],
   ]) {
     const result = fullEngine(`{${expression}}`);
