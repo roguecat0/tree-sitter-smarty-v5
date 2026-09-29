@@ -9,8 +9,8 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 const original = readFileSync(join(root, 'grammar.js'), 'utf8');
 const mutations = [
   { name: 'index key loses its field', fixture: 'Mixed indices preserve receiver',
-    from: 'seq("[", field("index", $._expression), "]")',
-    to: 'seq("[", field("value", $._expression), "]")' },
+    from: 'seq("[", field("index", $._index_value), "]")',
+    to: 'seq("[", field("value", $._index_value), "]")' },
   { name: 'foreach source gets the wrong field', fixture: 'Simple foreach',
     from: 'field("source", $._expression)',
     to: 'field("value", $._expression)' },
@@ -32,8 +32,8 @@ const mutations = [
     from: 'choice($.text, $.output, $.custom_tag,',
     to: 'choice($.text, $.output, alias($.custom_tag, $.text),' },
   { name: 'attribute value gets the wrong field', fixture: 'Custom tag arguments',
-    from: 'attribute: $ => seq(field("name", $.identifier), "=", field("value", $._expression))',
-    to: 'attribute: $ => seq(field("name", $.identifier), "=", field("argument", $._expression))' },
+    from: 'attribute: $ => seq(field("name", $._attribute_name), "=", field("value", $._expression))',
+    to: 'attribute: $ => seq(field("name", $._attribute_name), "=", field("argument", $._expression))' },
   { name: 'addition binds tighter than multiplication', fixture: 'Arithmetic precedence',
     from: '[[1, ["+", "-"]], [2, ["*", "/", "%"]]]',
     to: '[[2, ["+", "-"]], [1, ["*", "/", "%"]]]' },

@@ -1,13 +1,13 @@
 # 008 — Boolean and null literals
 
-Status: ready; not implemented. Dependencies: 004–007 for composition fixtures.
+Status: complete (2026-09-29). Dependencies: 004–007 for composition fixtures.
 Implement before 009. This is a small lexical/primary-expression task.
 
 ## Scope and motivation
 
 Support case-insensitive whole-word `true`, `false` and `null` wherever the bounded
 expression grammar allows a primary value: outputs, calls, tag arguments and
-attributes, conditions, indices and modifier arguments. Do not introduce generic
+attributes, conditions, parenthesized/compound indices and modifier arguments. Do not introduce generic
 bare-word values, constants, numeric formats, output attributes or assignment.
 
 On 2026-09-22 a raw lexical scan found primitive words in 254 of the 467 local
@@ -34,7 +34,7 @@ original spelling/ranges; do not convert them to strings, identifiers or numbers
 ```
 
 `{true}`, `{FALSE}` and `{null}` are outputs, not generic tags. Exact primitive
-words are reserved in tag-name position, case-insensitively; ordinary names such
+words are reserved in opening tag-name position, case-insensitively; ordinary names such
 as `true_widget`, `TRUEish` and `nullary` remain generic tags. Contextual property,
 method and static dot-key identifiers such as `$a->true()` and `$a.TRUE` must
 retain their identifier nodes. Strings and comment bodies remain opaque.
@@ -62,6 +62,20 @@ The recorder also accepts `{widget value=trueish}` (bare-word value) and
 identifier fallback to handle keyword prefixes or silently accept output attributes.
 The event projection does not verify literal values/types; exact trees and the
 controlled full-engine helper from 005 provide distinct evidence.
+
+## Reference boundary correction (2026-09-23)
+
+Bare bracket `ID` is a section index in Smarty, even when it spells a primitive.
+With `a = {0: "zero", 1: "one", "": "empty"}`, full-engine rendering returns
+`empty` for `$a[true]`, `$a[false]`, `$a[null]` and `$a[TRUE]`, but `one` for
+`$a[(true)]` and `zero` for `$a[(false)]`. Therefore bare primitive indices stay
+outside the existing section-index boundary; parenthesized and compound primitive
+indices are expressions. This corrects the brief's original blanket index scope.
+The recorder alone cannot expose that semantic difference.
+
+Primitive reservation applies only to opening tags. Independent `{/true}`,
+attribute names in `{widget true=1}`, modifiers in `$a|true` and contextual member
+names remain identifiers. Existing malformed control tags remain errors.
 
 ## Acceptance work
 
@@ -92,3 +106,30 @@ controlled full-engine helper from 005 provide distinct evidence.
 Trees/reference/full-engine/edit links; exact keyword/identifier boundaries;
 commands/results; corpus report paths/comparison; changed expectations and minimal
 Smarty observations; remaining bare-word/constant/output-attribute exclusions.
+
+## Completion evidence (2026-09-29)
+
+- [Seven manual trees](../../test/corpus/primitive-literals.txt) and
+  [reference/type/range/edit checks](../../test/primitive-literals.test.mjs).
+  Before implementation six new trees failed; the opaque-string/comment tree
+  already passed. The inherited draft's full-engine return-field typo was fixed
+  (`result`, not `output`); no assertion was weakened or old tree changed.
+- `npm test` passes 91 trees, 137 Node checks and all nine mutations. Exact
+  keyword spelling uses Tree-sitter word boundaries; longer names and primitive
+  prefixes are protected by positive trees and explicit negative/edit checks.
+  No additional mutation is needed for a failure mode those checks already catch.
+  Index/attribute mutation anchors were updated preserving their original faults.
+- `reference.php` now records the real deferred modifier list passed into
+  `compilePrintExpression`: `{null|escape:false}` previously omitted its modifier
+  event. Dedicated renamed-modifier and malformed-argument checks verify the
+  extension; plugin execution remains bypassed, as before.
+- Full-engine tests distinguish literal types/case from quoted values and
+  independently verify the section-index correction above. Bare-name values,
+  section indices and output attributes remain separate project gaps to keep
+  this primary-expression task bounded, not permanent project exclusions.
+- Reports `/tmp/smarty-008-before.json` and `/tmp/smarty-008-after.json` match all
+  467 input hashes: **57 → 71 clean**, **410 → 396 failing**, no regressions.
+  Literal nodes in all fourteen newly clean files were inspected; local structure
+  evidence is `/tmp/smarty-008-review.json`. The method-argument fixture minimizes
+  the cited `get_key_values(true)` corpus usage. Clean parses do not prove runtime
+  correctness or complete language coverage.

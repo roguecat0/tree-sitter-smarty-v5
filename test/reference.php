@@ -29,6 +29,12 @@ class SyntaxRecorder extends \Smarty\Compiler\Template
 
     public function compilePrintExpression($value, $attributes = [], $modifiers = null)
     {
+        // Bare constant/literal output passes modifiers through this callback;
+        // other expressions already called compileModifier while being parsed.
+        // Record the real modifier list without resolving or executing plugins.
+        if ($modifiers !== null) {
+            $this->compileModifier($modifiers, $value);
+        }
         $this->events[] = ['kind' => 'output'];
         return '';
     }

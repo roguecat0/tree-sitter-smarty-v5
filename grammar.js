@@ -7,11 +7,17 @@
 /// <reference types="tree-sitter-cli/dsl" />
 // @ts-check
 
+// Explicit keyword spellings cooperate with Tree-sitter's word token: a longer
+// identifier such as TRUEish must win, and contextual names remain identifiers.
+const cases = word => [...word].reduce((forms, ch) => forms.flatMap(form => [form + ch, form + ch.toUpperCase()]), [""]);
+const primitiveWords = [...cases("true"), ...cases("false"), ...cases("null")];
+const controlWords = ["if", "else", "elseif", "foreach", "foreachelse"];
+
 export default grammar({
   name: "smarty2",
   extras: _ => [/\s/],
   word: $ => $.identifier,
-  reserved: { global: _ => ["if", "else", "elseif", "foreach", "foreachelse"], property: _ => [] },
+  reserved: { global: _ => controlWords, tag: _ => [...controlWords, ...primitiveWords], property: _ => [] },
   conflicts: $ => [[$.elseif_clause], [$.else_clause], [$.foreachelse_clause]],
   rules: {
     source_file: $ => repeat($._node),
@@ -21,11 +27,13 @@ export default grammar({
     // Star runs cannot consume a closing brace; the following newline is text.
     comment: _ => token(seq("{*", /([^*]|\*+[^*}])*/, /\*+/, "}")),
     output: $ => seq("{", field("value", $._expression), "}"),
-    custom_tag: $ => seq("{", field("name", $.identifier), repeat(choice(
+    custom_tag: $ => seq("{", field("name", reserved("tag", $.identifier)), repeat(choice(
       $.attribute, field("argument", $._expression),
     )), "}"),
     custom_close_tag: $ => seq("{/", field("name", $.identifier), "}"),
-    attribute: $ => seq(field("name", $.identifier), "=", field("value", $._expression)),
+    // Primitive tokens also occur where a tag accepts a named attribute.
+    _attribute_name: $ => choice($.identifier, alias($.boolean, $.identifier), alias($.null, $.identifier)),
+    attribute: $ => seq(field("name", $._attribute_name), "=", field("value", $._expression)),
     if_block: $ => seq(
       $.if_tag, repeat($._node), repeat($.elseif_clause), optional($.else_clause), $.if_close_tag,
     ),
@@ -68,7 +76,8 @@ export default grammar({
       seq(token.immediate(/\s+/), field("argument", $.unary_expression)),
     ))),
     _modified: $ => choice($._primary, $.modifier_expression),
-    _primary: $ => choice(
+    _primary: $ => choice($._nonliteral_primary, $.boolean, $.null),
+    _nonliteral_primary: $ => choice(
       $.variable, $.config_variable, $.member_expression, $.method_call_expression, $.index_expression, alias($._config_index, $.index_expression),
       $.number, $.string, $.parenthesized_expression,
     ),
@@ -89,7 +98,14 @@ export default grammar({
         // Integer-only tokens prevent .1.2 from collapsing into a decimal key.
         alias(token.immediate(/[0-9]+/), $.number),
       ))),
-      seq("[", field("index", $._expression), "]"),
+      seq("[", field("index", $._index_value), "]"),
+    ),
+    // Bare [true]/[false]/[null] are Smarty section names. Only parentheses or
+    // an actual compound expression make primitives expression-valued indices.
+    _index_value: $ => choice(
+      $._nonliteral_primary, $.unary_expression, $.modifier_expression, $.binary_expression,
+      alias($._or_expression, $.binary_expression), alias($._and_expression, $.binary_expression),
+      alias($._equality_expression, $.binary_expression), alias($._relational_expression, $.binary_expression),
     ),
     // Restrict receivers to variables and static property/call/index chains.
     // Left recursion preserves each member, binding above modifiers (4) and arithmetic.
@@ -104,6 +120,8 @@ export default grammar({
       optional(seq(field("argument", $._expression), repeat(seq(",", field("argument", $._expression))))), ")",
     )),
     identifier: _ => /[a-zA-Z_][a-zA-Z0-9_]*/,
+    boolean: _ => choice(...cases("true"), ...cases("false")),
+    null: _ => choice(...cases("null")),
     number: _ => /[0-9]+(?:\.[0-9]+)?/,
     string: _ => choice(/'[^'\\]*(?:\\.[^'\\]*)*'/, /"[^"\\$]*(?:\\.[^"\\$]*)*"/),
     parenthesized_expression: $ => seq("(", $._expression, ")"),
@@ -115,6 +133,6 @@ export default grammar({
       field("value", $._modified), "|", field("name", $.identifier),
       repeat(seq(":", field("argument", $._modifier_argument))),
     )),
-    _modifier_argument: $ => choice($.variable, $.config_variable, $.member_expression, $.method_call_expression, $.index_expression, alias($._config_index, $.index_expression), $.number, $.string, $.parenthesized_expression),
+    _modifier_argument: $ => choice($.variable, $.config_variable, $.member_expression, $.method_call_expression, $.index_expression, alias($._config_index, $.index_expression), $.number, $.string, $.parenthesized_expression, $.boolean, $.null),
   }
 });

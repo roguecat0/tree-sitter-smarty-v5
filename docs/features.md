@@ -20,7 +20,7 @@ all Smarty variants are covered. `Partial` means only the described forms work.
 | Object method calls | Partial: static names, ordinary arguments, property/call chains | [004](tasks/004-object-method-calls.md) |
 | Standalone function calls | Unimplemented; excluded from 004 | Separate brief needed |
 | Dot/index read access | Partial: static dot keys and bounded bracket-index chains | [007](tasks/007-index-access.md) |
-| Boolean/null literals | Ready: case-insensitive literals, contextual keyword boundaries | [008](tasks/008-primitive-literals.md) |
+| Boolean/null literals | Supported: case-insensitive literals; bare section indices excluded | [008](tasks/008-primitive-literals.md) |
 | Static class constants | Ready: adjacent static `Class::NAME` expressions | [009](tasks/009-class-constants.md) |
 | Array literals | Unimplemented | Separate brief needed |
 | Comparison/boolean/unary operators | Partial: symbolic comparisons, `&&`/`\|\|`, prefix `! + -`; no word aliases | [005](tasks/005-condition-operators.md) |
@@ -43,8 +43,8 @@ The six clean files are not promoted wholesale: some contain `block`/`extends`
 that our generic rules accept without understanding inheritance. The first briefs
 favor small independent features over promising to clear the most files at once.
 
-Tasks 001–007 are complete as separate verified changes within their bounded
-scopes. Implement [008](tasks/008-primitive-literals.md), then [009](tasks/009-class-constants.md)
+Tasks 001–008 are complete as separate verified changes within their bounded
+scopes. Implement [009](tasks/009-class-constants.md)
 as separate verified changes. These are ready briefs, not implemented features.
 They target access chains, commonly used literal arguments, and constant-bearing
 conditions; their corpus hints overlap and do not predict clean-file gains.
@@ -105,3 +105,11 @@ checks, nine mutations. Hash-matched local corpus: **46 → 57 clean**, **421 �
 410 failing**, no regressions. All eleven newly clean files retain explicit
 object/index fields (60 index nodes). Remaining failures are reported separately
 from supported syntax; no runtime `$smarty` behavior is claimed.
+
+## Primitive literal evidence (2026-09-29)
+
+Task [008](tasks/008-primitive-literals.md) passes `npm test`: 91 trees,
+137 Node checks and nine mutations. All 467 corpus hashes match: **57 → 71 clean**,
+**410 → 396 failing**, no regressions. Fourteen newly clean files have explicit
+literal nodes. Bare bracket primitive names are section syntax in Smarty;
+parenthesized/compound indices are supported expressions.

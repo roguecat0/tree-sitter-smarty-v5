@@ -106,3 +106,14 @@ indices directly. Binding is above modifiers/operators. Empty append, bare-name
 section, dynamic dot and arbitrary-expression receivers remain excluded.
 Evidence: [index trees](corpus/index-access.txt) and
 [reference/range/edit checks](index-access.test.mjs).
+
+Case-insensitive `true`/`false` and `null` produce named leaf `boolean` and `null`
+nodes, retaining their original text/ranges. They are primary expressions and
+modifier arguments. Only opening tag names reserve primitive words; longer names,
+independent closing tags, attributes, modifiers and contextual access keys keep
+identifier structure. Bare primitive bracket keys are excluded section names;
+parenthesized or compound primitive indices retain full expression structure.
+The recorder now observes modifier lists passed directly to print-expression
+compilation for literal output, without executing plugins. Evidence:
+[primitive trees](corpus/primitive-literals.txt) and
+[reference/type/range/edit checks](primitive-literals.test.mjs).

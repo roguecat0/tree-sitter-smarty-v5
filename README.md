@@ -17,15 +17,15 @@ npm test
 
 `npm test` regenerates the parser and rebuilds its Node binding, then runs:
 
-1. **75 expected-tree cases.** Manually written trees, including fields, cover
+1. **91 expected-tree cases.** Manually written trees, including fields, cover
    the initial subset and completed features in [test/corpus/](test/corpus/).
-2. **111 Node checks.** Reference projections compare accepted syntax and tag/
+2. **137 Node checks.** Reference projections compare accepted syntax and tag/
    modifier events with Smarty. Controlled full-engine checks separately cover
    precedence and block validation; range and negative checks protect boundaries.
 3. **Incremental edit checks.** Each feature includes edits through valid,
    incomplete and repaired syntax. Incremental trees must match fresh trees,
    including fields, punctuation, ranges and error/missing-node state.
-4. **Eight deliberate grammar bugs.** Temporary copies corrupt node types,
+4. **Nine deliberate grammar bugs.** Temporary copies corrupt node types,
    fields or precedence. Each must generate and fail its intended tree assertion.
    The working grammar is never modified by these experiments.
 
@@ -43,7 +43,7 @@ Dependency versions are recorded in `package-lock.json` and `composer.lock`.
 ## What is implemented
 
 Text, output tags, variables, numbers, simple quoted strings, arithmetic,
-parentheses, static config variables, Smarty comments, static object property
+parentheses, boolean/null literals, static config variables, Smarty comments, static object property
 chains and static method calls, symbolic comparison/boolean/prefix operators,
 custom tags with positional/named arguments, modifier chains, modern foreach
 blocks, and nested `if`/`elseif`/`else` blocks. Custom closing tags remain separate nodes and

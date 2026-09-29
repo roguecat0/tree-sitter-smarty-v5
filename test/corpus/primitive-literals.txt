@@ -1,0 +1,48 @@
+==========
+Primitive case variants
+==========
+{true}{TRUE}{TrUe}{false}{FALSE}{FaLsE}{null}{NULL}{NuLl}
+---
+(source_file (output value: (boolean)) (output value: (boolean)) (output value: (boolean)) (output value: (boolean)) (output value: (boolean)) (output value: (boolean)) (output value: (null)) (output value: (null)) (output value: (null)))
+
+==========
+Primitive method arguments
+==========
+{$user->find(true, FALSE, null)}
+---
+(source_file (output value: (method_call_expression object: (variable name: (identifier)) method: (identifier) argument: (boolean) argument: (boolean) argument: (null))))
+
+==========
+Primitive operators
+==========
+{!false || true === TRUE}
+---
+(source_file (output value: (binary_expression left: (unary_expression argument: (boolean)) right: (binary_expression left: (boolean) right: (boolean)))))
+
+==========
+Parenthesized primitive indices
+==========
+{$a[(true)]}{$a[(null)]}{$a[false + 1]}
+---
+(source_file (output value: (index_expression object: (variable name: (identifier)) index: (parenthesized_expression (boolean)))) (output value: (index_expression object: (variable name: (identifier)) index: (parenthesized_expression (null)))) (output value: (index_expression object: (variable name: (identifier)) index: (binary_expression left: (boolean) right: (number)))))
+
+==========
+Primitive contextual names
+==========
+{true_widget}{TRUEish}{nullary}{/true}{$a->null}{$a->true()}{$a.FALSE}{widget true=true null=null}{$a|true:false}
+---
+(source_file (custom_tag name: (identifier)) (custom_tag name: (identifier)) (custom_tag name: (identifier)) (custom_close_tag name: (identifier)) (output value: (member_expression object: (variable name: (identifier)) member: (identifier))) (output value: (method_call_expression object: (variable name: (identifier)) method: (identifier))) (output value: (index_expression object: (variable name: (identifier)) index: (identifier))) (custom_tag name: (identifier) (attribute name: (identifier) value: (boolean)) (attribute name: (identifier) value: (null))) (output value: (modifier_expression value: (variable name: (identifier)) name: (identifier) argument: (boolean))))
+
+==========
+Primitive loop composition
+==========
+{foreach $rows as $row}{if $row->find(true)}{null|escape:false}{elseif false}{TRUE}{/if}{/foreach}
+---
+(source_file (foreach_block (foreach_tag source: (variable name: (identifier)) item: (variable name: (identifier))) (if_block (if_tag condition: (method_call_expression object: (variable name: (identifier)) method: (identifier) argument: (boolean))) (output value: (modifier_expression value: (null) name: (identifier) argument: (boolean))) (elseif_clause (elseif_tag condition: (boolean)) (output value: (boolean))) (if_close_tag)) (foreach_close_tag)))
+
+==========
+Primitive opacity
+==========
+{* true null *}{'true'}{"FALSE"}{'null'}
+---
+(source_file (comment) (output value: (string)) (output value: (string)) (output value: (string)))

@@ -22,6 +22,10 @@
             "named": true
           },
           {
+            "type": "boolean",
+            "named": true
+          },
+          {
             "type": "config_variable",
             "named": true
           },
@@ -39,6 +43,10 @@
           },
           {
             "type": "modifier_expression",
+            "named": true
+          },
+          {
+            "type": "null",
             "named": true
           },
           {
@@ -78,6 +86,10 @@
             "named": true
           },
           {
+            "type": "boolean",
+            "named": true
+          },
+          {
             "type": "config_variable",
             "named": true
           },
@@ -95,6 +107,10 @@
           },
           {
             "type": "modifier_expression",
+            "named": true
+          },
+          {
+            "type": "null",
             "named": true
           },
           {
@@ -194,6 +210,10 @@
             "named": true
           },
           {
+            "type": "boolean",
+            "named": true
+          },
+          {
             "type": "config_variable",
             "named": true
           },
@@ -211,6 +231,10 @@
           },
           {
             "type": "modifier_expression",
+            "named": true
+          },
+          {
+            "type": "null",
             "named": true
           },
           {
@@ -236,6 +260,11 @@
         ]
       }
     }
+  },
+  {
+    "type": "boolean",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "config_variable",
@@ -282,6 +311,10 @@
             "named": true
           },
           {
+            "type": "boolean",
+            "named": true
+          },
+          {
             "type": "config_variable",
             "named": true
           },
@@ -299,6 +332,10 @@
           },
           {
             "type": "modifier_expression",
+            "named": true
+          },
+          {
+            "type": "null",
             "named": true
           },
           {
@@ -449,6 +486,10 @@
             "named": true
           },
           {
+            "type": "boolean",
+            "named": true
+          },
+          {
             "type": "config_variable",
             "named": true
           },
@@ -466,6 +507,10 @@
           },
           {
             "type": "modifier_expression",
+            "named": true
+          },
+          {
+            "type": "null",
             "named": true
           },
           {
@@ -581,6 +626,10 @@
             "named": true
           },
           {
+            "type": "boolean",
+            "named": true
+          },
+          {
             "type": "config_variable",
             "named": true
           },
@@ -598,6 +647,10 @@
           },
           {
             "type": "modifier_expression",
+            "named": true
+          },
+          {
+            "type": "null",
             "named": true
           },
           {
@@ -669,6 +722,11 @@
   },
   {
     "type": "foreachelse_tag",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "identifier",
     "named": true,
     "fields": {}
   },
@@ -745,6 +803,10 @@
             "named": true
           },
           {
+            "type": "boolean",
+            "named": true
+          },
+          {
             "type": "config_variable",
             "named": true
           },
@@ -762,6 +824,10 @@
           },
           {
             "type": "modifier_expression",
+            "named": true
+          },
+          {
+            "type": "null",
             "named": true
           },
           {
@@ -921,6 +987,10 @@
             "named": true
           },
           {
+            "type": "boolean",
+            "named": true
+          },
+          {
             "type": "config_variable",
             "named": true
           },
@@ -938,6 +1008,10 @@
           },
           {
             "type": "modifier_expression",
+            "named": true
+          },
+          {
+            "type": "null",
             "named": true
           },
           {
@@ -1005,6 +1079,10 @@
         "required": false,
         "types": [
           {
+            "type": "boolean",
+            "named": true
+          },
+          {
             "type": "config_variable",
             "named": true
           },
@@ -1018,6 +1096,10 @@
           },
           {
             "type": "method_call_expression",
+            "named": true
+          },
+          {
+            "type": "null",
             "named": true
           },
           {
@@ -1053,6 +1135,10 @@
         "required": true,
         "types": [
           {
+            "type": "boolean",
+            "named": true
+          },
+          {
             "type": "config_variable",
             "named": true
           },
@@ -1070,6 +1156,10 @@
           },
           {
             "type": "modifier_expression",
+            "named": true
+          },
+          {
+            "type": "null",
             "named": true
           },
           {
@@ -1093,6 +1183,11 @@
     }
   },
   {
+    "type": "null",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "output",
     "named": true,
     "fields": {
@@ -1102,6 +1197,10 @@
         "types": [
           {
             "type": "binary_expression",
+            "named": true
+          },
+          {
+            "type": "boolean",
             "named": true
           },
           {
@@ -1122,6 +1221,10 @@
           },
           {
             "type": "modifier_expression",
+            "named": true
+          },
+          {
+            "type": "null",
             "named": true
           },
           {
@@ -1161,6 +1264,10 @@
           "named": true
         },
         {
+          "type": "boolean",
+          "named": true
+        },
+        {
           "type": "config_variable",
           "named": true
         },
@@ -1178,6 +1285,10 @@
         },
         {
           "type": "modifier_expression",
+          "named": true
+        },
+        {
+          "type": "null",
           "named": true
         },
         {
@@ -1257,6 +1368,10 @@
         "required": true,
         "types": [
           {
+            "type": "boolean",
+            "named": true
+          },
+          {
             "type": "config_variable",
             "named": true
           },
@@ -1274,6 +1389,10 @@
           },
           {
             "type": "modifier_expression",
+            "named": true
+          },
+          {
+            "type": "null",
             "named": true
           },
           {
@@ -1435,6 +1554,134 @@
     "named": false
   },
   {
+    "type": "FALSE",
+    "named": false
+  },
+  {
+    "type": "FALSe",
+    "named": false
+  },
+  {
+    "type": "FALsE",
+    "named": false
+  },
+  {
+    "type": "FALse",
+    "named": false
+  },
+  {
+    "type": "FAlSE",
+    "named": false
+  },
+  {
+    "type": "FAlSe",
+    "named": false
+  },
+  {
+    "type": "FAlsE",
+    "named": false
+  },
+  {
+    "type": "FAlse",
+    "named": false
+  },
+  {
+    "type": "FaLSE",
+    "named": false
+  },
+  {
+    "type": "FaLSe",
+    "named": false
+  },
+  {
+    "type": "FaLsE",
+    "named": false
+  },
+  {
+    "type": "FaLse",
+    "named": false
+  },
+  {
+    "type": "FalSE",
+    "named": false
+  },
+  {
+    "type": "FalSe",
+    "named": false
+  },
+  {
+    "type": "FalsE",
+    "named": false
+  },
+  {
+    "type": "False",
+    "named": false
+  },
+  {
+    "type": "NULL",
+    "named": false
+  },
+  {
+    "type": "NULl",
+    "named": false
+  },
+  {
+    "type": "NUlL",
+    "named": false
+  },
+  {
+    "type": "NUll",
+    "named": false
+  },
+  {
+    "type": "NuLL",
+    "named": false
+  },
+  {
+    "type": "NuLl",
+    "named": false
+  },
+  {
+    "type": "NulL",
+    "named": false
+  },
+  {
+    "type": "Null",
+    "named": false
+  },
+  {
+    "type": "TRUE",
+    "named": false
+  },
+  {
+    "type": "TRUe",
+    "named": false
+  },
+  {
+    "type": "TRuE",
+    "named": false
+  },
+  {
+    "type": "TRue",
+    "named": false
+  },
+  {
+    "type": "TrUE",
+    "named": false
+  },
+  {
+    "type": "TrUe",
+    "named": false
+  },
+  {
+    "type": "TruE",
+    "named": false
+  },
+  {
+    "type": "True",
+    "named": false
+  },
+  {
     "type": "[",
     "named": false
   },
@@ -1459,6 +1706,70 @@
     "named": false
   },
   {
+    "type": "fALSE",
+    "named": false
+  },
+  {
+    "type": "fALSe",
+    "named": false
+  },
+  {
+    "type": "fALsE",
+    "named": false
+  },
+  {
+    "type": "fALse",
+    "named": false
+  },
+  {
+    "type": "fAlSE",
+    "named": false
+  },
+  {
+    "type": "fAlSe",
+    "named": false
+  },
+  {
+    "type": "fAlsE",
+    "named": false
+  },
+  {
+    "type": "fAlse",
+    "named": false
+  },
+  {
+    "type": "faLSE",
+    "named": false
+  },
+  {
+    "type": "faLSe",
+    "named": false
+  },
+  {
+    "type": "faLsE",
+    "named": false
+  },
+  {
+    "type": "faLse",
+    "named": false
+  },
+  {
+    "type": "falSE",
+    "named": false
+  },
+  {
+    "type": "falSe",
+    "named": false
+  },
+  {
+    "type": "falsE",
+    "named": false
+  },
+  {
+    "type": "false",
+    "named": false
+  },
+  {
     "type": "foreach",
     "named": false
   },
@@ -1467,11 +1778,39 @@
     "named": false
   },
   {
-    "type": "identifier",
-    "named": true
+    "type": "if",
+    "named": false
   },
   {
-    "type": "if",
+    "type": "nULL",
+    "named": false
+  },
+  {
+    "type": "nULl",
+    "named": false
+  },
+  {
+    "type": "nUlL",
+    "named": false
+  },
+  {
+    "type": "nUll",
+    "named": false
+  },
+  {
+    "type": "nuLL",
+    "named": false
+  },
+  {
+    "type": "nuLl",
+    "named": false
+  },
+  {
+    "type": "nulL",
+    "named": false
+  },
+  {
+    "type": "null",
     "named": false
   },
   {
@@ -1479,8 +1818,40 @@
     "named": true
   },
   {
+    "type": "tRUE",
+    "named": false
+  },
+  {
+    "type": "tRUe",
+    "named": false
+  },
+  {
+    "type": "tRuE",
+    "named": false
+  },
+  {
+    "type": "tRue",
+    "named": false
+  },
+  {
     "type": "text",
     "named": true
+  },
+  {
+    "type": "trUE",
+    "named": false
+  },
+  {
+    "type": "trUe",
+    "named": false
+  },
+  {
+    "type": "truE",
+    "named": false
+  },
+  {
+    "type": "true",
+    "named": false
   },
   {
     "type": "{",
