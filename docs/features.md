@@ -21,7 +21,7 @@ all Smarty variants are covered. `Partial` means only the described forms work.
 | Standalone function calls | Unimplemented; excluded from 004 | Separate brief needed |
 | Dot/index read access | Partial: static dot keys and bounded bracket-index chains | [007](tasks/007-index-access.md) |
 | Boolean/null literals | Supported: case-insensitive literals; bare section indices excluded | [008](tasks/008-primitive-literals.md) |
-| Static class constants | Ready: adjacent static `Class::NAME` expressions | [009](tasks/009-class-constants.md) |
+| Static class constants | Partial: adjacent static `Class::NAME` expressions | [009](tasks/009-class-constants.md) |
 | Array literals | Unimplemented | Separate brief needed |
 | Comparison/boolean/unary operators | Partial: symbolic comparisons, `&&`/`\|\|`, prefix `! + -`; no word aliases | [005](tasks/005-condition-operators.md) |
 | Foreach blocks | Partial: modern `as` headers, optional key and `foreachelse` | [006](tasks/006-foreach-blocks.md) |
@@ -43,11 +43,8 @@ The six clean files are not promoted wholesale: some contain `block`/`extends`
 that our generic rules accept without understanding inheritance. The first briefs
 favor small independent features over promising to clear the most files at once.
 
-Tasks 001–008 are complete as separate verified changes within their bounded
-scopes. Implement [009](tasks/009-class-constants.md)
-as separate verified changes. These are ready briefs, not implemented features.
-They target access chains, commonly used literal arguments, and constant-bearing
-conditions; their corpus hints overlap and do not predict clean-file gains.
+Tasks 001–009 are complete as separate verified changes within their bounded
+scopes. Their corpus hints overlap and do not predict clean-file gains.
 Standalone functions, array literals, interpolation, bitwise/word operators and
 literal blocks still need separate briefs.
 
@@ -113,3 +110,11 @@ Task [008](tasks/008-primitive-literals.md) passes `npm test`: 91 trees,
 **410 → 396 failing**, no regressions. Fourteen newly clean files have explicit
 literal nodes. Bare bracket primitive names are section syntax in Smarty;
 parenthesized/compound indices are supported expressions.
+
+## Class constant evidence (2026-09-29)
+
+Task [009](tasks/009-class-constants.md) passes `npm test`: 100 trees,
+151 Node checks and ten mutations. All 467 corpus hashes match: **71 → 98 clean**,
+**396 → 369 failing**, no regressions. The 27 newly clean files contain 145
+explicit constant nodes whose class/member fields were inspected. Clean parses
+do not establish runtime class existence or complete language coverage.

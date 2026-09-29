@@ -1,6 +1,6 @@
 # 009 — Static class constant expressions
 
-Status: ready; not implemented. Dependencies: 004–008 for composition fixtures.
+Status: complete (2026-09-29). Dependencies: 004–008 for composition fixtures.
 
 ## Scope and motivation
 
@@ -28,7 +28,7 @@ in conditions; reduce to the `State::READY` condition above.
 `corpus/menu_button.tpl:5` composes constants with bitwise `&`; that entire
 expression remains unsupported and belongs in a later operator brief.
 
-## Proposed tree contract
+## Tree contract
 
 Add `class_constant_expression` with `class: (identifier)` and
 `constant: (identifier)` fields; `::` is anonymous punctuation. Both identifiers
@@ -89,8 +89,32 @@ constant fields; their structure needs explicit tree and range checks.
    Update contract, feature row, task status and evidence. No runtime class or
    complete bitwise-condition support may be inferred from clean parsing.
 
-## Completion evidence (fill when implemented)
+## Completion evidence (2026-09-29)
 
-Tree/reference/range/edit/mutation links; commands/results; hash-matched corpus
-reports; minimized provenance; changed exclusions/expectations; remaining static
-methods, namespace, dynamic receiver, global constant and bitwise boundaries.
+- Nine manually specified [trees](../../test/corpus/class-constants.txt) and
+  fourteen [Node checks](../../test/class-constants.test.mjs) cover reference
+  acceptance, exact fields/ranges, contextual names, composition, exclusions,
+  and incremental edits across tag/constant and malformed separator boundaries.
+  Before implementation, eight new tree cases failed; the quoted-string case
+  already passed. No existing expected trees or negative assertions changed.
+- `npm test` passes: **100 trees, 151 Node checks, ten mutation checks**.
+  The added [mutation](../../test/mutations.mjs) changes the constant field and
+  is caught by the manually specified output tree.
+- Reference checks confirm adjacent contextual names and reject internal spaces
+  and case-insensitive `self`/`parent` receivers. Ordinary tags with those names
+  remain supported. Namespaced constants and static calls are valid Smarty
+  forms deferred to separate receiver/call contracts, rather than claimed
+  invalid language. No application symbol lookup or execution was added.
+- `npm run corpus:report -- ./corpus /tmp/smarty-009-after.json` compared with
+  `/tmp/smarty-009-before.json`: **71 → 98 clean**, **396 → 369 failing**,
+  identical hashes for all 467 templates and no clean-to-failing regressions.
+  All 27 newly clean files were inspected for explicit class/constant fields:
+  145 constant nodes, recorded in `/tmp/smarty-009-review.json`. These temporary
+  reports are local evidence, not portable test dependencies. The minimized
+  status condition above is retained in the tracked fixtures.
+- The [contract](../../test/CONTRACT.md) and [inventory](../features.md) record
+  the supported tree. Remaining namespaces, dynamic receivers, static methods/
+  properties, suffixes, global constants and bitwise operators need separate
+  bounded tasks. Runtime existence/visibility validation is outside parser scope.
+  The 369 failing templates remain triage work; clean counts are not a language
+  coverage percentage.

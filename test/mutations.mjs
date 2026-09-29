@@ -8,6 +8,9 @@ import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const original = readFileSync(join(root, 'grammar.js'), 'utf8');
 const mutations = [
+  { name: 'class constant name loses its field', fixture: 'Class constant output',
+    from: 'field("constant", alias(token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/), $.identifier))',
+    to: 'field("value", alias(token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/), $.identifier))' },
   { name: 'index key loses its field', fixture: 'Mixed indices preserve receiver',
     from: 'seq("[", field("index", $._index_value), "]")',
     to: 'seq("[", field("value", $._index_value), "]")' },

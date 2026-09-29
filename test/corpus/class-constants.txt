@@ -1,0 +1,62 @@
+==================
+Class constant output
+==================
+{State::READY}
+---
+(source_file (output value: (class_constant_expression class: (identifier) constant: (identifier))))
+
+==================
+Constant class and member keywords
+==================
+{thing::ready}{if::READY}{true::FALSE}{foreach::null}{Thing::if}
+---
+(source_file (output value: (class_constant_expression class: (identifier) constant: (identifier))) (output value: (class_constant_expression class: (identifier) constant: (identifier))) (output value: (class_constant_expression class: (identifier) constant: (identifier))) (output value: (class_constant_expression class: (identifier) constant: (identifier))) (output value: (class_constant_expression class: (identifier) constant: (identifier))))
+
+==================
+Constant output versus tag
+==================
+{State}{State::READY}{/State}
+---
+(source_file (custom_tag name: (identifier)) (output value: (class_constant_expression class: (identifier) constant: (identifier))) (custom_close_tag name: (identifier)))
+
+==================
+Corpus status condition
+==================
+{if $action->get_status() == State::READY}Y{/if}
+---
+(source_file (if_block (if_tag condition: (binary_expression left: (method_call_expression object: (variable name: (identifier)) method: (identifier)) right: (class_constant_expression class: (identifier) constant: (identifier)))) (text) (if_close_tag)))
+
+==================
+Constants in nested access and arguments
+==================
+{$user->find(State::ready, true)}{$rows[State::READY]}
+---
+(source_file (output value: (method_call_expression object: (variable name: (identifier)) method: (identifier) argument: (class_constant_expression class: (identifier) constant: (identifier)) argument: (boolean))) (output value: (index_expression object: (variable name: (identifier)) index: (class_constant_expression class: (identifier) constant: (identifier)))))
+
+==================
+Constant modifier and arithmetic binding
+==================
+{State::READY|escape}{State::READY + 2 * State::RATE}
+---
+(source_file (output value: (modifier_expression value: (class_constant_expression class: (identifier) constant: (identifier)) name: (identifier))) (output value: (binary_expression left: (class_constant_expression class: (identifier) constant: (identifier)) right: (binary_expression left: (number) right: (class_constant_expression class: (identifier) constant: (identifier))))))
+
+==================
+Constant unknown tag fields
+==================
+{widget State::READY value=State::READY|escape other=$a|decorate:State::READY}{/other}
+---
+(source_file (custom_tag name: (identifier) argument: (class_constant_expression class: (identifier) constant: (identifier)) (attribute name: (identifier) value: (modifier_expression value: (class_constant_expression class: (identifier) constant: (identifier)) name: (identifier))) (attribute name: (identifier) value: (modifier_expression value: (variable name: (identifier)) name: (identifier) argument: (class_constant_expression class: (identifier) constant: (identifier))))) (custom_close_tag name: (identifier)))
+
+==================
+Constant foreach composition
+==================
+{foreach $rows as $row}{if $row->status == State::READY}{*State::HIDDEN*}{State::READY}{elseif State::READY != null}{true}{/if}{/foreach}
+---
+(source_file (foreach_block (foreach_tag source: (variable name: (identifier)) item: (variable name: (identifier))) (if_block (if_tag condition: (binary_expression left: (member_expression object: (variable name: (identifier)) member: (identifier)) right: (class_constant_expression class: (identifier) constant: (identifier)))) (comment) (output value: (class_constant_expression class: (identifier) constant: (identifier))) (elseif_clause (elseif_tag condition: (binary_expression left: (class_constant_expression class: (identifier) constant: (identifier)) right: (null))) (output value: (boolean))) (if_close_tag)) (foreach_close_tag)))
+
+==================
+Quoted constant remains string
+==================
+{'State::READY'}
+---
+(source_file (output value: (string)))

@@ -12,12 +12,18 @@
 const cases = word => [...word].reduce((forms, ch) => forms.flatMap(form => [form + ch, form + ch.toUpperCase()]), [""]);
 const primitiveWords = [...cases("true"), ...cases("false"), ...cases("null")];
 const controlWords = ["if", "else", "elseif", "foreach", "foreachelse"];
+const classReservedWords = [...cases("self"), ...cases("parent")];
 
 export default grammar({
   name: "smarty2",
   extras: _ => [/\s/],
   word: $ => $.identifier,
-  reserved: { global: _ => controlWords, tag: _ => [...controlWords, ...primitiveWords], property: _ => [] },
+  reserved: {
+    global: _ => controlWords,
+    tag: _ => [...controlWords, ...primitiveWords],
+    property: _ => [],
+    class: _ => classReservedWords,
+  },
   conflicts: $ => [[$.elseif_clause], [$.else_clause], [$.foreachelse_clause]],
   rules: {
     source_file: $ => repeat($._node),
@@ -27,7 +33,10 @@ export default grammar({
     // Star runs cannot consume a closing brace; the following newline is text.
     comment: _ => token(seq("{*", /([^*]|\*+[^*}])*/, /\*+/, "}")),
     output: $ => seq("{", field("value", $._expression), "}"),
-    custom_tag: $ => seq("{", field("name", reserved("tag", $.identifier)), repeat(choice(
+    // These names are valid custom tags, but not static class receivers.
+    // Explicit tokens let the class-only reserved set reject exact spellings.
+    _tag_name: $ => choice(reserved("tag", $.identifier), alias(choice(...classReservedWords), $.identifier)),
+    custom_tag: $ => seq("{", field("name", $._tag_name), repeat(choice(
       $.attribute, field("argument", $._expression),
     )), "}"),
     custom_close_tag: $ => seq("{/", field("name", $.identifier), "}"),
@@ -79,7 +88,7 @@ export default grammar({
     _primary: $ => choice($._nonliteral_primary, $.boolean, $.null),
     _nonliteral_primary: $ => choice(
       $.variable, $.config_variable, $.member_expression, $.method_call_expression, $.index_expression, alias($._config_index, $.index_expression),
-      $.number, $.string, $.parenthesized_expression,
+      $.number, $.string, $.parenthesized_expression, $.class_constant_expression,
     ),
     variable: $ => seq("$", field("name", alias(token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/), $.identifier))),
     // Smarty requires both the name and closing hash to be adjacent.
@@ -120,6 +129,15 @@ export default grammar({
       optional(seq(field("argument", $._expression), repeat(seq(",", field("argument", $._expression))))), ")",
     )),
     identifier: _ => /[a-zA-Z_][a-zA-Z0-9_]*/,
+    // Control/primitive words are contextual class names, but self/parent are
+    // explicitly rejected by Smarty. Both sides of :: require adjacency.
+    class_constant_expression: $ => prec(8, seq(
+      field("class", choice(
+        reserved("class", $.identifier), alias(choice(...controlWords), $.identifier),
+        alias($.boolean, $.identifier), alias($.null, $.identifier),
+      )), token.immediate("::"),
+      field("constant", alias(token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/), $.identifier)),
+    )),
     boolean: _ => choice(...cases("true"), ...cases("false")),
     null: _ => choice(...cases("null")),
     number: _ => /[0-9]+(?:\.[0-9]+)?/,
@@ -133,6 +151,6 @@ export default grammar({
       field("value", $._modified), "|", field("name", $.identifier),
       repeat(seq(":", field("argument", $._modifier_argument))),
     )),
-    _modifier_argument: $ => choice($.variable, $.config_variable, $.member_expression, $.method_call_expression, $.index_expression, alias($._config_index, $.index_expression), $.number, $.string, $.parenthesized_expression, $.boolean, $.null),
+    _modifier_argument: $ => choice($.variable, $.config_variable, $.member_expression, $.method_call_expression, $.index_expression, alias($._config_index, $.index_expression), $.number, $.string, $.parenthesized_expression, $.boolean, $.null, $.class_constant_expression),
   }
 });

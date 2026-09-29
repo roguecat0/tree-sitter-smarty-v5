@@ -117,3 +117,14 @@ The recorder now observes modifier lists passed directly to print-expression
 compilation for literal output, without executing plugins. Evidence:
 [primitive trees](corpus/primitive-literals.txt) and
 [reference/type/range/edit checks](primitive-literals.test.mjs).
+
+Adjacent static `Class::NAME` values produce `class_constant_expression` with
+`class: (identifier)` and `constant: (identifier)` fields and anonymous `::`.
+Both names retain exact spelling, including contextual control/primitive words.
+Constants compose as primary expressions and modifier arguments; `{Class}` stays
+a generic tag. Internal whitespace is rejected. Case-insensitive `self`/`parent`
+are excluded class receivers but remain generic tag names. Namespaces, dynamic
+receivers, static calls/properties, constant access suffixes, global constants
+and runtime symbol validation remain outside this bounded feature.
+Evidence: [constant trees](corpus/class-constants.txt) and
+[reference/field/range/edit checks](class-constants.test.mjs).
