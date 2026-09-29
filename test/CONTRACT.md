@@ -1,6 +1,12 @@
 # Smarty grammar contract
 
-Target: a deliberately small Smarty 5 subset, with the package name `smarty2`.
+Target: a reusable Smarty 5 parser with broad practical coverage and robust
+recovery, with the package name `smarty2`. Editor support is the primary use
+case, and the syntax trees should also serve CLI tools and other integrations.
+The grammar is currently partial. Bounded feature tasks are the development
+method, not the intended coverage ceiling. Project-specific plugin behavior and
+arbitrary custom tag semantics are out of scope; unknown tags must remain
+parseable without hiding their supported arguments and expressions.
 
 The root is `source_file`. Text becomes `text`; output tags become `output`
 with a `value` field. Expressions preserve variable names, strings, numbers,
@@ -24,10 +30,14 @@ The reference tests compare a smaller projection (ordered tag names, argument
 names, and modifier names) with the installed Smarty parser. Smarty's generated
 PHP fragments are not treated as Tree-sitter syntax trees.
 
-Not yet supported: other built-in blocks, word operator aliases, bitwise operators,
+Currently not supported: other built-in blocks, word operator aliases, bitwise operators,
 standalone calls/dynamic member access, dynamic config variables,
 arrays, interpolated strings, literal blocks, configurable delimiters, auto-literal braces,
-or HTML injection. This milestone does not claim to parse the application corpus.
+or HTML injection. These are current gaps to assess and address according to
+common usage and usefulness to parser consumers; the explicit plugin/custom-tag
+boundary is the exception. Recovery on unfinished and malformed input is part
+of the parser's goal, especially for interactive editor use, and should be
+represented in tests for each relevant syntax family.
 
 Static `#name#` expressions produce `config_variable` with a `name: (identifier)`
 field in outputs, conditions, tag arguments/attributes and modifier inputs/arguments.

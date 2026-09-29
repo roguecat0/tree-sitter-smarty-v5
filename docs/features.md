@@ -1,5 +1,13 @@
 # Feature inventory
 
+The goal is a broadly useful Smarty 5 parser. Editor support is the primary use
+case, and the same syntax trees should support CLI tools and other integrations.
+Useful structure and recovery while users type matter especially for editors.
+This inventory describes current evidence and gaps; it does not define the
+intended final coverage ceiling. Work proceeds in bounded, reviewed changes.
+Project-specific plugins and arbitrary custom tag semantics remain out of scope,
+while unknown tags should preserve supported structure and expressions.
+
 `Supported` means the explicitly bounded form has acceptance evidence, not that
 all Smarty variants are covered. `Partial` means only the described forms work.
 `Ready` means a brief is available; it does not mean implementation has started.
@@ -41,7 +49,10 @@ not proven causes. Regenerate the report for current evidence.
 
 The six clean files are not promoted wholesale: some contain `block`/`extends`
 that our generic rules accept without understanding inheritance. The first briefs
-favor small independent features over promising to clear the most files at once.
+favor small independent changes because that improves confidence in each tree and
+recovery behavior; it does not limit the project's eventual scope. Corpus counts
+help prioritize common forms, while explicit syntax trees and malformed-input
+checks establish whether the parser understood them usefully for downstream tools.
 
 Tasks 001–009 are complete as separate verified changes within their bounded
 scopes. Their corpus hints overlap and do not predict clean-file gains.

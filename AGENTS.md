@@ -1,6 +1,11 @@
 # Working on this grammar
 
-Target Smarty 5; `smarty2` is the package name, not the language version.
+Target a broadly useful Smarty 5 parser with practical coverage and robust
+recovery; editor support is the primary use case, and CLI tools and other
+integrations are also expected consumers. `smarty2` is the package name, not the
+language version. Use bounded, tested syntax changes to build toward that goal.
+Project-specific plugin behavior and arbitrary custom tag semantics are out of
+scope; preserve unknown tags and their supported contents where possible.
 Read `test/CONTRACT.md`, `docs/features.md`, and the selected brief in
 `docs/tasks/` before extending syntax. Follow `docs/expanding.md`.
 

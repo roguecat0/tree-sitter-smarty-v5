@@ -1,9 +1,16 @@
 # tree-sitter-smarty2
 
-An initial Tree-sitter grammar for **Smarty 5**. The package name `smarty2`
+A Tree-sitter grammar for **Smarty 5**. The package name `smarty2`
 distinguishes this project from another parser; it does not mean Smarty version 2.
 
-This is a small working grammar and test harness, not a complete Smarty parser.
+The goal is a reasonably full-featured, reusable parser for common Smarty 5
+templates. Editor support is the primary use case: syntax trees should support
+highlighting and remain useful while a template is incomplete or malformed. The
+same trees should also serve CLI tools and other integrations. Syntax is added in
+small, controlled, well-tested steps as coverage grows. Project-specific plugin
+behavior and arbitrary custom tag semantics are outside the goal; unknown tags
+should still preserve their syntax and contained expressions where possible.
+The current grammar is an early, partial implementation of that goal.
 
 ## Run the checks
 
@@ -49,10 +56,12 @@ custom tags with positional/named arguments, modifier chains, modern foreach
 blocks, and nested `if`/`elseif`/`else` blocks. Custom closing tags remain separate nodes and
 do not imply a validated block relationship.
 
-See [the tree contract](test/CONTRACT.md) for the fields and exclusions. In
-particular, standalone functions, interpolation, dynamic members, legacy loops,
-literal blocks, and the remaining Smarty language features are future work. The 467 application templates have
-not been used as an acceptance gate for this milestone.
+See [the tree contract](test/CONTRACT.md) for the fields and current exclusions.
+Standalone functions, interpolation, dynamic members, legacy loops, literal
+blocks, and other Smarty syntax remain future work. These are limits of the
+current implementation, not a declaration that broad practical coverage is out
+of scope. The 467 application templates are local triage evidence, not an
+acceptance gate.
 
 Smarty comparisons deliberately cover less than the exact-tree tests: the
 recording compiler does not check plugin availability, block semantics, argument

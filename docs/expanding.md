@@ -2,10 +2,23 @@
 
 ## Choose and specify
 
-Use [features.md](features.md) to select a ready task. Work on one syntax family.
-The brief fixes the initial scope and proposed node fields; grammar implementation
-choices remain the implementer's responsibility. Resolve a demonstrated conflict
-with Smarty before changing the proposal.
+Use [features.md](features.md) to select and prioritize work toward broad,
+practically useful Smarty 5 coverage. Editor support is the primary use case, but
+the syntax trees should also serve CLI tools and other integrations. Work on one
+syntax family at a time to keep each change reviewable; bounded tasks are an
+implementation method, not a limit on the project goal. Prefer common syntax and
+recovery improvements that help downstream consumers, especially highlighting
+and tree structure in real templates. Arbitrary project-specific plugin behavior
+is out of scope, but unknown tags should not cause their supported contents to be
+lost. The brief fixes the initial scope and proposed node fields; grammar
+implementation choices remain the implementer's responsibility. Resolve a
+demonstrated conflict with Smarty before changing the proposal.
+
+When a task excludes syntax that Smarty accepts, distinguish the task boundary
+from the project's overall goal. Briefly state why that form is outside this
+task and whether it remains a known project gap or is intentionally out of
+scope. Record only reasons supported by evidence or an explicit design decision.
+Keep this rationale concise in the brief.
 
 Start with the listed small fixtures, manually write their expected trees, and
 run `npm test` to observe the intended failure. New corpus files are discovered
@@ -23,9 +36,12 @@ answers that merely duplicate the grammar.
 
 ## Implement and verify
 
-Implement the smallest coherent feature. Check it in output expressions, generic
-tag arguments, modifiers, or built-in conditions where applicable. Include an
-unfinished form and an edit that breaks and repairs the construct. Reuse the
+Implement the smallest coherent feature that advances practical syntax coverage
+or useful recovery. Check it in output expressions, generic tag arguments,
+modifiers, or built-in conditions where applicable. Include unfinished and
+malformed forms where relevant, plus edits that break and repair the construct.
+Check that neighboring syntax remains structured during recovery, as well as
+after repair. Reuse the
 full-tree `snapshot()` helper for incremental comparisons, not just node names.
 
 Run `npm test`: exact trees, Node reference/recovery/edit checks, and isolated
