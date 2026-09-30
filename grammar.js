@@ -16,6 +16,7 @@ const classReservedWords = [...cases("self"), ...cases("parent")];
 
 export default grammar({
   name: "smarty2",
+  externals: $ => [$._output_attribute_error_marker],
   extras: _ => [/\s/],
   word: $ => $.identifier,
   reserved: {
@@ -32,7 +33,13 @@ export default grammar({
     // A single token hides all template syntax and stops at the first *}.
     // Star runs cannot consume a closing brace; the following newline is text.
     comment: _ => token(seq("{*", /([^*]|\*+[^*}])*/, /\*+/, "}")),
-    output: $ => seq("{", field("value", $._expression), "}"),
+    output: $ => choice(
+      // A no-source external marker forces a parse error after this explicit
+      // recovery node without making any input spelling valid.
+      prec(9, seq("{", field("value", $.function_call_expression), alias(repeat1($.attribute), "ERROR"), $._output_attribute_error_marker, "}")),
+      prec(9, seq("{", field("value", $.function_call_expression), "}")),
+      seq("{", field("value", $._expression), "}"),
+    ),
     // These names are valid custom tags, but not static class receivers.
     // Explicit tokens let the class-only reserved set reject exact spellings.
     _tag_name: $ => choice(reserved("tag", $.identifier), alias(choice(...classReservedWords), $.identifier)),
@@ -87,8 +94,16 @@ export default grammar({
     _modified: $ => choice($._primary, $.modifier_expression),
     _primary: $ => choice($._nonliteral_primary, $.boolean, $.null),
     _nonliteral_primary: $ => choice(
-      $.variable, $.config_variable, $.member_expression, $.method_call_expression, $.index_expression, alias($._config_index, $.index_expression),
+      $.variable, $.config_variable, $.member_expression, $.method_call_expression, $.function_call_expression, $.index_expression, alias($._config_index, $.index_expression), $.array_literal,
       $.number, $.string, $.parenthesized_expression, $.class_constant_expression,
+    ),
+    array_literal: $ => choice(
+      seq("[", optional(seq($.array_element, repeat(seq(",", $.array_element)), optional(","))), "]"),
+      seq("array", "(", optional(seq($.array_element, repeat(seq(",", $.array_element)), optional(","))), ")"),
+    ),
+    array_element: $ => choice(
+      seq(field("key", choice($._primary, $.identifier)), "=>", field("value", $._expression)),
+      field("value", $._expression),
     ),
     variable: $ => seq("$", field("name", alias(token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/), $.identifier))),
     // Smarty requires both the name and closing hash to be adjacent.
@@ -128,6 +143,12 @@ export default grammar({
       "->", field("method", reserved("property", $.identifier)), "(",
       optional(seq(field("argument", $._expression), repeat(seq(",", field("argument", $._expression))))), ")",
     )),
+    // Calls on a static unqualified identifier are expressions, including the
+    // tag-shaped `{name(args)}` form which Smarty compiles as function output.
+    function_call_expression: $ => prec.left(8, seq(
+      field("name", $.identifier), "(",
+      optional(seq(field("argument", $._expression), repeat(seq(",", field("argument", $._expression))))), ")",
+    )),
     identifier: _ => /[a-zA-Z_][a-zA-Z0-9_]*/,
     // Control/primitive words are contextual class names, but self/parent are
     // explicitly rejected by Smarty. Both sides of :: require adjacency.
@@ -151,6 +172,6 @@ export default grammar({
       field("value", $._modified), "|", field("name", $.identifier),
       repeat(seq(":", field("argument", $._modifier_argument))),
     )),
-    _modifier_argument: $ => choice($.variable, $.config_variable, $.member_expression, $.method_call_expression, $.index_expression, alias($._config_index, $.index_expression), $.number, $.string, $.parenthesized_expression, $.boolean, $.null, $.class_constant_expression),
+    _modifier_argument: $ => choice($.variable, $.config_variable, $.member_expression, $.method_call_expression, $.function_call_expression, $.index_expression, alias($._config_index, $.index_expression), $.array_literal, $.number, $.string, $.parenthesized_expression, $.boolean, $.null, $.class_constant_expression),
   }
 });

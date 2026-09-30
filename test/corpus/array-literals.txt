@@ -1,0 +1,132 @@
+==================
+short arrays
+==================
+{$user->find(["id"=>1, active=>true, "options"=>["limit"=>10],])}
+---
+(source_file
+  (output value: (method_call_expression
+    object: (variable name: (identifier))
+    method: (identifier)
+    argument: (array_literal
+      (array_element key: (string) value: (number))
+      (array_element key: (identifier) value: (boolean))
+      (array_element key: (string) value: (array_literal
+        (array_element key: (string) value: (number))))))))
+
+==================
+array function forms
+==================
+{$user->find(array(1, 2,))}{$user->find([])}{$user->find(array())}
+---
+(source_file
+  (output value: (method_call_expression
+    object: (variable name: (identifier))
+    method: (identifier)
+    argument: (array_literal
+      (array_element value: (number))
+      (array_element value: (number)))))
+  (output value: (method_call_expression
+    object: (variable name: (identifier))
+    method: (identifier)
+    argument: (array_literal)))
+  (output value: (method_call_expression
+    object: (variable name: (identifier))
+    method: (identifier)
+    argument: (array_literal))))
+
+==================
+modifier argument array
+==================
+{$x|default:[1, 2]}
+---
+(source_file
+  (output value: (modifier_expression
+    value: (variable name: (identifier))
+    name: (identifier)
+    argument: (array_literal
+      (array_element value: (number))
+      (array_element value: (number))))))
+
+==================
+array literal as index value
+==================
+{$rows[[1, 2]]}
+---
+(source_file
+  (output value: (index_expression
+    object: (variable name: (identifier))
+    index: (array_literal
+      (array_element value: (number))
+      (array_element value: (number))))))
+
+==================
+compound key and corpus call
+==================
+{$app->urls["go_page"]->get_url(["view"=>"edit", "param_id"=>$id, ($x+1)=>"v"])|escape}
+---
+(source_file
+  (output value: (modifier_expression
+    value: (method_call_expression
+      object: (index_expression
+        object: (member_expression object: (variable name: (identifier))
+          member: (identifier)) index: (string))
+      method: (identifier)
+      argument: (array_literal
+        (array_element key: (string) value: (string))
+        (array_element key: (string) value: (variable name: (identifier)))
+    (array_element
+          key: (parenthesized_expression
+            (binary_expression left: (variable name: (identifier)) right: (number)))
+          value: (string))))
+    name: (identifier))))
+
+==================
+unknown tag arrays
+==================
+{widget [1, [2]] values=[active=>true, label=>"ok"]}
+---
+(source_file
+  (custom_tag name: (identifier)
+    argument: (array_literal
+      (array_element value: (number))
+      (array_element value: (array_literal
+        (array_element value: (number)))))
+    (attribute name: (identifier) value: (array_literal
+      (array_element key: (identifier) value: (boolean))
+      (array_element key: (identifier) value: (string))))))
+
+==================
+array in conditional block
+==================
+{if ["x"=>1] != []}{$user->find(array("a"=>[1, 2]))}{/if}
+---
+(source_file
+  (if_block
+    (if_tag condition: (binary_expression
+      left: (array_literal (array_element key: (string) value: (number)))
+      right: (array_literal)))
+    (output value: (method_call_expression
+      object: (variable name: (identifier))
+      method: (identifier)
+      argument: (array_literal
+        (array_element key: (string) value: (array_literal
+          (array_element value: (number))
+          (array_element value: (number)))))))
+    (if_close_tag)))
+
+==================
+array in foreach body
+==================
+{foreach $rows as $row}{$user->find([$row->id=>true])}{/foreach}
+---
+(source_file
+  (foreach_block
+    (foreach_tag source: (variable name: (identifier)) item: (variable name: (identifier)))
+    (output value: (method_call_expression
+      object: (variable name: (identifier))
+      method: (identifier)
+      argument: (array_literal
+        (array_element key: (member_expression
+          object: (variable name: (identifier)) member: (identifier))
+          value: (boolean)))))
+    (foreach_close_tag)))

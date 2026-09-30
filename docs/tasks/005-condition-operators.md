@@ -135,11 +135,15 @@ evaluate arbitrary corpus source to establish precedence.
   `1 == 2 < 3` observation alone does not distinguish those groupings).
   Same-level comparison chains produce PHP ParseError despite recorder
   acceptance. Adjacent sign pairs are not nested unary signs; spaced signs are.
-- One new fixture exposed the already documented `{f(1)}` generic/function
-  overlap: Smarty classifies `{widget ($a > 0) ...}` as function output. Its
-  manual tree is retained with an explicit reference-discrepancy assertion;
-  a separate `{widget $a > 0 ...}` fixture verifies actual generic tag agreement.
-  No existing tree expectation changed or fixture was deleted.
+- Task 011 corrected the old `Operators in unknown tags and modifier arguments`
+  fixture: Smarty classifies `{widget ($a > 0)}` as a function output, not a
+  generic tag with a parenthesized argument. The generic-tag operator, attribute,
+  comment, and independent-closer coverage is retained using
+  `{widget $a > 0 enabled=... value=...}`. The compiler accepts the original
+  function-output-with-trailing-attributes source; 011 records it as a
+  task-unsupported error/recovery case until output attributes receive their own
+  tree contract. This is an expectation correction grounded in the pinned
+  Smarty recorder and grammar, not a claim that the old full source is invalid.
 - Reports `/tmp/smarty-005-before.json` and `/tmp/smarty-005-after.json` have
   identical hashes for all 467 inputs: **27 → 30 clean**, **440 → 437 failing**,
   no regressions. All three newly clean files have explicit operator nodes:

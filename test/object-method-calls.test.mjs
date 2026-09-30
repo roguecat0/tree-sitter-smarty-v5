@@ -33,7 +33,7 @@ test('Method negative boundaries and explicit leading-comma discrepancy', () => 
     assert.ok(reference(source).error, source);
   }
   assert.equal(reference('{$a->f(,1)}').error, null);
-  for (const source of ['{$a->f(,1)}','{$a->f(f(1))}','{$a->$f()}','{$a::f()}','{$a->f(x:1)}','{$a->f(...$b)}','{($a)->f()}','{$a->f()[0]}'])
+  for (const source of ['{$a->f(,1)}','{$a->$f()}','{$a::f()}','{$a->f(x:1)}','{$a->f(...$b)}','{($a)->f()}','{$a->f()[0]}'])
     assert.equal(parser().parse(source).rootNode.hasError, true, source);
 });
 test('Method incremental delete and restore closing parenthesis', () => {

@@ -10,15 +10,17 @@ for (const {name, source} of examples) test(`Operator reference: ${name}`, () =>
   const expected = reference(source);
   assert.equal(expected.error, null);
   if (name === 'Operators in unknown tags and modifier arguments') {
-    // Existing generic parenthesized-argument syntax overlaps Smarty function
-    // output syntax; retain its tree but explicitly record that distinction.
+    // Keep operator/attribute/comment recovery coverage in true generic-tag
+    // context; the parenthesized function-output form has separate coverage.
     assert.deepEqual(expected.events, [
-      {kind: 'modifier', name: 'widget', arguments: 0},
-      {kind: 'modifier', name: 'decorate', arguments: 1}, {kind: 'output'},
+      {kind: 'modifier', name: 'decorate', arguments: 1},
+      {kind: 'tag', name: 'widget', arguments: [
+        {name: null}, {name: 'enabled'}, {name: 'value'},
+      ]},
       {kind: 'tag', name: 'otherclose', arguments: []},
     ]);
     assert.equal(root.firstNamedChild.type, 'custom_tag');
-    assert.equal(root.firstNamedChild.childForFieldName('argument').type, 'parenthesized_expression');
+    assert.equal(root.firstNamedChild.childForFieldName('argument').type, 'binary_expression');
   } else {
     assert.deepEqual(observations(root), expected.events);
   }

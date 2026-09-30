@@ -23,8 +23,11 @@ const mutations = [
     alsoFrom: 'field("operator", "&&"), field("right", $._equality)',
     alsoTo: 'field("operator", "||"), field("right", $._equality)' },
   { name: 'method arguments lose their field', fixture: 'Method arguments preserve order',
-    from: 'optional(seq(field("argument", $._expression), repeat(seq(",", field("argument", $._expression)))))',
-    to: 'optional(seq(field("value", $._expression), repeat(seq(",", field("value", $._expression)))))' },
+    from: 'method_call_expression: $ => prec.left(6, seq(\n      field("object", choice($.variable, $.member_expression, $.method_call_expression, $.index_expression)),\n      "->", field("method", reserved("property", $.identifier)), "(",\n      optional(seq(field("argument", $._expression), repeat(seq(",", field("argument", $._expression))))), ")",\n    ))',
+    to: 'method_call_expression: $ => prec.left(6, seq(\n      field("object", choice($.variable, $.member_expression, $.method_call_expression, $.index_expression)),\n      "->", field("method", reserved("property", $.identifier)), "(",\n      optional(seq(field("value", $._expression), repeat(seq(",", field("value", $._expression))))), ")",\n    ))' },
+  { name: 'standalone function arguments lose their field', fixture: 'Function output',
+    from: 'function_call_expression: $ => prec.left(8, seq(\n      field("name", $.identifier), "(",\n      optional(seq(field("argument", $._expression), repeat(seq(",", field("argument", $._expression))))), ")",\n    ))',
+    to: 'function_call_expression: $ => prec.left(8, seq(\n      field("name", $.identifier), "(",\n      optional(seq(field("value", $._expression), repeat(seq(",", field("value", $._expression))))), ")",\n    ))' },
   { name: 'property chain receiver gets the wrong field', fixture: 'Left associated property chain',
     from: 'member_expression: $ => prec.left(5, seq(\n      field("object", choice($.variable, $.member_expression, $.method_call_expression, $.index_expression))',
     to: 'member_expression: $ => prec.left(5, seq(\n      field("value", choice($.variable, $.member_expression, $.method_call_expression, $.index_expression))' },
@@ -49,6 +52,9 @@ for (const mutation of mutations) {
     cpSync(join(root, 'tree-sitter.json'), join(dir, 'tree-sitter.json'));
     mkdirSync(join(dir, 'test'), { recursive: true });
     cpSync(join(root, 'test/corpus'), join(dir, 'test/corpus'), { recursive: true });
+    mkdirSync(join(dir, 'src'), { recursive: true });
+    cpSync(join(root, 'src/tree_sitter'), join(dir, 'src/tree_sitter'), { recursive: true });
+    cpSync(join(root, 'src/scanner.c'), join(dir, 'src/scanner.c'));
     writeFileSync(join(dir, 'package.json'), '{"type":"module"}');
     const options = { cwd: dir, encoding: 'utf8', timeout: 30_000, env: process.env };
     // Establish that this isolated setup works before attributing failure to a bug.

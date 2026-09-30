@@ -148,9 +148,9 @@ Corpus icon condition
 ==================
 Operators in unknown tags and modifier arguments
 ==================
-{widget ($a > 0) enabled=!$b value=$a|decorate:($b || #enabled#)}{*ignored &&*}{/other}
+{widget $a > 0 enabled=!$b value=$a|decorate:($b || #enabled#)}{*ignored &&*}{/other}
 ---
-(source_file (custom_tag name: (identifier) argument: (parenthesized_expression (binary_expression left: (variable name: (identifier)) right: (number))) (attribute name: (identifier) value: (unary_expression argument: (variable name: (identifier)))) (attribute name: (identifier) value: (modifier_expression value: (variable name: (identifier)) name: (identifier) argument: (parenthesized_expression (binary_expression left: (variable name: (identifier)) right: (config_variable name: (identifier))))))) (comment) (custom_close_tag name: (identifier)))
+(source_file (custom_tag name: (identifier) argument: (binary_expression left: (variable name: (identifier)) right: (number)) (attribute name: (identifier) value: (unary_expression argument: (variable name: (identifier)))) (attribute name: (identifier) value: (modifier_expression value: (variable name: (identifier)) name: (identifier) argument: (parenthesized_expression (binary_expression left: (variable name: (identifier)) right: (config_variable name: (identifier))))))) (comment) (custom_close_tag name: (identifier)))
 
 ==================
 Operator elseif and method argument

@@ -52,6 +52,12 @@ export function observations(node) {
     case 'modifier_expression':
       events.push({ kind: 'modifier', name, arguments: node.childrenForFieldName('argument').length });
       break;
+    case 'function_call_expression':
+      // Smarty compiles function values through its modifier-in-expression path;
+      // Smarty routes the first function argument as the value and exposes only
+      // the remaining arguments as modifier parameters in this projection.
+      events.push({ kind: 'modifier', name, arguments: Math.max(node.childrenForFieldName('argument').length - 1, 0) });
+      break;
     case 'output':
       events.push({ kind: 'output' });
       break;

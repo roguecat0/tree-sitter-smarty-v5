@@ -80,9 +80,15 @@ implementations or approve its own work.
   scope.
 - Decide finding disposition from repository instructions and evidence. Record
   accepted limitations and unresolved disagreements in the task brief.
-- After a task passes, update the queue and select the next task. Make a
-  project-finished decision only when all six conditions above hold; report
-  blockers that need human input.
+- After a task passes, record reviewer acceptance and evidence, update its
+  canonical status to `complete`, and create a Git commit for that task before
+  selecting the next task. Include its grammar/scanner changes, generated
+  sources, tests, contract, inventory, brief, and evidence in the commit. Keep
+  one commit per completed task; report the commit hash in the handoff. If the
+  commit fails or the worktree contains unexplained changes, resolve that before
+  advancing the queue.
+- Make a project-finished decision only when all six conditions above hold;
+  report blockers that need human input.
 
 ### 2. `task_creation_owner`
 
@@ -234,6 +240,9 @@ At the start of each task, tell the role its exact name from the five-role list,
 its allowed files/actions, the current state, and the handoff artifact it must
 return. At the end of each implementation/review pair, use the written evidence
 to advance the state; agent confidence or agreement is not a gate.
+The transition to the next queued task happens only after the accepted task is
+committed. The commit is part of the orchestrator's completion responsibility,
+not a task-owner or reviewer action.
 
 ## Adversarial review protocol
 

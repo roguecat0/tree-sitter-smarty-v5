@@ -126,3 +126,11 @@ receiver/name fields (19 zero-argument calls total). The tracked toolbar fixture
 minimizes `corpus/toolbar.tpl:5-7`; repeated calls also minimize the cited action
 example. Corpus acceptance does not establish runtime behavior. Dynamic names,
 standalone calls, indexing, static access and the other listed exclusions remain.
+
+### Scope correction from task 011
+
+Task 011 supersedes the method-argument exclusion for
+`{$a->f(f(1))}`. The pinned Smarty 5.8.4 recorder accepts it, and the 011
+hand-authored tree verifies that the method's `argument` field retains a nested
+`function_call_expression`. This later composition does not expand method
+receivers, indexing, or other exclusions above.

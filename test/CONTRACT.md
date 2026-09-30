@@ -31,13 +31,26 @@ names, and modifier names) with the installed Smarty parser. Smarty's generated
 PHP fragments are not treated as Tree-sitter syntax trees.
 
 Currently not supported: other built-in blocks, word operator aliases, bitwise operators,
-standalone calls/dynamic member access, dynamic config variables,
-arrays, interpolated strings, literal blocks, configurable delimiters, auto-literal braces,
+dynamic member access, dynamic config variables,
+interpolated strings, literal blocks, configurable delimiters, auto-literal braces,
 or HTML injection. These are current gaps to assess and address according to
 common usage and usefulness to parser consumers; the explicit plugin/custom-tag
 boundary is the exception. Recovery on unfinished and malformed input is part
 of the parser's goal, especially for interactive editor use, and should be
 represented in tests for each relevant syntax family.
+Static unqualified calls are supported below; their namespace and dynamic-call
+exclusions remain listed with that syntax contract.
+
+Short `[...]` and `array(...)` literals produce `array_literal` nodes. Each
+comma-separated value is an `array_element` with a `value` field; keyed entries
+also have a `key` field. Empty arrays and trailing commas are supported. Keys
+may be supported primary expressions or bare identifier names; a compound
+expression key must be parenthesized. Values use the full supported expression
+grammar. Nested literals compose as primary expressions and are retained in
+unknown tag arguments and attributes. Leading and repeated commas, spread,
+assignment, and PHP runtime array behavior are outside this tree contract.
+Evidence: [array trees](corpus/array-literals.txt) and
+[reference/recovery/edit checks](array-literals.test.mjs).
 
 Static `#name#` expressions produce `config_variable` with a `name: (identifier)`
 field in outputs, conditions, tag arguments/attributes and modifier inputs/arguments.
@@ -69,10 +82,30 @@ arguments, require each supplied expression, and reject trailing/leading commas.
 Calls and properties form left-nested chains above modifiers and arithmetic.
 Whitespace around arrows, method names and argument punctuation is accepted.
 Smarty's recorder accepts a leading comma; this subset deliberately rejects it.
-Standalone functions remain unsupported; `{f(1)}` overlaps the existing generic
-tag syntax and is a custom tag with a parenthesized argument, not a function node.
+Arguments retain standalone function calls when used inside a method argument;
+`{$a->f(f(1))}` is supported by the 011 expression-call contract.
 Evidence: [method trees](corpus/object-method-calls.txt) and
 [reference/range/edit checks](object-method-calls.test.mjs).
+
+Unqualified static identifier calls produce `function_call_expression` with
+`name: (identifier)` and repeated `argument` fields. Calls accept zero or more
+ordinary comma-separated expressions and bind as primary values. They compose
+in outputs, conditions, generic-tag positional/named values and modifier
+arguments; nested method/array expressions retain their trees. A tag-shaped
+`{name(args)}` parses as an output call, while `{widget}` and
+`{widget value=("x")}` remain generic tags. Smarty also treats
+`{widget ($a > 0)}` as function output; this corrects the former 005 generic-tag
+expectation. Trailing attributes on function outputs are Smarty-valid but
+remain unsupported: the parser reports an error at them and recovers later
+comments and independent closers. The recorder routes function values through
+its modifier-in-expression callback; it reports the callee and counts supplied
+arguments after the first as modifier parameters. This projection does not
+verify argument values, runtime function behavior, plugin resolution, or
+callee semantics. Namespaced callees, variable/dynamic callees, static `::`
+calls, function-result chains, and nonordinary argument forms remain outside
+this subset. Evidence:
+[call trees](corpus/standalone-function-calls.txt) and
+[reference/recovery/edit checks](standalone-function-calls.test.mjs).
 
 Symbolic comparisons `== != === !== < <= > >=` and booleans `&& ||` reuse
 `binary_expression` with `left`, `operator`, and `right` fields. Prefix `! + -`
@@ -89,9 +122,10 @@ Evidence: [operator trees](corpus/condition-operators.txt) and
 helper uses only controlled fixtures and temporary compile directories. It does
 not execute application corpus templates.
 
-The retained generic parenthesized-argument shape also means `{widget ($a > 0)}`
-overlaps Smarty's function-output syntax, just like `{f(1)}`. This limitation is
-explicitly recorded; `{widget $a > 0}` is the reference-backed generic tag form.
+The generic-tag operator fixture uses `{widget $a > 0 ...}` and retains its
+comment and independent closer. Its former `{widget ($a > 0) ...}` form was
+Smarty function-output syntax; see the standalone-call contract and 011
+evidence. Function-output trailing attributes remain a documented gap.
 
 Modern foreach loops produce `foreach_block` with `foreach_tag`, direct body
 nodes, optional `foreachelse_clause` (opening tag plus body), and

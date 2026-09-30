@@ -21,7 +21,7 @@ all Smarty variants are covered. `Partial` means only the described forms work.
 
 | Feature | Status and supported boundary | Evidence / next task |
 | --- | --- | --- |
-| Text/output boundaries | Partial: ordinary text and expression output; no raw braces/auto-literal | [initial trees](../test/corpus/initial.txt) |
+| Text/output boundaries | Partial: ordinary text and expression output; no raw braces/auto-literal or structured Smarty output attributes (including trailing attributes on function outputs; valid gap deferred in 011) | [initial trees](../test/corpus/initial.txt); [011](tasks/011-standalone-function-calls.md) |
 | Variables/numbers | Partial: simple variable names, unsigned decimal numbers | initial trees |
 | Strings | Partial: simple quotes/escapes; no interpolation (see [quoted-comment limitation](tasks/002-comments.md#reference-boundary-clarification)) | initial trees, quoted-brace case |
 | Arithmetic | Partial: binary `+ - * / %`, parentheses and prefix `+ -`; see operator row | initial trees; precedence mutation; operator-field check |
@@ -33,11 +33,11 @@ all Smarty variants are covered. `Partial` means only the described forms work.
 | Smarty comments | Supported: `{* ... *}` through first terminator; non-nesting | [002](tasks/002-comments.md) |
 | Object properties | Partial: static ASCII `->name` chains from variables/calls; no dynamic members | [003](tasks/003-object-properties.md) |
 | Object method calls | Partial: static names, ordinary arguments, property/call chains | [004](tasks/004-object-method-calls.md) |
-| Standalone function calls | Unimplemented; excluded from 004 | Separate brief needed |
+| Standalone function calls | Partial: unqualified static identifier calls with ordinary expression arguments; namespaced, dynamic, and `::` callees, result chains, and trailing function-output attributes remain gaps | [call trees](../test/corpus/standalone-function-calls.txt); [011](tasks/011-standalone-function-calls.md) |
 | Dot/index read access | Partial: static dot keys and bounded bracket-index chains | [007](tasks/007-index-access.md) |
 | Boolean/null literals | Supported: case-insensitive literals; bare section indices excluded | [008](tasks/008-primitive-literals.md) |
 | Static class constants | Partial: adjacent static `Class::NAME` expressions | [009](tasks/009-class-constants.md) |
-| Array literals | Unimplemented | Separate brief needed |
+| Array literals | Partial: `[...]` and `array(...)`, keyed/list values, nesting and trailing commas | [010](tasks/010-array-literals.md) |
 | Comparison/boolean/unary operators | Partial: symbolic comparisons, `&&`/`\|\|`, prefix `! + -`; no word aliases | [005](tasks/005-condition-operators.md) |
 | Foreach blocks | Partial: modern `as` headers, optional key and `foreachelse` | [006](tasks/006-foreach-blocks.md) |
 | Other built-in blocks | Unimplemented structurally; some names parse as generic tags | Inheritance, capture, etc. need explicit contracts |
@@ -65,11 +65,14 @@ syntax trees and malformed-input checks establish whether supported syntax is
 understood usefully, while corpus errors show where practical coverage is still
 missing.
 
-Tasks 001–009 are complete as separate verified changes within their bounded
+Tasks 001–010 are complete as separate verified changes within their bounded
 scopes. Their corpus hints overlap and do not predict clean-file gains; remaining
 corpus failures still need to drive further inventory and task updates.
-Standalone functions, array literals, interpolation, bitwise/word operators and
-literal blocks still need separate briefs.
+Task 011 passes its implementation gate for ordinary standalone calls; its
+independent review is pending. The remaining namespace/dynamic/result-chain and
+trailing output-attribute gaps stay visible in the feature rows. Interpolation,
+bitwise/word operators, literal blocks, and other unimplemented inventory rows
+still need briefs or scope decisions.
 
 ## Config variables evidence (2026-09-22)
 
@@ -141,3 +144,56 @@ Task [009](tasks/009-class-constants.md) passes `npm test`: 100 trees,
 **396 → 369 failing**, no regressions. The 27 newly clean files contain 145
 explicit constant nodes whose class/member fields were inspected. Clean parses
 do not establish runtime class existence or complete language coverage.
+
+## Array literal implementation evidence (2026-09-30)
+
+Task [010](tasks/010-array-literals.md) adds short and `array(...)` literals as
+primary expressions, with explicit `array_element` children and `key`/`value`
+fields. Its hand-written trees cover empty, list, keyed, nested and trailing
+comma forms, parenthesized compound keys, unknown tags, modifiers, index values,
+conditions, and `if`/`foreach` composition. Reference checks confirm the exposed
+output/tag events; the recorder does not inspect array entry values. `npm test`
+passes 108 corpus trees, 152 Node checks, and the existing ten mutation checks.
+
+The baseline audit (`grammarSha256`
+`a6a8d1263dd532a54c8e8b15da42ad46bc73df8ceed82fbe16049518a308afe7`) measured
+467 files: 98 clean and 369 failing. The after report (`grammarSha256`
+`0304cbe4b50d712ce545362f5679fcd1ebb3e78648dadb667589a5c8a82e5f64`) has the
+same 467 source hashes: 99 clean and 368 failing, with no regressions. The newly
+clean `view_sap/article_details.tpl` contains an explicit `array_literal` with
+two `array_element` nodes holding method calls; its node structure was inspected.
+At the end of task 010, 368 files still contained unresolved parser errors;
+task 011's report and remaining count follow below.
+
+## Array literal corpus motivation (baseline, 2026-09-30)
+
+The baseline hash-matched audit found parse errors whose snippets contain
+`get_url([` in 53 distinct failing templates (770 reported error entries,
+including overlapping nodes). `view_wage_work/wage_work_repairs_params.tpl:30`
+contains a keyed query array passed to `get_url`; the reduced
+`{$user->find(["id"=>1, "active"=>true])}` is accepted by the Smarty 5.8.4
+recording compiler and produces an output event, while the baseline parser
+reports errors. See [task 010](tasks/010-array-literals.md). The recorder checks
+only the output event, so keyed/list entry structure and value binding require
+manual expected trees.
+
+## Standalone function evidence (2026-09-30)
+
+Task [011](tasks/011-standalone-function-calls.md) passes `npm test` with 118
+corpus trees, 168 Node checks and all 11 mutation checks caught. Hash-matched reports
+`/tmp/smarty-array-after.json` and `/tmp/smarty-011-final-after.json` preserve all 467
+source hashes and show **99 → 135 clean**, **368 → 332 failing**, with no
+regressions. All 36 newly clean files were inspected for explicit function-call
+names and argument node fields; the review is saved in
+`/tmp/smarty-011-review.json`. Smarty 5.8.4 confirms tag-shaped
+`{widget ($a > 0)}` is function output, correcting the 005 generic-tag
+expectation. The full function-output-with-attributes form remains a recorded
+valid Smarty gap with parser error recovery. Independent task review is pending.
+
+Other unresolved clusters remain visible: standalone function calls in
+conditions/arguments (`is_valid_id(...)`, `date(...)`) are covered by the
+ordinary-call subset in [011](tasks/011-standalone-function-calls.md); remaining
+call gaps are named in that task. Loop metadata such as
+`$item@index` and `$message@last`, bitwise expressions, literal blocks, and
+other built-in blocks. Their audit hints are not diagnoses; each needs a
+minimized Smarty observation before becoming task scope.

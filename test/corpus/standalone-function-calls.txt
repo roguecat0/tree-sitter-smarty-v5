@@ -1,0 +1,69 @@
+==================
+Function output
+==================
+{is_valid_id($id)}
+---
+(source_file (output value: (function_call_expression name: (identifier) argument: (variable name: (identifier)))))
+
+==================
+Call precedence across prefix and binary operators
+==================
+{!f()}{f() + 2 * 3}{f() < 2}
+---
+(source_file (output value: (unary_expression argument: (function_call_expression name: (identifier)))) (output value: (binary_expression left: (function_call_expression name: (identifier)) right: (binary_expression left: (number) right: (number)))) (output value: (binary_expression left: (function_call_expression name: (identifier)) right: (number))))
+
+==================
+Standalone call in elseif condition
+==================
+{if $ready}before{elseif f() < 2}after{/if}
+---
+(source_file (if_block (if_tag condition: (variable name: (identifier))) (text) (elseif_clause (elseif_tag condition: (binary_expression left: (function_call_expression name: (identifier)) right: (number))) (text)) (if_close_tag)))
+
+==================
+Standalone call inside a method argument
+==================
+{$a->f(f(1))}
+---
+(source_file (output value: (method_call_expression object: (variable name: (identifier)) method: (identifier) argument: (function_call_expression name: (identifier) argument: (number)))))
+
+==================
+Bare function output from tag-shaped source
+==================
+{widget ($a > 0)}
+---
+(source_file (output value: (function_call_expression name: (identifier) argument: (binary_expression left: (variable name: (identifier)) right: (number)))))
+
+==================
+Empty and multiple arguments
+==================
+{f()}{sum($a, 2 + 3)}
+---
+(source_file (output value: (function_call_expression name: (identifier))) (output value: (function_call_expression name: (identifier) argument: (variable name: (identifier)) argument: (binary_expression left: (number) right: (number)))))
+
+==================
+Nested calls in condition and array
+==================
+{if is_valid_id($item->get_id()) && in_array($state, [$open, $closed])}ok{/if}
+---
+(source_file (if_block (if_tag condition: (binary_expression left: (function_call_expression name: (identifier) argument: (method_call_expression object: (variable name: (identifier)) method: (identifier))) right: (function_call_expression name: (identifier) argument: (variable name: (identifier)) argument: (array_literal (array_element value: (variable name: (identifier))) (array_element value: (variable name: (identifier))))))) (text) (if_close_tag)))
+
+==================
+Calls in unknown tag arguments
+==================
+{widget is_valid_id($id) value=in_array($id, [$open, $closed])}
+---
+(source_file (custom_tag name: (identifier) argument: (function_call_expression name: (identifier) argument: (variable name: (identifier))) (attribute name: (identifier) value: (function_call_expression name: (identifier) argument: (variable name: (identifier)) argument: (array_literal (array_element value: (variable name: (identifier))) (array_element value: (variable name: (identifier))))))))
+
+==================
+Call and modifier composition
+==================
+{f($id)|escape}
+---
+(source_file (output value: (modifier_expression value: (function_call_expression name: (identifier) argument: (variable name: (identifier))) name: (identifier))))
+
+==================
+Call as modifier argument
+==================
+{$id|decorate:is_valid_id($other)}
+---
+(source_file (output value: (modifier_expression value: (variable name: (identifier)) name: (identifier) argument: (function_call_expression name: (identifier) argument: (variable name: (identifier))))))
