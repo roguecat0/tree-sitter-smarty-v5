@@ -68,6 +68,19 @@ test('Metadata composes with arithmetic and retains operator and operands', () =
   assert.equal(value.childForFieldName('right').text, '1');
 });
 
+test('Metadata composes as a function and method argument', () => {
+  const source = '{foreach $items as $item}{$service->row($item@index)}{lookup($item@iteration)}{/foreach}';
+  const root = parser().parse(source).rootNode;
+  assert.equal(root.hasError, false, root.toString());
+  const method = root.descendantsOfType('method_call_expression')[0];
+  assert.equal(method.childForFieldName('argument').type, 'loop_metadata_expression');
+  const call = root.descendantsOfType('function_call_expression')[0];
+  assert.equal(call.childForFieldName('argument').type, 'loop_metadata_expression');
+  const expected = reference(source);
+  assert.equal(expected.error, null);
+  assert.deepEqual(observations(root), expected.events);
+});
+
 test('Missing or separated metadata suffix rejects and recovers around valid neighbors', () => {
   for (const malformed of ['{$item@}', '{$item @index}']) {
     const source = `{foreach $items as $item}{$before}${malformed}{$after}{/foreach}`;

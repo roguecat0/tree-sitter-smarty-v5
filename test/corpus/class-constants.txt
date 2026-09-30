@@ -60,3 +60,10 @@ Quoted constant remains string
 {'State::READY'}
 ---
 (source_file (output value: (string)))
+
+==================
+Constants as array key and value
+==================
+{[State::KEY=>State::READY]}
+---
+(source_file (output value: (array_literal (array_element key: (class_constant_expression class: (identifier) constant: (identifier)) value: (class_constant_expression class: (identifier) constant: (identifier))))))

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import {fixtures,observations,parser,reference,snapshot} from './helpers.mjs';
 const examples=fixtures('class-constants.txt');
-assert.equal(examples.length,9);
+assert.equal(examples.length,10);
 for(const {name,source} of examples) test(`Class constant reference: ${name}`,()=>{
  const root=parser().parse(source).rootNode; assert.equal(root.hasError,false,root.toString());
  const expected=reference(source); assert.equal(expected.error,null,source); assert.deepEqual(observations(root),expected.events);
@@ -14,6 +14,17 @@ test('Class and constant fields retain exact names ranges and separator',()=>{
   const child=node.childForFieldName(field);assert.deepEqual([child.type,child.text,child.startIndex,child.endIndex],['identifier',text,start,end]);
  }
  assert.deepEqual(node.children.filter(n=>!n.isNamed).map(n=>n.text),['::']);
+});
+test('Class constants retain key and value fields inside one array element',()=>{
+ const source='{[State::KEY=>State::READY]}';
+ const root=parser().parse(source).rootNode;
+ assert.equal(root.hasError,false,root.toString());
+ const element=root.descendantsOfType('array_element')[0];
+ assert.equal(element.childForFieldName('key').type,'class_constant_expression');
+ assert.equal(element.childForFieldName('key').childForFieldName('constant').text,'KEY');
+ assert.equal(element.childForFieldName('value').type,'class_constant_expression');
+ assert.equal(element.childForFieldName('value').childForFieldName('constant').text,'READY');
+ const expected=reference(source);assert.equal(expected.error,null);assert.deepEqual(observations(root),expected.events);
 });
 test('Constant keyword contexts and names require no application registry',()=>{
  for(const className of ['if','else','elseif','foreach','foreachelse','true','FaLsE','NULL','self_widget','parental','Z9']) {

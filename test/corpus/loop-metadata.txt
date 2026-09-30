@@ -39,3 +39,10 @@ Unknown metadata suffix remains explicit syntax
 {foreach $items as $item}{$item@madeup}{/foreach}
 ---
 (source_file (foreach_block (foreach_tag source: (variable name: (identifier)) item: (variable name: (identifier))) (output value: (loop_metadata_expression item: (variable name: (identifier)) property: (identifier))) (foreach_close_tag)))
+
+==================
+Metadata in function and method arguments
+==================
+{foreach $items as $item}{$service->row($item@index)}{lookup($item@iteration)}{/foreach}
+---
+(source_file (foreach_block (foreach_tag source: (variable name: (identifier)) item: (variable name: (identifier))) (output value: (method_call_expression object: (variable name: (identifier)) method: (identifier) argument: (loop_metadata_expression item: (variable name: (identifier)) property: (identifier)))) (output value: (function_call_expression name: (identifier) argument: (loop_metadata_expression item: (variable name: (identifier)) property: (identifier)))) (foreach_close_tag)))

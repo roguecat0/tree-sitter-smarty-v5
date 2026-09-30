@@ -14,6 +14,14 @@ lost. The brief fixes the initial scope and proposed node fields; grammar
 implementation choices remain the implementer's responsibility. Resolve a
 demonstrated conflict with Smarty before changing the proposal.
 
+Keep the cross-context expression checklist in [composition.md](composition.md).
+Task creators must check it when writing a syntax brief: name the expression
+contexts affected by the feature, add representative combinations that should
+work or fail, and update the checklist when its coverage changes. Do not try to
+test every Cartesian combination. Use [task 015](tasks/015-composition-audit.md)
+for the initial audit of the existing grammar and to establish a checked
+baseline before making this an ongoing task-creation responsibility.
+
 When a task excludes syntax that Smarty accepts, distinguish the task boundary
 from the project's overall goal. Briefly state why that form is outside this
 task and whether it remains a known project gap or is intentionally out of

@@ -138,9 +138,13 @@ method keywords remain valid in their established contexts. An adjacent static
 `$item@identifier` expression produces `loop_metadata_expression` with `item:
 (variable)` and `property: (identifier)` fields; `@` is anonymous punctuation.
 The syntax accepts identifier suffixes without a property allowlist, but does
-not validate runtime properties or binding to the enclosing loop. Legacy
-headers, extra attributes and runtime iteration semantics remain outside the
-subset. Recorder events normalize names to `from`, `item`, then optional `key`
+not validate runtime properties or binding to the enclosing loop. A confirmed
+composition gap remains for loop metadata as a direct modifier argument; it is
+recorded in [015](../docs/tasks/015-composition-audit.md), with a proposed fix
+in the noncanonical [016 draft candidate](../docs/tasks/016-loop-metadata-modifier-argument.md)
+that is not yet queued or accepted. Legacy headers, extra attributes and
+runtime iteration semantics remain outside the subset. Recorder events
+normalize names to `from`, `item`, then optional `key`
 and do not validate pairing; full-compiler checks supplement exact trees for
 that purpose. Evidence: [foreach trees](corpus/foreach.txt),
 [reference/compiler/edit checks](foreach.test.mjs), and
