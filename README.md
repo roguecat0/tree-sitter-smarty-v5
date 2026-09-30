@@ -94,13 +94,16 @@ Tasks [007: index access](docs/tasks/007-index-access.md),
 [009: class constants](docs/tasks/009-class-constants.md) are also complete.
 Further syntax expansions need separate briefs.
 
-Measure the local corpus without requiring all files to pass:
+Check real-world coverage against the local application corpus:
 
 ```sh
 npm run corpus:report
 ```
 
 The report groups lexical hints and records error locations in
-`build/corpus-report.json`. Clean parses still need structural review. Minimized,
-reviewed examples belong in the tracked `test/corpus/` regression set. Public CI
-runs `npm test` without needing the local application corpus.
+`build/corpus-report.json`. Remaining parse errors identify gaps to investigate
+and add to the feature inventory/task queue; the parser is not complete for this
+application while any remain. Clean parses still need structural review.
+Minimized, reviewed examples belong in the tracked
+`test/corpus/` regression set. Public CI runs `npm test` without needing the
+private local application corpus.

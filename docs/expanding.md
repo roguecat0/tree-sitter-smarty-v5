@@ -59,8 +59,11 @@ This writes `build/corpus-report.json` with file hashes, generated-parser hash,
 all error/missing-node locations, snippets, and overlapping lexical hints.
 Positions are 1-based line/column in the Node binding's UTF-16 coordinate system.
 Source line endings are preserved. Hints can match strings or comments and are
-not diagnoses. A parsing timeout, unreadable input, invalid UTF-8, or missing/empty
-corpus fails the command; ordinary parse errors do not.
+not diagnoses. Ordinary parse errors are recorded in the report rather than
+failing the reporting command; for this project, remaining errors are unresolved
+real-world coverage failures and must drive investigation and tasks. A parsing
+timeout, unreadable input, invalid UTF-8, or missing/empty corpus fails the
+command.
 
 Alternative corpus and output path:
 
@@ -70,8 +73,11 @@ npm run corpus:report -- ./corpus /tmp/smarty-before.json
 
 Save before/after reports outside `build/`: rebuilding the native binding clears
 that directory. Compare identical file hashes before attributing changes to the
-grammar. Investigate files that newly fail, but also inspect relevant node types
-and fields in newly clean files. No percentage threshold is a completion gate.
+grammar. Investigate files that newly fail, files that remain failing, and the
+relevant node types and fields in newly clean files. Group related failures,
+reduce representative examples, and update `docs/features.md` plus bounded task
+briefs for confirmed syntax or recovery gaps. A complete-looking inventory does
+not override unexplained errors in the application corpus.
 
 `corpus/` is locally supplied and ignored by Git. Reports contain source snippets;
 they stay local under ignored `build/` by default. Public CI uses tracked fixtures.
@@ -79,10 +85,10 @@ Do not add the entire corpus or its reports to the repository to satisfy CI.
 
 ## Promote evidence into the regression set
 
-For each useful corpus discovery:
+For each corpus failure pattern or useful discovery:
 
 1. Reduce it to a small example, replacing application names and unrelated content.
-2. Record its local source path and the behavior it demonstrates in the task brief.
+2. Record its local source path and the behavior/error it demonstrates in the task brief.
 3. Manually specify its tree in `test/corpus/`, including fields. Add a reference
    comparison where Smarty can actually independently verify the behavior.
 4. Check that relevant syntax is represented explicitly, not merely accepted.
@@ -91,6 +97,12 @@ Those tracked expected trees are the protected regression set: every future
 `npm test` runs them, even without the original corpus. Protection means required
 tests and reviewed expectation changes; it is not an immutable security boundary.
 Whole-file no-error snapshots are not substitutes for reviewed structural tests.
+They are still required as the real-world completeness signal for this
+application: remaining errors mean the parser's practical feature coverage is
+not finished and should produce further inventory/task work. Project completion
+requires zero parse errors in the fixed local corpus and structural inspection
+of newly clean files. Keep existing feature rows; append or refine the inventory
+as corpus failures expose additional gaps.
 
 ## Finish and hand off
 

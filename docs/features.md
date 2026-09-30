@@ -5,6 +5,13 @@ case, and the same syntax trees should support CLI tools and other integrations.
 Useful structure and recovery while users type matter especially for editors.
 This inventory describes current evidence and gaps; it does not define the
 intended final coverage ceiling. Work proceeds in bounded, reviewed changes.
+The local application corpus is the real-world completeness signal for this
+use case: remaining parse errors expose gaps to investigate and add to this
+inventory/task queue. The inventory must grow or its boundaries be corrected
+when corpus failures reveal unsupported practical syntax.
+Project completion requires zero parse errors in the fixed local application
+corpus, plus structural review of newly clean files; this inventory is a living
+map toward that result, not a substitute for it.
 Project-specific plugins and arbitrary custom tag semantics remain out of scope,
 while unknown tags should preserve supported structure and expressions.
 
@@ -48,14 +55,19 @@ comments in 132, custom switch in 10, and literal in 3. Counts overlap and are
 not proven causes. Regenerate the report for current evidence.
 
 The six clean files are not promoted wholesale: some contain `block`/`extends`
-that our generic rules accept without understanding inheritance. The first briefs
-favor small independent changes because that improves confidence in each tree and
-recovery behavior; it does not limit the project's eventual scope. Corpus counts
-help prioritize common forms, while explicit syntax trees and malformed-input
-checks establish whether the parser understood them usefully for downstream tools.
+that our generic rules accept without understanding inheritance. Conversely,
+the 461 failing files are not merely a prioritization metric: their remaining
+parse errors must be investigated and converted into feature/task work for this
+application. The first briefs favor small independent changes because that
+improves confidence in each tree and recovery behavior; it does not limit the
+project's eventual scope. Corpus hints overlap and are not diagnoses. Explicit
+syntax trees and malformed-input checks establish whether supported syntax is
+understood usefully, while corpus errors show where practical coverage is still
+missing.
 
 Tasks 001–009 are complete as separate verified changes within their bounded
-scopes. Their corpus hints overlap and do not predict clean-file gains.
+scopes. Their corpus hints overlap and do not predict clean-file gains; remaining
+corpus failures still need to drive further inventory and task updates.
 Standalone functions, array literals, interpolation, bitwise/word operators and
 literal blocks still need separate briefs.
 

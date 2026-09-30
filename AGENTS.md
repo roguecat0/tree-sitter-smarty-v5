@@ -1,5 +1,8 @@
 # Working on this grammar
 
+For multi-agent, end-to-end project work, follow [the agent loop](docs/agent-loop.md).
+It defines the project completion target, role boundaries, handoffs, and review gates.
+
 Target a broadly useful Smarty 5 parser with practical coverage and robust
 recovery; editor support is the primary use case, and CLI tools and other
 integrations are also expected consumers. `smarty2` is the package name, not the
@@ -33,13 +36,18 @@ Read `test/CONTRACT.md`, `docs/features.md`, and the selected brief in
    Put the roadmap in docs, not TODOs scattered through the grammar.
 5. Edit `grammar.js` (and a scanner if justified), then regenerate. Do not hand-edit
    generated files under `src/` or modify the vendored Smarty reference.
-6. A no-error corpus parse is not proof of support. Promote reviewed, minimized
-   examples into tracked expected-tree tests; never count swallowed syntax as progress.
+6. Treat the local application corpus as the real-world completeness signal for
+   this use case. Remaining parse errors are evidence of gaps: investigate and
+   feed confirmed syntax/recovery gaps into `docs/features.md` and task briefs.
+   A no-error parse is not proof of support. Promote reviewed, minimized examples
+   into tracked expected-tree tests; never count swallowed syntax as progress.
 7. Test composition and an edit crossing the new boundary. Extend mutation checks
    when a new failure mode could otherwise escape; not every rule needs a mutation.
-8. Update the feature row, contract, task status, and evidence links. Only claim
-   completion after `npm test` passes. Report local corpus results separately,
-   including remaining failures. If the corpus is absent, say so; do not fabricate
+8. Update the feature row, contract, task status, and evidence links. A task is
+   complete only after `npm test` passes. Report corpus results and remaining
+   failures; the parser is complete for this use case only when the fixed local
+   corpus has zero parse errors and newly clean files have structurally reviewed
+   trees. If the corpus is absent, completion cannot be verified; do not fabricate
    coverage or make public CI depend on it.
 
 ## Reference limits
