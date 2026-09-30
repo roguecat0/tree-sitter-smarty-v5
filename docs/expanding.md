@@ -22,6 +22,14 @@ test every Cartesian combination. Use [task 015](tasks/015-composition-audit.md)
 for the initial audit of the existing grammar and to establish a checked
 baseline before making this an ongoing task-creation responsibility.
 
+Put minimized examples derived from the pinned Smarty source tests or official
+documentation in the dedicated `test/corpus/smarty-reference.txt` Tree-sitter
+corpus. Keep their source and Smarty version in the fixture names or accompanying
+task evidence. These fixtures supplement the local application corpus; they do
+not replace its role as the practical completeness signal. Task
+[014](tasks/014-default-auto-literal-boundary.md) starts this section with
+default delimiter-boundary examples.
+
 When a task excludes syntax that Smarty accepts, distinguish the task boundary
 from the project's overall goal. Briefly state why that form is outside this
 task and whether it remains a known project gap or is intentionally out of

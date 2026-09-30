@@ -43,10 +43,6 @@
         }
       ]
     },
-    "text": {
-      "type": "PATTERN",
-      "value": "[^{}]+"
-    },
     "comment": {
       "type": "TOKEN",
       "content": {
@@ -2715,6 +2711,10 @@
   ],
   "precedences": [],
   "externals": [
+    {
+      "type": "SYMBOL",
+      "name": "text"
+    },
     {
       "type": "SYMBOL",
       "name": "_output_attribute_error_marker"

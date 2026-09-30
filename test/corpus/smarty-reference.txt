@@ -1,0 +1,48 @@
+==================
+auto-literal-left-and-right-whitespace
+==================
+A { foo } B
+---
+(source_file (text))
+
+==================
+auto-literal-empty-braces
+==================
+{}
+---
+(source_file (text))
+
+==================
+auto-literal-opening-side-only
+==================
+A { foo} B
+---
+(source_file (text))
+
+==================
+auto-literal-active-tag-right-whitespace
+==================
+{if true }Y{/if}
+---
+(source_file (if_block (if_tag condition: (boolean)) (text) (if_close_tag)))
+
+==================
+auto-literal-raw-right-brace
+==================
+A } B
+---
+(source_file (text))
+
+==================
+auto-literal-repeated-left-braces
+==================
+A {{ foo B
+---
+(source_file (text))
+
+==================
+auto-literal-html-script-composition
+==================
+<script>const x = { foo: 1 };</script>{if true }Y{/if}<script>if (x) { go(); }</script>
+---
+(source_file (text) (if_block (if_tag condition: (boolean)) (text) (if_close_tag)) (text))

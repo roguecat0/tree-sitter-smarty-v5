@@ -21,7 +21,7 @@ all Smarty variants are covered. `Partial` means only the described forms work.
 
 | Feature | Status and supported boundary | Evidence / next task |
 | --- | --- | --- |
-| Text/output boundaries | Partial: ordinary text and expression output; no raw braces/auto-literal or structured Smarty output attributes (including trailing attributes on function outputs; valid gap deferred in 011) | [initial trees](../test/corpus/initial.txt); [011](tasks/011-standalone-function-calls.md) |
+| Text/output boundaries | Partial: ordinary text, expression output and default `auto_literal` brace boundaries; structured Smarty output attributes remain unsupported (including trailing attributes on function outputs; valid gap deferred in 011) | [initial trees](../test/corpus/initial.txt); [default boundary trees](../test/corpus/smarty-reference.txt); [014](tasks/014-default-auto-literal-boundary.md); [011](tasks/011-standalone-function-calls.md) |
 | Variables/numbers | Partial: simple variable names, unsigned decimal numbers | initial trees |
 | Strings | Partial: simple quotes/escapes; no interpolation (see [quoted-comment limitation](tasks/002-comments.md#reference-boundary-clarification)) | initial trees, quoted-brace case |
 | Arithmetic | Partial: binary `+ - * / %`, parentheses and prefix `+ -`; see operator row | initial trees; precedence mutation; operator-field check |
@@ -41,7 +41,7 @@ all Smarty variants are covered. `Partial` means only the described forms work.
 | Comparison/boolean/unary operators | Partial: symbolic comparisons, `&&`/`\|\|`, prefix `! + -`; Smarty's `is div by` predicate is a confirmed gap; other word aliases and `is ...` predicates remain unsupported | [005](tasks/005-condition-operators.md); [013](tasks/013-divisibility-predicate.md) |
 | Foreach blocks | Partial: modern `as` headers, optional key and `foreachelse`; static item metadata suffixes parse as expressions, except a confirmed direct modifier-argument composition gap recorded in [015](tasks/015-composition-audit.md); legacy headers and runtime binding/metadata validation remain out of scope | [006](tasks/006-foreach-blocks.md); [012](tasks/012-loop-metadata.md); [016 noncanonical draft candidate](tasks/016-loop-metadata-modifier-argument.md) |
 | Other built-in blocks | Unimplemented structurally; some names parse as generic tags | Inheritance, capture, etc. need explicit contracts |
-| Literal blocks/auto-literal | Unimplemented | Separate boundary/recovery tasks |
+| Literal blocks/auto-literal | Partial: default `{`/`}` boundaries follow `auto_literal=true`, including whitespace after `{`, `{}`, and raw right braces; `{literal}` regions and non-default delimiter/configuration behavior remain gaps | [014 trees and checks](tasks/014-default-auto-literal-boundary.md) |
 | Configurable delimiters | Unimplemented | Design decision needed |
 | HTML injections/queries | Unimplemented | Separate editor integration milestone |
 | Generic custom-block nesting | Deferred by design | Keep custom tags independent |
@@ -193,7 +193,19 @@ valid Smarty gap with parser error recovery. Independent task review is pending.
 Other unresolved clusters remain visible: standalone function calls in
 conditions/arguments (`is_valid_id(...)`, `date(...)`) are covered by the
 ordinary-call subset in [011](tasks/011-standalone-function-calls.md); remaining
-call gaps are named in that task. Loop metadata such as
-`$item@index` and `$message@last`, bitwise expressions, literal blocks, and
-other built-in blocks. Their audit hints are not diagnoses; each needs a
-minimized Smarty observation before becoming task scope.
+call gaps are named in that task. The corpus-confirmed `is div by` predicate is
+described in [013](tasks/013-divisibility-predicate.md). Bitwise expressions,
+literal blocks, other built-in blocks, and other word predicates/operators still
+need separate source classification and minimized Smarty observations.
+
+## Default brace boundary evidence (2026-10-01)
+
+Task [014](tasks/014-default-auto-literal-boundary.md) passes `npm test` with
+133 corpus trees, 194 Node checks, and all 11 mutation checks caught. With
+identical source hashes across 467 application templates, the corpus report
+improved from **142 clean / 325 failing** to **186 clean / 281 failing**, with
+no regressions. All 44 newly clean trees were inspected; each contains
+structured Smarty nodes rather than only text. Default `{`/`}` auto-literal
+behavior is now supported within the stated contract; `{literal}` blocks and
+the remaining 281 corpus failures still need later work. See the task brief for
+the full new-file list and saved report locations.

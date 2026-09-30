@@ -30,9 +30,19 @@ The reference tests compare a smaller projection (ordered tag names, argument
 names, and modifier names) with the installed Smarty parser. Smarty's generated
 PHP fragments are not treated as Tree-sitter syntax trees.
 
+With Smarty's default `{` and `}` delimiters and `auto_literal=true`, literal
+text preserves a left brace followed immediately by whitespace, the empty `{}`
+pair, and raw right braces. A left brace immediately followed by non-whitespace
+starts the existing tag/output grammar; whitespace before that tag's closing
+brace does not deactivate it. Text and active constructs retain separate named
+nodes and source ranges. This boundary rule does not cover `{literal}` regions,
+custom literal sequences, alternate delimiters, or `auto_literal=false`.
+Evidence: [manual Smarty-reference trees](corpus/smarty-reference.txt) and
+[full-engine/reference/edit/recovery checks](default-auto-literal.test.mjs).
+
 Currently not supported: other built-in blocks, word operator aliases, bitwise operators,
 dynamic member access, dynamic config variables,
-interpolated strings, literal blocks, configurable delimiters, auto-literal braces,
+interpolated strings, literal blocks, configurable delimiters,
 or HTML injection. These are current gaps to assess and address according to
 common usage and usefulness to parser consumers; the explicit plugin/custom-tag
 boundary is the exception. Recovery on unfinished and malformed input is part

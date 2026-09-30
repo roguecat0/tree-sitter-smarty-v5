@@ -16,7 +16,7 @@ const classReservedWords = [...cases("self"), ...cases("parent")];
 
 export default grammar({
   name: "smarty2",
-  externals: $ => [$._output_attribute_error_marker],
+  externals: $ => [$.text, $._output_attribute_error_marker],
   extras: _ => [/\s/],
   word: $ => $.identifier,
   reserved: {
@@ -29,7 +29,6 @@ export default grammar({
   rules: {
     source_file: $ => repeat($._node),
     _node: $ => choice($.text, $.output, $.custom_tag, $.custom_close_tag, $.if_block, $.comment, $.foreach_block),
-    text: _ => /[^{}]+/,
     // A single token hides all template syntax and stops at the first *}.
     // Star runs cannot consume a closing brace; the following newline is text.
     comment: _ => token(seq("{*", /([^*]|\*+[^*}])*/, /\*+/, "}")),
