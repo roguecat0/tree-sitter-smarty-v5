@@ -94,9 +94,15 @@ export default grammar({
     _modified: $ => choice($._primary, $.modifier_expression),
     _primary: $ => choice($._nonliteral_primary, $.boolean, $.null),
     _nonliteral_primary: $ => choice(
-      $.variable, $.config_variable, $.member_expression, $.method_call_expression, $.function_call_expression, $.index_expression, alias($._config_index, $.index_expression), $.array_literal,
+      $.variable, $.loop_metadata_expression, $.config_variable, $.member_expression, $.method_call_expression, $.function_call_expression, $.index_expression, alias($._config_index, $.index_expression), $.array_literal,
       $.number, $.string, $.parenthesized_expression, $.class_constant_expression,
     ),
+    // Smarty item metadata is an adjacent static suffix on a variable. Keep
+    // the property as syntax rather than validating runtime loop bindings.
+    loop_metadata_expression: $ => prec(9, seq(
+      field("item", $.variable), token.immediate("@"),
+      field("property", alias(token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/), $.identifier)),
+    )),
     array_literal: $ => choice(
       seq("[", optional(seq($.array_element, repeat(seq(",", $.array_element)), optional(","))), "]"),
       seq("array", "(", optional(seq($.array_element, repeat(seq(",", $.array_element)), optional(","))), ")"),

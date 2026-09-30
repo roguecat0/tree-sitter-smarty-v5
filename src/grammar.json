@@ -1352,6 +1352,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "loop_metadata_expression"
+        },
+        {
+          "type": "SYMBOL",
           "name": "config_variable"
         },
         {
@@ -1400,6 +1404,46 @@
           "name": "class_constant_expression"
         }
       ]
+    },
+    "loop_metadata_expression": {
+      "type": "PREC",
+      "value": 9,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "FIELD",
+            "name": "item",
+            "content": {
+              "type": "SYMBOL",
+              "name": "variable"
+            }
+          },
+          {
+            "type": "IMMEDIATE_TOKEN",
+            "content": {
+              "type": "STRING",
+              "value": "@"
+            }
+          },
+          {
+            "type": "FIELD",
+            "name": "property",
+            "content": {
+              "type": "ALIAS",
+              "content": {
+                "type": "IMMEDIATE_TOKEN",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "[a-zA-Z_][a-zA-Z0-9_]*"
+                }
+              },
+              "named": true,
+              "value": "identifier"
+            }
+          }
+        ]
+      }
     },
     "array_literal": {
       "type": "CHOICE",

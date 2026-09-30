@@ -1,0 +1,41 @@
+==================
+Foreach metadata output
+==================
+{foreach $items as $item}{$item@index}{/foreach}
+---
+(source_file (foreach_block (foreach_tag source: (variable name: (identifier)) item: (variable name: (identifier))) (output value: (loop_metadata_expression item: (variable name: (identifier)) property: (identifier))) (foreach_close_tag)))
+
+==================
+Metadata arithmetic composition
+==================
+{foreach $items as $item}{$item@index + 1}{/foreach}
+---
+(source_file (foreach_block (foreach_tag source: (variable name: (identifier)) item: (variable name: (identifier))) (output value: (binary_expression left: (loop_metadata_expression item: (variable name: (identifier)) property: (identifier)) right: (number))) (foreach_close_tag)))
+
+==================
+All standard foreach item metadata
+==================
+{foreach $items as $item}{$item@first}{$item@last}{$item@index}{$item@iteration}{$item@show}{$item@total}{$item@key}{/foreach}
+---
+(source_file (foreach_block (foreach_tag source: (variable name: (identifier)) item: (variable name: (identifier))) (output value: (loop_metadata_expression item: (variable name: (identifier)) property: (identifier))) (output value: (loop_metadata_expression item: (variable name: (identifier)) property: (identifier))) (output value: (loop_metadata_expression item: (variable name: (identifier)) property: (identifier))) (output value: (loop_metadata_expression item: (variable name: (identifier)) property: (identifier))) (output value: (loop_metadata_expression item: (variable name: (identifier)) property: (identifier))) (output value: (loop_metadata_expression item: (variable name: (identifier)) property: (identifier))) (output value: (loop_metadata_expression item: (variable name: (identifier)) property: (identifier))) (foreach_close_tag)))
+
+==================
+Metadata composition in conditions and modifiers
+==================
+{foreach $items as $item}{if $item@first || $item@last && $item@index > 0}{$item@index|escape}{elseif $item@iteration == 2}{$item@total}{/if}{/foreach}
+---
+(source_file (foreach_block (foreach_tag source: (variable name: (identifier)) item: (variable name: (identifier))) (if_block (if_tag condition: (binary_expression left: (loop_metadata_expression item: (variable name: (identifier)) property: (identifier)) right: (binary_expression left: (loop_metadata_expression item: (variable name: (identifier)) property: (identifier)) right: (binary_expression left: (loop_metadata_expression item: (variable name: (identifier)) property: (identifier)) right: (number))))) (output value: (modifier_expression value: (loop_metadata_expression item: (variable name: (identifier)) property: (identifier)) name: (identifier))) (elseif_clause (elseif_tag condition: (binary_expression left: (loop_metadata_expression item: (variable name: (identifier)) property: (identifier)) right: (number))) (output value: (loop_metadata_expression item: (variable name: (identifier)) property: (identifier)))) (if_close_tag)) (foreach_close_tag)))
+
+==================
+Metadata in an unknown tag attribute
+==================
+{foreach $items as $item}{widget value=$item@key}{/widget}{/foreach}
+---
+(source_file (foreach_block (foreach_tag source: (variable name: (identifier)) item: (variable name: (identifier))) (custom_tag name: (identifier) (attribute name: (identifier) value: (loop_metadata_expression item: (variable name: (identifier)) property: (identifier)))) (custom_close_tag name: (identifier)) (foreach_close_tag)))
+
+==================
+Unknown metadata suffix remains explicit syntax
+==================
+{foreach $items as $item}{$item@madeup}{/foreach}
+---
+(source_file (foreach_block (foreach_tag source: (variable name: (identifier)) item: (variable name: (identifier))) (output value: (loop_metadata_expression item: (variable name: (identifier)) property: (identifier))) (foreach_close_tag)))

@@ -134,12 +134,18 @@ source order; bindings are simple variables. Whitespace is required after
 `foreach` and on both sides of contextual `as`. Branches belong to their own
 nested block; missing or crossed closers are errors. Reserved control names
 cannot escape as generic tags, while `{as}`, variables/config names and property/
-method keywords remain valid in their established contexts. Legacy headers,
-extra attributes, metadata and runtime iteration semantics are outside the
+method keywords remain valid in their established contexts. An adjacent static
+`$item@identifier` expression produces `loop_metadata_expression` with `item:
+(variable)` and `property: (identifier)` fields; `@` is anonymous punctuation.
+The syntax accepts identifier suffixes without a property allowlist, but does
+not validate runtime properties or binding to the enclosing loop. Legacy
+headers, extra attributes and runtime iteration semantics remain outside the
 subset. Recorder events normalize names to `from`, `item`, then optional `key`
 and do not validate pairing; full-compiler checks supplement exact trees for
-that purpose. Evidence: [foreach trees](corpus/foreach.txt) and
-[reference/compiler/edit checks](foreach.test.mjs).
+that purpose. Evidence: [foreach trees](corpus/foreach.txt),
+[reference/compiler/edit checks](foreach.test.mjs), and
+[item metadata trees](corpus/loop-metadata.txt) and
+[item metadata checks](loop-metadata.test.mjs).
 
 Dot/bracket read access produces left-nested `index_expression` with `object` and
 `index` fields. Dot keys are adjacent ASCII identifiers or unsigned integers;

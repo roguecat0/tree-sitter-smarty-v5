@@ -39,7 +39,7 @@ all Smarty variants are covered. `Partial` means only the described forms work.
 | Static class constants | Partial: adjacent static `Class::NAME` expressions | [009](tasks/009-class-constants.md) |
 | Array literals | Partial: `[...]` and `array(...)`, keyed/list values, nesting and trailing commas | [010](tasks/010-array-literals.md) |
 | Comparison/boolean/unary operators | Partial: symbolic comparisons, `&&`/`\|\|`, prefix `! + -`; no word aliases | [005](tasks/005-condition-operators.md) |
-| Foreach blocks | Partial: modern `as` headers, optional key and `foreachelse` | [006](tasks/006-foreach-blocks.md) |
+| Foreach blocks | Partial: modern `as` headers, optional key and `foreachelse`; static item metadata suffixes parse as expressions, while legacy headers and runtime binding/metadata validation remain out of scope | [006](tasks/006-foreach-blocks.md); [012](tasks/012-loop-metadata.md) |
 | Other built-in blocks | Unimplemented structurally; some names parse as generic tags | Inheritance, capture, etc. need explicit contracts |
 | Literal blocks/auto-literal | Unimplemented | Separate boundary/recovery tasks |
 | Configurable delimiters | Unimplemented | Design decision needed |
