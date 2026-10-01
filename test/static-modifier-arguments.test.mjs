@@ -62,9 +62,8 @@ test('Existing literal and class-constant modifier argument classifications rema
   assert.equal(numeric.childrenForFieldName('argument')[0].type, 'number');
 });
 
-test('Bare identifiers remain unsupported in generic tag values and call arguments', () => {
+test('Bare identifiers are limited to modifier and generic tag values', () => {
   for (const source of [
-    '{widget value=foo}', '{widget value=123foo}',
     '{f(foo)}', '{f(123foo)}',
     '{[$key=>foo]}', '{[$key=>123foo]}',
     '{123foo}',
@@ -72,7 +71,11 @@ test('Bare identifiers remain unsupported in generic tag values and call argumen
     const root = parser().parse(source).rootNode;
     assert.equal(root.hasError, true, `${source}: ${root.toString()}`);
   }
-  assert.equal(reference('{widget value=foo}').error, null, 'The recorder accepts this generic-tag shape; the grammar contract excludes it');
+  for (const source of ['{widget value=foo}', '{widget value=123foo}', '{widget foo}']) {
+    const root = parser().parse(source).rootNode;
+    assert.equal(root.hasError, false, `${source}: ${root.toString()}`);
+  }
+  assert.equal(reference('{widget value=foo}').error, null, 'The recorder accepts this generic-tag shape');
 });
 
 test('Missing and multi-token modifier arguments error and preserve following outputs', () => {

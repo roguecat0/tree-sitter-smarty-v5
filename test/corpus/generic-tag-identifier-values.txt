@@ -1,0 +1,108 @@
+==================
+generic tag positional identifier
+==================
+{widget foo}
+---
+(source_file
+  (custom_tag
+    name: (identifier)
+    argument: (identifier)))
+
+==================
+generic tag named identifier
+==================
+{widget mode=title}
+---
+(source_file
+  (custom_tag
+    name: (identifier)
+    (attribute
+      name: (identifier)
+      value: (identifier))))
+
+==================
+generic tag mixed direct value types
+==================
+{widget foo mode=title amount=123 enabled=true disabled=false nothing=null text="ok" current=$item type=Widget::NAME}
+---
+(source_file
+  (custom_tag
+    name: (identifier)
+    argument: (identifier)
+    (attribute name: (identifier) value: (identifier))
+    (attribute name: (identifier) value: (number))
+    (attribute name: (identifier) value: (boolean))
+    (attribute name: (identifier) value: (boolean))
+    (attribute name: (identifier) value: (null))
+    (attribute name: (identifier) value: (string))
+    (attribute name: (identifier) value: (variable name: (identifier)))
+    (attribute name: (identifier)
+      value: (class_constant_expression
+        class: (identifier)
+        constant: (identifier)))))
+
+==================
+generic tag digit prefixed identifier
+==================
+{widget value=123foo}
+---
+(source_file
+  (custom_tag
+    name: (identifier)
+    (attribute
+      name: (identifier)
+      value: (identifier))))
+
+==================
+generic tag pure numeric value
+==================
+{widget value=123}
+---
+(source_file
+  (custom_tag
+    name: (identifier)
+    (attribute
+      name: (identifier)
+      value: (number))))
+
+==================
+generic tag primitive prefix remains static identifier
+==================
+{widget value=trueish}
+---
+(source_file
+  (custom_tag
+    name: (identifier)
+    (attribute
+      name: (identifier)
+      value: (identifier))))
+
+==================
+generic tag identifier and separate closer
+==================
+{widget foo}{/widget}
+---
+(source_file
+  (custom_tag name: (identifier) argument: (identifier))
+  (custom_close_tag name: (identifier)))
+
+==================
+generic tag name remains its name field
+==================
+{widget}
+---
+(source_file
+  (custom_tag
+    name: (identifier)))
+
+==================
+built in block identifier attribute
+==================
+{block name=title}body{/block}
+---
+(source_file
+  (custom_tag
+    name: (identifier)
+    (attribute name: (identifier) value: (identifier)))
+  (text)
+  (custom_close_tag name: (identifier)))

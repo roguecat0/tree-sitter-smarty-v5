@@ -27,7 +27,7 @@ Cartesian suite merely to fill the matrix.
 | Function call (`name(...)`) | yes [FC-output](#ev-fc-output) | yes [FC-condition](#ev-fc-condition) | ? [U-function-source](#ev-u-function-source) | yes [FC-tag-pos](#ev-fc-tag-pos) | yes [FC-tag-attr](#ev-fc-tag-attr) | yes [FC-call-arg](#ev-fc-call-arg) | yes [FC-mod-input](#ev-fc-mod-input) | yes [FC-mod-arg](#ev-fc-mod-arg) | ? [U-function-bracket](#ev-u-function-bracket) | ? [U-function-array-key](#ev-u-function-array-key) | ? [U-function-array-value](#ev-u-function-array-value) |
 | Array literal | ? [U-array-output](#ev-u-array-output) | yes [AR-condition](#ev-ar-condition) | ? [U-array-source](#ev-u-array-source) | yes [AR-tag-pos](#ev-ar-tag-pos) | yes [AR-tag-attr](#ev-ar-tag-attr) | yes [AR-call-arg](#ev-ar-call-arg) | ? [U-array-mod-input](#ev-u-array-mod-input) | yes [AR-mod-arg](#ev-ar-mod-arg) | yes [AR-bracket](#ev-ar-bracket) | ? [U-array-array-key](#ev-u-array-array-key) | yes [AR-array-value](#ev-ar-array-value) |
 | Class constant (`Class::NAME`) | yes [CC-output](#ev-cc-output) | yes [CC-condition](#ev-cc-condition) | ? [U-constant-source](#ev-u-constant-source) | yes [CC-tag-pos](#ev-cc-tag-pos) | yes [CC-tag-attr](#ev-cc-tag-attr) | yes [CC-call-arg](#ev-cc-call-arg) | yes [CC-mod-input](#ev-cc-mod-input) | yes [CC-mod-arg](#ev-cc-mod-arg) | yes [CC-bracket](#ev-cc-bracket) | yes [CC-array-key](#ev-cc-array-key) | yes [CC-array-value](#ev-cc-array-value) |
-| Bare identifier (modifier-argument-only) | — | — | — | — | — | — | — | yes [MOD-ID-arg](#ev-mod-id-arg) | — | — | — |
+| Bare identifier (modifier and generic-tag direct values) | — | — | — | yes [GT-ID-pos](#ev-gt-id-pos) | yes [GT-ID-attr](#ev-gt-id-attr) | — | — | yes [MOD-ID-arg](#ev-mod-id-arg) | — | — | — |
 
 ## Cell notation and evidence
 
@@ -53,10 +53,11 @@ behavior or parser boundary remains unknown. State syntax evidence separately
 from runtime binding, plugin behavior, or value semantics the recording adapter
 cannot observe.
 
-`—` marks a context that does not apply to a modifier-argument-only atom row;
-it is not an audited support claim. The added `MOD-ID-arg` cell is tracked
-separately from the Task 015 expression-composition totals below because Task
-017 is a modifier-only atom/context pairing.
+`—` marks a context that does not apply to an atom row limited to direct tag or
+modifier values; it is not an audited support claim. The `MOD-ID-arg` cell is
+tracked separately from the Task 015 expression-composition totals below
+because Task 017 adds a modifier-only atom/context pairing. The two `GT-ID`
+cells record the direct generic-tag pairings verified by Task 018.
 
 The evidence link format may point several cells to one combined hand tree and
 check when that fixture directly demonstrates all named cases. A cell may
@@ -99,6 +100,7 @@ tree.
 | <a id="ev-ar-condition"></a>AR-condition, <a id="ev-ar-tag-pos"></a>AR-tag-pos, <a id="ev-ar-tag-attr"></a>AR-tag-attr, <a id="ev-ar-call-arg"></a>AR-call-arg, <a id="ev-ar-mod-arg"></a>AR-mod-arg, <a id="ev-ar-bracket"></a>AR-bracket, <a id="ev-ar-array-value"></a>AR-array-value | Array literal in condition, custom-tag positional/attribute value, method argument, modifier argument, bracket-index expression, and as a nested array value. | [arrays](../test/corpus/array-literals.txt) | [array checks](../test/array-literals.test.mjs#L6) |
 | <a id="ev-cc-output"></a>CC-output, <a id="ev-cc-condition"></a>CC-condition, <a id="ev-cc-tag-pos"></a>CC-tag-pos, <a id="ev-cc-tag-attr"></a>CC-tag-attr, <a id="ev-cc-call-arg"></a>CC-call-arg, <a id="ev-cc-mod-input"></a>CC-mod-input, <a id="ev-cc-mod-arg"></a>CC-mod-arg, <a id="ev-cc-bracket"></a>CC-bracket, <a id="ev-cc-array-key"></a>CC-array-key, <a id="ev-cc-array-value"></a>CC-array-value | Class constant in each listed expression context; the new key/value fixture asserts the explicit `array_element` key and value fields. | [constants](../test/corpus/class-constants.txt) | [constant fixture/reference checks](../test/class-constants.test.mjs#L4), [array key/value field check](../test/class-constants.test.mjs#L18) |
 | <a id="ev-mod-id-arg"></a>MOD-ID-arg | A direct static Smarty `ID` modifier argument is an `identifier`, including digit-prefixed `123foo`; numeric, boolean, null, and class-constant arguments retain their separate node types. | [hand-authored modifier trees](../test/corpus/modifier-identifiers.txt), [pinned reference, full-engine, context-exclusion and edit checks](../test/static-modifier-arguments.test.mjs#L1) | [Task 017 evidence](tasks/017-static-modifier-arguments.md) |
+| <a id="ev-gt-id-pos"></a>GT-ID-pos, <a id="ev-gt-id-attr"></a>GT-ID-attr | Direct static Smarty IDs, including `123foo`, are `identifier` nodes in generic-tag positional and attribute-value fields; primitive, numeric, variable, string, and class-constant values retain their distinct types. The recorder checks event names/order/count, and the full engine renders the built-in block example. | [hand-authored trees](../test/corpus/generic-tag-identifier-values.txt), [reference, full-engine, recovery and edit checks](../test/generic-tag-identifier-values.test.mjs) | Pinned Smarty 5.8.4 parser productions `value ::= ID`, `attribute ::= SPACE value`, and `attribute ::= SPACE ID EQUAL ID`; [018](tasks/018-generic-tag-identifier-values.md) |
 
 ### Unverified pairings
 

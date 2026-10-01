@@ -218,6 +218,10 @@
             "named": true
           },
           {
+            "type": "identifier",
+            "named": true
+          },
+          {
             "type": "index_expression",
             "named": true
           },
@@ -582,6 +586,10 @@
           },
           {
             "type": "function_call_expression",
+            "named": true
+          },
+          {
+            "type": "identifier",
             "named": true
           },
           {

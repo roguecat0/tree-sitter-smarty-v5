@@ -43,12 +43,17 @@ export default grammar({
     // Explicit tokens let the class-only reserved set reject exact spellings.
     _tag_name: $ => choice(reserved("tag", $.identifier), alias(choice(...classReservedWords), $.identifier)),
     custom_tag: $ => seq("{", field("name", $._tag_name), repeat(choice(
-      $.attribute, field("argument", $._expression),
+      $.attribute, field("argument", $._tag_argument_value),
     )), "}"),
     custom_close_tag: $ => seq("{/", field("name", $.identifier), "}"),
     // Primitive tokens also occur where a tag accepts a named attribute.
     _attribute_name: $ => choice($.identifier, alias($.boolean, $.identifier), alias($.null, $.identifier)),
-    attribute: $ => seq(field("name", $._attribute_name), "=", field("value", $._expression)),
+    attribute: $ => seq(field("name", $._attribute_name), "=", field("value", $._tag_attribute_value)),
+    // Smarty's tag value productions accept a direct ID in these two tag-only
+    // positions. Keep it out of _expression so a bare name does not become a
+    // general value in outputs, conditions, or other expression contexts.
+    _tag_argument_value: $ => choice(prec(1, $._expression), prec(-1, $.identifier), prec(-1, alias($._modifier_identifier, $.identifier))),
+    _tag_attribute_value: $ => choice(prec(1, $._expression), prec(-1, $.identifier), prec(-1, alias($._modifier_identifier, $.identifier))),
     if_block: $ => seq(
       $.if_tag, repeat($._node), repeat($.elseif_clause), optional($.else_clause), $.if_close_tag,
     ),

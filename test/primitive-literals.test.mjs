@@ -32,7 +32,10 @@ test('Bare primitive indices are excluded section names, not literal values',()=
 test('Primitive whole words and incomplete forms do not leak prefixes',()=>{
  for(const word of ['trueish','FALSEhood','nullary','TRUE_widget','null0']) {
    assert.equal(parser().parse(`{${word}}`).rootNode.firstNamedChild.type,'custom_tag');
-   for(const source of [`{$a->f(${word})}`,`{widget value=${word}}`]) assert.equal(parser().parse(source).rootNode.hasError,true,source);
+   assert.equal(parser().parse(`{$a->f(${word})}`).rootNode.hasError,true,`{$a->f(${word})}`);
+   const tagValue = parser().parse(`{widget value=${word}}`).rootNode;
+   assert.equal(tagValue.hasError,false,`{widget value=${word}}`);
+   assert.equal(tagValue.firstNamedChild.namedChildren[1].childForFieldName('value').type,'identifier');
  }
  for(const source of ['{true ===}', '{!}', '{$a->f(tru)}', '{TRUE value=1}', '{/if}', '{if}', '{foreach}']) assert.equal(parser().parse(source).rootNode.hasError,true,source);
 });

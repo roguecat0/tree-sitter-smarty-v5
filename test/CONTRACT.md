@@ -16,8 +16,15 @@ applications bind tighter than arithmetic in this subset.
 
 Custom tag names are unrestricted identifiers except the recognized control
 keywords. `custom_tag` has a `name`, positional `argument` fields, and `attribute`
-children with `name` and `value` fields. `custom_close_tag` has a `name`. These
-nodes do not assert block pairing or plugin availability.
+children with `name` and `value` fields. These two value positions accept either
+a supported expression or one direct static Smarty `ID`, represented as an
+`identifier`; digit-prefixed `123foo` is an identifier, while pure decimals,
+booleans, nulls, variables, strings, and class constants retain their existing
+node types. This does not make a bare identifier a general expression or enable
+it in function/method arguments or array values. See
+[018 trees and checks](../docs/tasks/018-generic-tag-identifier-values.md).
+`custom_close_tag` has a `name`. These nodes do not assert block pairing or
+plugin availability.
 
 Known `if` blocks are nested: `if_tag`, body nodes, optional `elseif_clause`
 nodes, optional `else_clause`, and `if_close_tag`. Conditions have a `condition`
@@ -129,10 +136,11 @@ are excluded INCDEC syntax; spaced signs such as `+ +$a` are nested unary nodes.
 Modifier arguments retain the current narrow subset; parenthesize full
 expressions. A direct static Smarty `ID` after a modifier colon is an
 `identifier` argument, including IDs with a digit prefix such as `123foo`;
-pure decimal tokens remain `number` nodes. This exception is limited to direct
-modifier arguments and does not make bare identifiers general expressions,
-generic-tag values, function arguments, or array values. See [017 trees and
-checks](../docs/tasks/017-static-modifier-arguments.md).
+pure decimal tokens remain `number` nodes. Direct static IDs are also allowed
+in generic-tag positional arguments and named attribute values. These bounded
+contexts do not make bare identifiers general expressions or enable them in
+function/method arguments or array values. See [017 trees and checks](../docs/tasks/017-static-modifier-arguments.md)
+and [018 trees and checks](../docs/tasks/018-generic-tag-identifier-values.md).
 The exact Smarty predicate `is div by` is also a `binary_expression` with a
 named `div_by_operator`; it is available anywhere the shared full-expression
 rule is used, including outputs, conditions, and parenthesized modifier

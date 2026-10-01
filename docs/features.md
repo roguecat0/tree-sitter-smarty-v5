@@ -25,9 +25,9 @@ all Smarty variants are covered. `Partial` means only the described forms work.
 | Variables/numbers | Partial: simple variable names, unsigned decimal numbers | initial trees |
 | Strings | Partial: simple quotes/escapes; no interpolation (see [quoted-comment limitation](tasks/002-comments.md#reference-boundary-clarification)) | initial trees, quoted-brace case |
 | Arithmetic | Partial: binary `+ - * / %`, parentheses and prefix `+ -`; see operator row | initial trees; precedence mutation; operator-field check |
-| Generic tags | Partial: names, positional expressions, named attributes; no bare-word values | initial trees; [reference tests](../test/reference.test.mjs) |
+| Generic tags | Partial: names, positional expressions, named attributes, and direct static ID values in positional/attribute positions; plugin semantics remain out of scope | [initial trees](../test/corpus/initial.txt); [static ID trees and checks](../test/corpus/generic-tag-identifier-values.txt); [018](tasks/018-generic-tag-identifier-values.md) |
 | Custom closing tags | Supported as independent tags; pairing deliberately unspecified | initial mismatched-name case |
-| Modifiers | Partial: chains and supported expression arguments, including one direct static `ID` token after a modifier colon; bare identifiers remain unsupported in other value contexts | initial trees; renamed-extension checks; [017 trees and checks](tasks/017-static-modifier-arguments.md) |
+| Modifiers | Partial: chains and supported expression arguments, including one direct static `ID` token after a modifier colon; bare identifiers remain unsupported in general expressions, function/method arguments, and array values | initial trees; renamed-extension checks; [017 trees and checks](tasks/017-static-modifier-arguments.md); [018 generic-tag values](tasks/018-generic-tag-identifier-values.md) |
 | If/elseif/else | Partial: nested blocks using supported expression forms | initial trees; [edit tests](../test/incremental.test.mjs) |
 | Config variables | Partial: static ASCII names in expressions; bounded read indices; no dynamic names | [001](tasks/001-config-variables.md) |
 | Smarty comments | Supported: `{* ... *}` through first terminator; non-nesting | [002](tasks/002-comments.md) |
