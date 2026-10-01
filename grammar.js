@@ -87,13 +87,26 @@ export default grammar({
     else_tag: _ => seq("{", "else", "}"),
     if_close_tag: _ => seq("{/", "if", "}"),
     foreach_block: $ => seq($.foreach_tag, repeat($._node), optional($.foreachelse_clause), $.foreach_close_tag),
-    foreach_tag: $ => seq(
-      "{", "foreach", token.immediate(/\s+/), field("source", $._expression),
-      // Smarty requires whitespace around contextual `as`; generic tag names
-      // and keyword-named properties keep their ordinary identifier behavior.
-      alias(token.immediate(/\s+as\s+/), "as"),
-      optional(seq(field("key", $.variable), "=>")), field("item", $.variable), "}",
+    foreach_tag: $ => choice(
+      // A sequence ending in contextual `as` is the modern binding form; give
+      // it priority over the otherwise permissive positional legacy list.
+      prec.dynamic(20, seq(
+        "{", "foreach", token.immediate(/\s+/), field("source", $._expression),
+        // Smarty requires whitespace around contextual `as`; generic tag names
+        // and keyword-named properties keep their ordinary identifier behavior.
+        alias(token.immediate(prec(2, /\s+as\s+/)), "as"),
+        optional(seq(field("key", $.variable), "=>")), field("item", $.variable), "}",
+      )),
+      // Tree-sitter cannot create a named node from an empty repeat; an empty
+      // legacy list is therefore represented by the absence of a header node.
+      seq("{", "foreach", optional(token.immediate(/\s+/)), "}"),
+      seq("{", "foreach", alias(repeat1(seq(
+        token.immediate(/\s+/),
+        choice($.attribute, $.foreach_option, field("argument", $._legacy_foreach_argument)),
+      )), $.legacy_foreach_header), "}"),
     ),
+    _legacy_foreach_argument: $ => $._tag_attribute_value,
+    foreach_option: _ => "nocache",
     foreachelse_clause: $ => seq($.foreachelse_tag, repeat($._node)),
     foreachelse_tag: _ => seq("{", "foreachelse", "}"),
     foreach_close_tag: _ => seq("{/", "foreach", "}"),

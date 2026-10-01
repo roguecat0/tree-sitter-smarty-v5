@@ -31,23 +31,41 @@ test('Foreach required whitespace and contextual as keyword', () => {
     assert.equal(reference(source).error,null,source);
     assert.equal(parser().parse(source).rootNode.hasError,false,source);
   }
-  for(const source of ['{foreach$items as $item}{/foreach}','{foreach $items as$item}{/foreach}','{foreach $items asdf $item}{/foreach}']) {
-    // `asdf` enters legacy positional header parsing. Recorder acceptance does
-    // not establish compiler validity and is outside the modern `as` contract.
-    if (source.includes('asdf')) assert.equal(reference(source).error,null);
-    else assert.ok(reference(source).error,source);
+  for(const source of ['{foreach$items as $item}{/foreach}','{foreach $items as$item}{/foreach}']) {
+    assert.ok(reference(source).error,source);
     assert.equal(parser().parse(source).rootNode.hasError,true,source);
   }
+  const legacy = '{foreach $items asdf $item}{/foreach}';
+  assert.equal(reference(legacy).error,null);
+  const legacyTree=parser().parse(legacy).rootNode;
+  assert.equal(legacyTree.hasError,false,legacy);
+  assert.deepEqual(legacyTree.firstNamedChild.firstNamedChild.firstNamedChild.childrenForFieldName('argument').map(n=>n.text), ['$items','asdf','$item']);
+  const legacyError=fullEngine(legacy,{mode:'compile'}).error;
+  assert.equal(legacyError?.type,'Smarty\\CompilerException');
+  assert.match(legacyError.message,/key.*illegal value/i);
 });
 
-test('Foreach malformed syntax and excluded headers cannot fall back to generic tags', () => {
-  const cases = ['{foreach $items $item}{/foreach}','{foreach as $item}{/foreach}',
-    '{foreach $items as }{/foreach}','{foreach $items as $key =>}{/foreach}',
-    '{foreach $items as item}{/foreach}', '{foreach from=$items item=item}{/foreach}',
-    '{foreach $items as $item name="loop"}{/foreach}'];
+test('Foreach malformed modern forms and compiler-invalid positional values stay distinct', () => {
+  const cases = ['{foreach $items as }{/foreach}','{foreach $items as $key =>}{/foreach}',
+    '{foreach $items as item}{/foreach}', '{foreach $items as $item name="loop"}{/foreach}'];
   for(const source of cases) assert.equal(parser().parse(source).rootNode.hasError,true,source);
-  assert.equal(reference(cases.at(-2)).error,null); // Valid Smarty, excluded legacy form.
-  assert.equal(reference(cases.at(-1)).error,null); // Valid Smarty, excluded attribute.
+  for(const source of ['{foreach $items item}{/foreach}','{foreach $items item key loop}{/foreach}',
+    '{foreach from=$items item=item}{/foreach}']) {
+    assert.equal(reference(source).error,null,source);
+    assert.equal(fullEngine(source,{mode:'compile'}).error,null,source);
+    const root=parser().parse(source).rootNode;
+    assert.equal(root.hasError,false,source);
+    const header=root.firstNamedChild.firstNamedChild.firstNamedChild;
+    assert.equal(header.type,'legacy_foreach_header');
+    assert.ok(header.namedChildren.length >= 2);
+  }
+  const positionalVariable='{foreach $items $item}{/foreach}';
+  const positionalTree=parser().parse(positionalVariable).rootNode;
+  assert.equal(positionalTree.hasError,false,positionalVariable);
+  assert.deepEqual(positionalTree.firstNamedChild.firstNamedChild.firstNamedChild.childrenForFieldName('argument').map(n=>n.text), ['$items','$item']);
+  const positionalError=fullEngine(positionalVariable,{mode:'compile'}).error;
+  assert.equal(positionalError?.type,'Smarty\\CompilerException');
+  assert.match(positionalError.message,/item.*illegal value/i);
 });
 
 test('Full compiler validates branch ownership that recording deliberately bypasses', () => {

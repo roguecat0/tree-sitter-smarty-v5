@@ -41,10 +41,21 @@ export function observations(node) {
     case 'foreach_tag':
       // Smarty normalizes header names and emits item before key, even though
       // a keyed header's source order is source/key/item. Trees check that order.
-      events.push({ kind: 'tag', name: 'foreach', arguments: [
-        { name: 'from' }, { name: 'item' },
-        ...(node.childForFieldName('key') ? [{ name: 'key' }] : []),
-      ] });
+      {
+        const legacyHeader = node.namedChildren.find(child => child.type === 'legacy_foreach_header');
+        if (legacyHeader) {
+          events.push({kind: 'tag', name: 'foreach', arguments: legacyHeader.namedChildren
+            .sort((left,right) => left.startIndex-right.startIndex)
+            .map(child => ({name: child.type === 'attribute' ? child.childForFieldName('name').text : null}))});
+        } else if (node.childForFieldName('source')) {
+          events.push({ kind: 'tag', name: 'foreach', arguments: [
+            { name: 'from' }, { name: 'item' },
+            ...(node.childForFieldName('key') ? [{ name: 'key' }] : []),
+          ] });
+        } else {
+          events.push({kind: 'tag', name: 'foreach', arguments: []});
+        }
+      }
       break;
     case 'foreachelse_tag': case 'foreach_close_tag':
       events.push({ kind: 'tag', name: node.type === 'foreachelse_tag' ? 'foreachelse' : 'foreachclose', arguments: [] });

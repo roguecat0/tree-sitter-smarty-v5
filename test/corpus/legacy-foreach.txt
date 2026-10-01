@@ -1,0 +1,107 @@
+Minimal named legacy foreach
+============================
+{foreach from=$items item=item}{$item}{/foreach}
+---
+(source_file
+  (foreach_block
+    (foreach_tag
+      (legacy_foreach_header
+        (attribute name: (identifier) value: (variable name: (identifier)))
+        (attribute name: (identifier) value: (identifier))))
+    (output value: (variable name: (identifier)))
+    (foreach_close_tag)))
+
+Permuted keyed attributes and empty branch
+===========================================
+{foreach item="item" from=$items key="key" name="rows"}{$item}{foreachelse}empty{/foreach}
+---
+(source_file
+  (foreach_block
+    (foreach_tag
+      (legacy_foreach_header
+        (attribute name: (identifier) value: (string (string_fragment)))
+        (attribute name: (identifier) value: (variable name: (identifier)))
+        (attribute name: (identifier) value: (string (string_fragment)))
+        (attribute name: (identifier) value: (string (string_fragment)))))
+    (output value: (variable name: (identifier)))
+    (foreachelse_clause (foreachelse_tag) (text))
+    (foreach_close_tag)))
+
+Legacy key, name, properties and nocache
+========================================
+{foreach from=$items item=$item key=$key name=rows properties="first,last" nocache}{$key}{$item}{/foreach}
+---
+(source_file
+  (foreach_block
+    (foreach_tag
+      (legacy_foreach_header
+        (attribute name: (identifier) value: (variable name: (identifier)))
+        (attribute name: (identifier) value: (variable name: (identifier)))
+        (attribute name: (identifier) value: (variable name: (identifier)))
+        (attribute name: (identifier) value: (identifier))
+        (attribute name: (identifier) value: (string (string_fragment)))
+        (foreach_option)))
+    (output value: (variable name: (identifier)))
+    (output value: (variable name: (identifier)))
+    (foreach_close_tag)))
+
+Positional legacy shorthand in source order
+============================================
+{foreach $items item key loop}{/foreach}
+---
+(source_file
+  (foreach_block
+    (foreach_tag
+      (legacy_foreach_header
+        (argument (variable name: (identifier)))
+        (argument (identifier))
+        (argument (identifier))
+        (argument (identifier))))
+    (foreach_close_tag)))
+
+Positional keyed shorthand and options
+=======================================
+{foreach $items item key loop nocache}{/foreach}
+---
+(source_file
+  (foreach_block
+    (foreach_tag
+      (legacy_foreach_header
+        (argument (variable name: (identifier)))
+        (argument (identifier))
+        (argument (identifier))
+        (argument (identifier))
+        (foreach_option)))
+    (foreach_close_tag)))
+
+Modern and legacy loops compose with for and if
+===============================================
+{foreach from=$rows item=row}{for $i=0 to 1}{if $row}{$row}{else}empty{/if}{foreach $row as $cell}{$cell}{foreachelse}none{/foreach}{forelse}for empty{/for}{foreachelse}rows empty{/foreach}
+---
+(source_file
+  (foreach_block
+    (foreach_tag (legacy_foreach_header
+      (attribute name: (identifier) value: (variable name: (identifier)))
+      (attribute name: (identifier) value: (identifier))))
+    (for_block
+      (for_tag (range_for_header target: (variable name: (identifier)) start: (number) end: (number)))
+      (if_block
+        (if_tag condition: (variable name: (identifier)))
+        (output value: (variable name: (identifier)))
+        (else_clause (else_tag) (text))
+        (if_close_tag))
+      (foreach_block
+        (foreach_tag source: (variable name: (identifier)) item: (variable name: (identifier)))
+        (output value: (variable name: (identifier)))
+        (foreachelse_clause (foreachelse_tag) (text))
+        (foreach_close_tag))
+      (forelse_clause (forelse_tag) (text))
+      (for_close_tag))
+    (foreachelse_clause (foreachelse_tag) (text))
+    (foreach_close_tag)))
+
+Empty legacy header is structurally retained
+============================================
+{foreach}x{/foreach}
+---
+(source_file (foreach_block (foreach_tag) (text) (foreach_close_tag)))

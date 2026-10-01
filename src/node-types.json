@@ -1222,6 +1222,11 @@
     }
   },
   {
+    "type": "for_option",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "for_tag",
     "named": true,
     "fields": {},
@@ -1421,12 +1426,17 @@
     "fields": {}
   },
   {
+    "type": "foreach_option",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "foreach_tag",
     "named": true,
     "fields": {
       "item": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "variable",
@@ -1446,7 +1456,7 @@
       },
       "source": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "array_literal",
@@ -1530,6 +1540,16 @@
           }
         ]
       }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "legacy_foreach_header",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -2019,6 +2039,112 @@
         },
         {
           "type": "string_interpolation",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "legacy_foreach_header",
+    "named": true,
+    "fields": {
+      "argument": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "array_literal",
+            "named": true
+          },
+          {
+            "type": "binary_expression",
+            "named": true
+          },
+          {
+            "type": "boolean",
+            "named": true
+          },
+          {
+            "type": "class_constant_expression",
+            "named": true
+          },
+          {
+            "type": "config_variable",
+            "named": true
+          },
+          {
+            "type": "function_call_expression",
+            "named": true
+          },
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "index_expression",
+            "named": true
+          },
+          {
+            "type": "interpolated_string",
+            "named": true
+          },
+          {
+            "type": "loop_metadata_expression",
+            "named": true
+          },
+          {
+            "type": "member_expression",
+            "named": true
+          },
+          {
+            "type": "method_call_expression",
+            "named": true
+          },
+          {
+            "type": "modifier_expression",
+            "named": true
+          },
+          {
+            "type": "null",
+            "named": true
+          },
+          {
+            "type": "number",
+            "named": true
+          },
+          {
+            "type": "parenthesized_expression",
+            "named": true
+          },
+          {
+            "type": "static_method_call_expression",
+            "named": true
+          },
+          {
+            "type": "string",
+            "named": true
+          },
+          {
+            "type": "unary_expression",
+            "named": true
+          },
+          {
+            "type": "variable",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "attribute",
+          "named": true
+        },
+        {
+          "type": "foreach_option",
           "named": true
         }
       ]
@@ -3692,10 +3818,6 @@
     "named": false
   },
   {
-    "type": "for_option",
-    "named": true
-  },
-  {
     "type": "foreach",
     "named": false
   },
@@ -3729,6 +3851,10 @@
   },
   {
     "type": "nUll",
+    "named": false
+  },
+  {
+    "type": "nocache",
     "named": false
   },
   {

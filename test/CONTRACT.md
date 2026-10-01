@@ -256,14 +256,27 @@ The syntax accepts identifier suffixes without a property allowlist, but does
 not validate runtime properties or binding to the enclosing loop. Loop metadata
 is also supported as a direct modifier argument, retaining its
 `loop_metadata_expression` shape; see the explicit composition trees and checks
-in [016](../docs/tasks/016-loop-metadata-modifier-argument.md). Legacy headers,
-extra attributes and runtime iteration semantics remain outside the subset. Recorder events
-normalize names to `from`, `item`, then optional `key`
-and do not validate pairing; full-compiler checks supplement exact trees for
-that purpose. Evidence: [foreach trees](corpus/foreach.txt),
-[reference/compiler/edit checks](foreach.test.mjs), and
+in [016](../docs/tasks/016-loop-metadata-modifier-argument.md). Legacy headers
+are also standard syntax. Nonempty named/positional legacy headers have a
+`legacy_foreach_header` child retaining source-ordered `attribute` and
+`argument` fields; `nocache` is an explicit `foreach_option`. The parser-valid
+empty `{foreach}` list has no header child. These nodes preserve syntax and do
+not validate required attributes, positional value types, bindings, or runtime
+iteration behavior; full-compiler checks distinguish those compiler errors.
+Modern and legacy loops share directly owned `foreachelse_clause` branches.
+Recorder events preserve legacy entry order and names, while modern events
+normalize their binding names; the recorder does not validate pairing.
+Full-compiler checks supplement exact trees for that purpose. Evidence:
+[foreach trees](corpus/foreach.txt),
+[legacy foreach trees](corpus/legacy-foreach.txt),
+[reference/compiler/edit checks](foreach.test.mjs),
+[legacy reference/compiler/recovery/edit checks](legacy-foreach.test.mjs), and
 [item metadata trees](corpus/loop-metadata.txt) and
 [item metadata checks](loop-metadata.test.mjs).
+Standard modern `as` headers that append ordinary attributes/options after the
+binding (for example `name="loop"` or bare `nocache`) remain a confirmed parser
+gap. The legacy valued option forms `nocache=true` and `nocache=false` are also
+confirmed standard syntax gaps; keep both forms in the next foreach-header task.
 
 Dot/bracket read access produces left-nested `index_expression` with `object` and
 `index` fields. Dot keys are adjacent ASCII identifiers or unsigned integers;
