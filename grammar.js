@@ -62,6 +62,9 @@ export default grammar({
     // locally in this field; ordinary names keep their existing node shape.
     _attribute_name: $ => choice(
       $.identifier, alias($.boolean, $.identifier), alias($.null, $.identifier), $.tag_attribute_name,
+      // These words are reserved in tag roots or class receivers, but Smarty
+      // accepts them as ordinary names in the generic attribute slot.
+      alias(choice(...controlWords, ...classReservedWords), $.identifier),
     ),
     attribute: $ => seq(field("name", $._attribute_name), "=", field("value", $._tag_attribute_value)),
     tag_attribute_name: _ => token(choice(

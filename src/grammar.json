@@ -605,6 +605,356 @@
         {
           "type": "SYMBOL",
           "name": "tag_attribute_name"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "STRING",
+                "value": "if"
+              },
+              {
+                "type": "STRING",
+                "value": "else"
+              },
+              {
+                "type": "STRING",
+                "value": "elseif"
+              },
+              {
+                "type": "STRING",
+                "value": "foreach"
+              },
+              {
+                "type": "STRING",
+                "value": "foreachelse"
+              },
+              {
+                "type": "STRING",
+                "value": "self"
+              },
+              {
+                "type": "STRING",
+                "value": "selF"
+              },
+              {
+                "type": "STRING",
+                "value": "seLf"
+              },
+              {
+                "type": "STRING",
+                "value": "seLF"
+              },
+              {
+                "type": "STRING",
+                "value": "sElf"
+              },
+              {
+                "type": "STRING",
+                "value": "sElF"
+              },
+              {
+                "type": "STRING",
+                "value": "sELf"
+              },
+              {
+                "type": "STRING",
+                "value": "sELF"
+              },
+              {
+                "type": "STRING",
+                "value": "Self"
+              },
+              {
+                "type": "STRING",
+                "value": "SelF"
+              },
+              {
+                "type": "STRING",
+                "value": "SeLf"
+              },
+              {
+                "type": "STRING",
+                "value": "SeLF"
+              },
+              {
+                "type": "STRING",
+                "value": "SElf"
+              },
+              {
+                "type": "STRING",
+                "value": "SElF"
+              },
+              {
+                "type": "STRING",
+                "value": "SELf"
+              },
+              {
+                "type": "STRING",
+                "value": "SELF"
+              },
+              {
+                "type": "STRING",
+                "value": "parent"
+              },
+              {
+                "type": "STRING",
+                "value": "parenT"
+              },
+              {
+                "type": "STRING",
+                "value": "pareNt"
+              },
+              {
+                "type": "STRING",
+                "value": "pareNT"
+              },
+              {
+                "type": "STRING",
+                "value": "parEnt"
+              },
+              {
+                "type": "STRING",
+                "value": "parEnT"
+              },
+              {
+                "type": "STRING",
+                "value": "parENt"
+              },
+              {
+                "type": "STRING",
+                "value": "parENT"
+              },
+              {
+                "type": "STRING",
+                "value": "paRent"
+              },
+              {
+                "type": "STRING",
+                "value": "paRenT"
+              },
+              {
+                "type": "STRING",
+                "value": "paReNt"
+              },
+              {
+                "type": "STRING",
+                "value": "paReNT"
+              },
+              {
+                "type": "STRING",
+                "value": "paREnt"
+              },
+              {
+                "type": "STRING",
+                "value": "paREnT"
+              },
+              {
+                "type": "STRING",
+                "value": "paRENt"
+              },
+              {
+                "type": "STRING",
+                "value": "paRENT"
+              },
+              {
+                "type": "STRING",
+                "value": "pArent"
+              },
+              {
+                "type": "STRING",
+                "value": "pArenT"
+              },
+              {
+                "type": "STRING",
+                "value": "pAreNt"
+              },
+              {
+                "type": "STRING",
+                "value": "pAreNT"
+              },
+              {
+                "type": "STRING",
+                "value": "pArEnt"
+              },
+              {
+                "type": "STRING",
+                "value": "pArEnT"
+              },
+              {
+                "type": "STRING",
+                "value": "pArENt"
+              },
+              {
+                "type": "STRING",
+                "value": "pArENT"
+              },
+              {
+                "type": "STRING",
+                "value": "pARent"
+              },
+              {
+                "type": "STRING",
+                "value": "pARenT"
+              },
+              {
+                "type": "STRING",
+                "value": "pAReNt"
+              },
+              {
+                "type": "STRING",
+                "value": "pAReNT"
+              },
+              {
+                "type": "STRING",
+                "value": "pAREnt"
+              },
+              {
+                "type": "STRING",
+                "value": "pAREnT"
+              },
+              {
+                "type": "STRING",
+                "value": "pARENt"
+              },
+              {
+                "type": "STRING",
+                "value": "pARENT"
+              },
+              {
+                "type": "STRING",
+                "value": "Parent"
+              },
+              {
+                "type": "STRING",
+                "value": "ParenT"
+              },
+              {
+                "type": "STRING",
+                "value": "PareNt"
+              },
+              {
+                "type": "STRING",
+                "value": "PareNT"
+              },
+              {
+                "type": "STRING",
+                "value": "ParEnt"
+              },
+              {
+                "type": "STRING",
+                "value": "ParEnT"
+              },
+              {
+                "type": "STRING",
+                "value": "ParENt"
+              },
+              {
+                "type": "STRING",
+                "value": "ParENT"
+              },
+              {
+                "type": "STRING",
+                "value": "PaRent"
+              },
+              {
+                "type": "STRING",
+                "value": "PaRenT"
+              },
+              {
+                "type": "STRING",
+                "value": "PaReNt"
+              },
+              {
+                "type": "STRING",
+                "value": "PaReNT"
+              },
+              {
+                "type": "STRING",
+                "value": "PaREnt"
+              },
+              {
+                "type": "STRING",
+                "value": "PaREnT"
+              },
+              {
+                "type": "STRING",
+                "value": "PaRENt"
+              },
+              {
+                "type": "STRING",
+                "value": "PaRENT"
+              },
+              {
+                "type": "STRING",
+                "value": "PArent"
+              },
+              {
+                "type": "STRING",
+                "value": "PArenT"
+              },
+              {
+                "type": "STRING",
+                "value": "PAreNt"
+              },
+              {
+                "type": "STRING",
+                "value": "PAreNT"
+              },
+              {
+                "type": "STRING",
+                "value": "PArEnt"
+              },
+              {
+                "type": "STRING",
+                "value": "PArEnT"
+              },
+              {
+                "type": "STRING",
+                "value": "PArENt"
+              },
+              {
+                "type": "STRING",
+                "value": "PArENT"
+              },
+              {
+                "type": "STRING",
+                "value": "PARent"
+              },
+              {
+                "type": "STRING",
+                "value": "PARenT"
+              },
+              {
+                "type": "STRING",
+                "value": "PAReNt"
+              },
+              {
+                "type": "STRING",
+                "value": "PAReNT"
+              },
+              {
+                "type": "STRING",
+                "value": "PAREnt"
+              },
+              {
+                "type": "STRING",
+                "value": "PAREnT"
+              },
+              {
+                "type": "STRING",
+                "value": "PARENt"
+              },
+              {
+                "type": "STRING",
+                "value": "PARENT"
+              }
+            ]
+          },
+          "named": true,
+          "value": "identifier"
         }
       ]
     },

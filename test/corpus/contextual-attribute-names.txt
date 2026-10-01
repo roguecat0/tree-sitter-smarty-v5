@@ -1,0 +1,41 @@
+==================
+Reserved words in generic attributes
+==================
+{widget parent=$parent self=$receiver if=$condition else=MODE elseif=$fallback foreach=$items foreachelse=$empty}{$later}
+---
+(source_file
+  (custom_tag name: (identifier)
+    (attribute name: (identifier) value: (variable name: (identifier)))
+    (attribute name: (identifier) value: (variable name: (identifier)))
+    (attribute name: (identifier) value: (variable name: (identifier)))
+    (attribute name: (identifier) value: (identifier))
+    (attribute name: (identifier) value: (variable name: (identifier)))
+    (attribute name: (identifier) value: (variable name: (identifier)))
+    (attribute name: (identifier) value: (variable name: (identifier))))
+  (output value: (variable name: (identifier))))
+
+==================
+Reserved words in include attributes
+==================
+{include file="x.tpl" block=$block parent=$block self=$root_block}{$later}
+---
+(source_file
+  (custom_tag name: (identifier)
+    (attribute name: (identifier) value: (string))
+    (attribute name: (identifier) value: (variable name: (identifier)))
+    (attribute name: (identifier) value: (variable name: (identifier)))
+    (attribute name: (identifier) value: (variable name: (identifier))))
+  (output value: (variable name: (identifier))))
+
+==================
+Missing reserved attribute value recovers following nodes
+==================
+{widget parent=} {*after*} {$later}
+---
+(source_file
+  (custom_tag name: (identifier)
+    (attribute name: (identifier) value: (MISSING identifier)))
+  (text)
+  (comment)
+  (text)
+  (output value: (variable name: (identifier))))

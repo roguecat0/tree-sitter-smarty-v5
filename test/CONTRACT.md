@@ -29,6 +29,12 @@ primitive aliases. It also supports `tag_attribute_name` leaves for hyphenated
 names, digit-prefixed names, and nonempty segments separated by single colons
 (for example `data-id`, `123data-id`, and `foo:bar:baz`). These leaves are
 local to the attribute `name` field and do not broaden expression identifiers.
+Smarty's contextual words `parent`, `self`, `if`, `else`, `elseif`, `foreach`,
+and `foreachelse` are also accepted as generic-tag attribute names and remain
+`identifier` leaves with their original spelling and source range. `parent` and
+`self` are accepted in every ASCII case variant in this attribute context.
+These contextual aliases do not change built-in control-tag parsing or allow
+case-insensitive `self`/`parent` as static class receivers.
 Smarty 5.8.4 accepts terminal-colon `foo:=MODE` and repeated-colon `foo::bar=`
 spellings, but this partial Tree-sitter contract retains both as explicit
 error/recovery gaps and preserves following independent output. The malformed
@@ -36,8 +42,10 @@ error/recovery gaps and preserves following independent output. The malformed
 Task 023 specifies all three boundary witnesses, their Smarty recorder results,
 and hand-authored Tree-sitter expectations in
 [Task 023](../docs/tasks/023-smarty-tag-attribute-names.md#partial-boundary-revision-2026-10-01).
-This is an explicit project gap for a future separately reviewed task. Eight
-corpus roots with `data-*`/`aria-*` names are covered by the Task 023 fixture.
+The Task 025 trees and checks cover contextual attribute aliases, malformed
+value recovery, control-tag/class-receiver boundaries, case preservation, and
+incremental edits. Eight corpus roots with `data-*`/`aria-*` names are covered
+by the Task 023 fixture.
 `custom_close_tag` has a `name`. These nodes do not assert block pairing or
 plugin availability.
 
