@@ -9,7 +9,8 @@
 
 // Explicit keyword spellings cooperate with Tree-sitter's word token: a longer
 // identifier such as TRUEish must win, and contextual names remain identifiers.
-const cases = word => [...word].reduce((forms, ch) => forms.flatMap(form => [form + ch, form + ch.toUpperCase()]), [""]);
+/** @param {string} word */
+const cases = word => [...word].reduce((forms, ch) => forms.flatMap(form => [form + ch, form + ch.toUpperCase()]), /** @type {string[]} */ ([""]));
 const primitiveWords = [...cases("true"), ...cases("false"), ...cases("null")];
 const controlWords = ["if", "else", "elseif", "foreach", "foreachelse"];
 const classReservedWords = [...cases("self"), ...cases("parent")];
@@ -241,7 +242,7 @@ export default grammar({
     ),
     parenthesized_expression: $ => seq("(", $._expression, ")"),
     binary_expression: $ => choice(
-      ...[[1, ["+", "-"]], [2, ["*", "/", "%"]]].map(([precedence, operators]) =>
+      .../** @type {[number, string[]][]} */ ([[1, ["+", "-"]], [2, ["*", "/", "%"]]]).map(([precedence, operators]) =>
         prec.left(precedence, seq(field("left", $._arithmetic), field("operator", choice(...operators)), field("right", $._arithmetic)))),
     ),
     modifier_expression: $ => prec.left(4, seq(

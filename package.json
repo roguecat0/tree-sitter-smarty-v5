@@ -39,7 +39,8 @@
   "devDependencies": {
     "prebuildify": "^6.0.1",
     "tree-sitter": "^0.25.0",
-    "tree-sitter-cli": "^0.26.9"
+    "tree-sitter-cli": "^0.26.9",
+    "typescript": "^5.9.3"
   },
   "peerDependencies": {
     "tree-sitter": "^0.25.0"
@@ -51,10 +52,11 @@
   },
   "scripts": {
     "install": "node-gyp-build",
+    "check:grammar": "tsc --noEmit --allowJs --checkJs --target ES2022 grammar.js",
     "prestart": "tree-sitter build --wasm",
     "start": "tree-sitter playground",
     "pretest": "tree-sitter generate && node-gyp rebuild",
-    "test": "node test/run.mjs",
+    "test": "npm run check:grammar && node test/run.mjs",
     "precorpus:report": "tree-sitter generate && node-gyp rebuild",
     "corpus:report": "node scripts/corpus-report.mjs"
   }
