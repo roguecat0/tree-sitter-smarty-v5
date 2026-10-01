@@ -3152,6 +3152,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "loop_metadata_expression"
+        },
+        {
+          "type": "SYMBOL",
           "name": "config_variable"
         },
         {

@@ -21,17 +21,16 @@ and all 11 mutation checks were caught. Final revision remained
 output: `/tmp/smarty-015-final.log`. No grammar rules changed, so no parser or
 application-corpus delta was expected; no corpus report was generated.
 
-The matrix now records 132 cells: 83 `yes`, four `limited`, one confirmed
-`no`, and 44 `?` pairings without direct composition evidence. The confirmed
-gap is loop metadata as a modifier argument. Exact source:
+At audit time, the matrix recorded 132 cells: 83 `yes`, four `limited`, one
+confirmed `no`, and 44 `?` pairings without direct composition evidence. The
+confirmed gap was loop metadata as a modifier argument. Exact source:
 `{foreach $items as $item}{$item|default:$item@index}{/foreach}`. Tree-Sitter
 currently produces an `ERROR` after the modifier argument `$item`; the pinned
 `php test/reference.php` observation uses Smarty 5.8.4 and returns `error:null`
 with foreach/default/output/close events. `test/CONTRACT.md` and the foreach
-feature row now state this boundary. Task 016 exists only as a noncanonical
-draft candidate; it is not queued or accepted and requires a separate task-
-creation owner and reviewer. This audit does not implement the grammar gap or
-mark that brief accepted.
+feature row recorded this boundary. Task 016 later implemented the bounded
+composition and updated the matrix; see that task's implementation evidence.
+This audit did not implement the grammar gap.
 
 Two high-value composition examples were added: class constants as both an
 array key and value, and loop metadata as function/method arguments. Their

@@ -1,0 +1,13 @@
+==================
+Metadata as a direct modifier argument
+==================
+{foreach $items as $item}{$item|default:$item@index}{/foreach}
+---
+(source_file (foreach_block (foreach_tag source: (variable name: (identifier)) item: (variable name: (identifier))) (output value: (modifier_expression value: (variable name: (identifier)) name: (identifier) argument: (loop_metadata_expression item: (variable name: (identifier)) property: (identifier)))) (foreach_close_tag)))
+
+==================
+Metadata alongside ordinary modifier arguments and a chained modifier
+==================
+{foreach $items as $item}{$item|default:$fallback:$item@index|escape}{/foreach}
+---
+(source_file (foreach_block (foreach_tag source: (variable name: (identifier)) item: (variable name: (identifier))) (output value: (modifier_expression value: (modifier_expression value: (variable name: (identifier)) name: (identifier) argument: (variable name: (identifier)) argument: (loop_metadata_expression item: (variable name: (identifier)) property: (identifier))) name: (identifier))) (foreach_close_tag)))
