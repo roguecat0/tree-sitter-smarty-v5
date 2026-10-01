@@ -44,7 +44,15 @@ export default grammar({
     ),
     // These names are valid custom tags, but not static class receivers.
     // Explicit tokens let the class-only reserved set reject exact spellings.
-    _tag_name: $ => choice(reserved("tag", $.identifier), alias(choice(...classReservedWords), $.identifier)),
+    // A bare-ID output can resemble `{name}`; prefer the established custom-tag
+    // interpretation when the ID occupies the entire brace body.
+    _tag_name: $ => prec(1, choice(
+      reserved("tag", $.identifier),
+      alias(choice(...classReservedWords), $.identifier),
+      // The pinned Smarty ID token may start with digits; preserve that token
+      // as a tag name at brace-root level instead of reclassifying it as output.
+      alias($._modifier_identifier, $.identifier),
+    )),
     custom_tag: $ => seq("{", field("name", $._tag_name), repeat(choice(
       $.attribute, field("argument", $._tag_argument_value),
     )), "}"),
@@ -110,7 +118,10 @@ export default grammar({
       seq(token.immediate(/\s+/), field("argument", $.unary_expression)),
     ))),
     _modified: $ => choice($._primary, $.modifier_expression),
-    _primary: $ => choice($._nonliteral_primary, $.boolean, $.null),
+    // Static Smarty IDs are primary values. Keep digit-prefixed ID tokens in
+    // the same node family; pure decimals remain numbers and primitives keep
+    // their dedicated token types.
+    _primary: $ => choice($._nonliteral_primary, $.boolean, $.null, $.identifier, alias($._modifier_identifier, $.identifier)),
     _nonliteral_primary: $ => choice(
       $.variable, $.loop_metadata_expression, $.config_variable, $.member_expression, $.method_call_expression, $.function_call_expression, $.index_expression, alias($._config_index, $.index_expression), $.array_literal,
       $.number, $.string, $.interpolated_string, $.parenthesized_expression, $.static_method_call_expression, $.class_constant_expression,
@@ -126,7 +137,7 @@ export default grammar({
       seq("array", "(", optional(seq($.array_element, repeat(seq(",", $.array_element)), optional(","))), ")"),
     ),
     array_element: $ => choice(
-      seq(field("key", choice($._primary, $.identifier)), "=>", field("value", $._expression)),
+      seq(field("key", $._primary), "=>", field("value", $._expression)),
       field("value", $._expression),
     ),
     variable: $ => seq("$", field("name", alias(token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/), $.identifier))),

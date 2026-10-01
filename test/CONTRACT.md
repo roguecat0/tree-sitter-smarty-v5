@@ -14,14 +14,15 @@ parentheses, left-associative arithmetic, and modifier applications. Multiplicat
 division, and remainder bind tighter than addition and subtraction. Modifier
 applications bind tighter than arithmetic in this subset.
 
-Custom tag names are unrestricted identifiers except the recognized control
-keywords. `custom_tag` has a `name`, positional `argument` fields, and `attribute`
-children with `name` and `value` fields. These two value positions accept either
+Custom tag names preserve the Smarty `ID` token, including digit-prefixed
+`123foo`, except for recognized control keywords. `custom_tag` has a `name`,
+positional `argument` fields, and `attribute` children with `name` and `value`
+fields. These two value positions accept either
 a supported expression or one direct static Smarty `ID`, represented as an
 `identifier`; digit-prefixed `123foo` is an identifier, while pure decimals,
 booleans, nulls, variables, strings, and class constants retain their existing
-node types. This does not make a bare identifier a general expression or enable
-it in function/method arguments or array values. See
+node types. Bare IDs are also primary expressions in the tested output,
+condition, function/method argument, and array-element value contexts. See
 [018 trees and checks](../docs/tasks/018-generic-tag-identifier-values.md).
 `custom_close_tag` has a `name`. These nodes do not assert block pairing or
 plugin availability.
@@ -152,10 +153,20 @@ Modifier arguments retain the current narrow subset; parenthesize full
 expressions. A direct static Smarty `ID` after a modifier colon is an
 `identifier` argument, including IDs with a digit prefix such as `123foo`;
 pure decimal tokens remain `number` nodes. Direct static IDs are also allowed
-in generic-tag positional arguments and named attribute values. These bounded
-contexts do not make bare identifiers general expressions or enable them in
-function/method arguments or array values. See [017 trees and checks](../docs/tasks/017-static-modifier-arguments.md)
-and [018 trees and checks](../docs/tasks/018-generic-tag-identifier-values.md).
+in generic-tag positional arguments and named attribute values. These contexts
+are separate from bare IDs as primary expressions. See [017 trees and
+checks](../docs/tasks/017-static-modifier-arguments.md) and [018 trees and
+checks](../docs/tasks/018-generic-tag-identifier-values.md). Task 022 extends
+the primary expression in tested outputs, conditions, function/method arguments,
+and array-element values. The static-tag-name boundary remains distinct:
+`{$f(foo)}` is rejected because Smarty does not support variable-callee output,
+while `{isset(foo)}` is a built-in function form whose bare ID argument is
+accepted by Smarty. `{123foo}` is a custom tag whose recorded name is exactly
+`123foo`, while `{$a == 123foo}` contains an `identifier` expression node.
+Pinned reference and full-engine observations for `{in_array(foo, $list)}` are
+recorded in Task 022; the recorder projection does not expose argument values.
+See the [Task 022 trees and checks](../docs/tasks/022-static-identifier-expressions.md)
+and its composition evidence.
 The exact Smarty predicate `is div by` is also a `binary_expression` with a
 named `div_by_operator`; it is available anywhere the shared full-expression
 rule is used, including outputs, conditions, and parenthesized modifier

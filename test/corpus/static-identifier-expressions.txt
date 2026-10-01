@@ -1,0 +1,135 @@
+==================
+Static identifier comparison operand
+==================
+{$a == FLAG}
+---
+(source_file
+  (output
+    value: (binary_expression
+      left: (variable name: (identifier))
+      right: (identifier))))
+
+==================
+Static identifier condition operands
+==================
+{if MODE && $enabled}yes{/if}
+---
+(source_file
+  (if_block
+    (if_tag condition: (binary_expression
+      left: (identifier)
+      right: (variable name: (identifier))))
+    (text)
+    (if_close_tag)))
+
+==================
+Static identifier method argument
+==================
+{$user->get(GROUP_NAME_NONE)}
+---
+(source_file
+  (output
+    value: (method_call_expression
+      object: (variable name: (identifier))
+      method: (identifier)
+      argument: (identifier))))
+
+==================
+Static identifier array value
+==================
+{$a == [STATUS_KEY=>MODE]}
+---
+(source_file
+  (output
+    value: (binary_expression
+      left: (variable name: (identifier))
+      right: (array_literal
+        (array_element
+          key: (identifier)
+          value: (identifier))))))
+
+==================
+Static identifier function argument
+==================
+{in_array(foo, $list)}
+---
+(source_file
+  (output
+    value: (function_call_expression
+      name: (identifier)
+      argument: (identifier)
+      argument: (variable name: (identifier)))))
+
+==================
+Digit-prefixed static identifier
+==================
+{$a == 123foo}
+---
+(source_file
+  (output
+    value: (binary_expression
+      left: (variable name: (identifier))
+      right: (identifier))))
+
+==================
+Pure decimal remains numeric
+==================
+{$a == 123}
+---
+(source_file
+  (output
+    value: (binary_expression
+      left: (variable name: (identifier))
+      right: (number))))
+
+==================
+False remains a boolean primary
+==================
+{$a == false}
+---
+(source_file
+  (output
+    value: (binary_expression
+      left: (variable name: (identifier))
+      right: (boolean))))
+
+==================
+Mixed-case true remains a boolean primary
+==================
+{$a == TrUe}
+---
+(source_file
+  (output
+    value: (binary_expression
+      left: (variable name: (identifier))
+      right: (boolean))))
+
+==================
+Mixed-case false remains a boolean primary
+==================
+{$a == FaLsE}
+---
+(source_file
+  (output
+    value: (binary_expression
+      left: (variable name: (identifier))
+      right: (boolean))))
+
+==================
+Mixed-case null remains a null primary
+==================
+{$a == NuLl}
+---
+(source_file
+  (output
+    value: (binary_expression
+      left: (variable name: (identifier))
+      right: (null))))
+
+==================
+Digit-prefixed unknown tag remains a tag
+==================
+{123foo}
+---
+(source_file
+  (custom_tag name: (identifier)))

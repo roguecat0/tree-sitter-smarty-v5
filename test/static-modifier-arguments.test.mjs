@@ -62,15 +62,12 @@ test('Existing literal and class-constant modifier argument classifications rema
   assert.equal(numeric.childrenForFieldName('argument')[0].type, 'number');
 });
 
-test('Bare identifiers are limited to modifier and generic tag values', () => {
-  for (const source of [
-    '{f(foo)}', '{f(123foo)}',
-    '{[$key=>foo]}', '{[$key=>123foo]}',
-    '{123foo}',
-  ]) {
-    const root = parser().parse(source).rootNode;
-    assert.equal(root.hasError, true, `${source}: ${root.toString()}`);
-  }
+test('Digit-prefixed tag IDs remain custom-tag names', () => {
+  const root = parser().parse('{123foo}').rootNode;
+  assert.equal(root.hasError, false, root.toString());
+  assert.deepEqual([root.firstNamedChild.type, root.firstNamedChild.childForFieldName('name').text],
+    ['custom_tag', '123foo']);
+  assert.equal(reference('{123foo}').events[0].name, '123foo');
   for (const source of ['{widget value=foo}', '{widget value=123foo}', '{widget foo}']) {
     const root = parser().parse(source).rootNode;
     assert.equal(root.hasError, false, `${source}: ${root.toString()}`);

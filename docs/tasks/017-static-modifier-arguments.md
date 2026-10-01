@@ -200,3 +200,17 @@ comparison, verified generated sources, inspected all seven newly clean trees,
 checked the identifier and number boundaries plus excluded contexts, and
 confirmed the reference/runtime limitations and synchronized contract,
 inventory, and composition evidence.
+
+## Subsequent contract correction (Task 022)
+
+Task 017's grammar-only negative for `{f(foo)}` and `{f(123foo)}` did not show
+that Smarty rejects bare IDs in call arguments. The recording compiler accepts
+`{f(foo)}` syntactically and emits a modifier event; the full compiler then
+fails during unknown-modifier resolution because `f` is not installed. In
+contrast, pinned Smarty 5.8.4's `function ::= ns1 OPENP variablelist CLOSEP`
+and `variablelist ::= expr` productions accept a bare ID argument in
+`{isset(foo)}` and `{in_array(foo, $list)}`. The latter full-engine example
+renders `1` when `list` contains `foo`. The variable-callee form `{$f(foo)}`
+is rejected at `(` with `Unexpected "("`. Task 022 promotes IDs as primary
+expressions in tested call-argument contexts; the earlier grammar subset
+boundary remains a record of Task 017's state, not the current contract.

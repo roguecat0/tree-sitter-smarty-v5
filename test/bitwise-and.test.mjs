@@ -83,9 +83,9 @@ test('Controlled Smarty 5.8.4 compilation and rendering confirms PHP bitwise beh
 test('Malformed AND operand errors stay local and later syntax recovers', () => {
   for (const [source, expectedTree] of [
     ['before {$a &} {* keep *} after {$later}',
-      '(source_file (text) (output value: (binary_expression left: (variable name: (identifier)) right: (boolean (MISSING "true")))) (text) (comment) (text) (output value: (variable name: (identifier))))'],
+      '(source_file (text) (output value: (binary_expression left: (variable name: (identifier)) right: (MISSING identifier))) (text) (comment) (text) (output value: (variable name: (identifier))))'],
     ['before {if $a &}bad{/if} after {$later}',
-      '(source_file (text) (if_block (if_tag condition: (binary_expression left: (variable name: (identifier)) right: (boolean (MISSING "true")))) (text) (if_close_tag)) (text) (output value: (variable name: (identifier))))'],
+      '(source_file (text) (if_block (if_tag condition: (binary_expression left: (variable name: (identifier)) right: (MISSING identifier))) (text) (if_close_tag)) (text) (output value: (variable name: (identifier))))'],
   ]) {
     const root = parser().parse(source).rootNode;
     assert.equal(root.hasError, true, root.toString());
@@ -95,9 +95,8 @@ test('Malformed AND operand errors stay local and later syntax recovers', () => 
       : root.descendantsOfType('output')[0].childForFieldName('value');
     assert.equal(expression.type, 'binary_expression');
     const missing = expression.childForFieldName('right');
-    assert.equal(missing.type, 'boolean');
-    assert.equal(missing.firstChild.type, 'true');
-    assert.equal(missing.firstChild.isMissing, true);
+    assert.equal(missing.type, 'identifier');
+    assert.equal(missing.isMissing, true);
     assert.equal(missing.text, '');
     assert.equal(missing.parent.type, 'binary_expression');
     assert.equal(missing.parent.childForFieldName('left').text, '$a');

@@ -32,15 +32,21 @@ test('Bare primitive indices are excluded section names, not literal values',()=
 test('Primitive whole words and incomplete forms do not leak prefixes',()=>{
  for(const word of ['trueish','FALSEhood','nullary','TRUE_widget','null0']) {
    assert.equal(parser().parse(`{${word}}`).rootNode.firstNamedChild.type,'custom_tag');
-   assert.equal(parser().parse(`{$a->f(${word})}`).rootNode.hasError,true,`{$a->f(${word})}`);
+   const source=`{$a->f(${word})}`, callRoot=parser().parse(source).rootNode;
+   assert.equal(callRoot.hasError,false,`${source}: ${callRoot.toString()}`);
+   const argument=callRoot.firstNamedChild.childForFieldName('value').childrenForFieldName('argument')[0];
+   assert.deepEqual([argument.type,argument.text],['identifier',word]);
+   assert.equal(reference(source).error,null,source);
    const tagValue = parser().parse(`{widget value=${word}}`).rootNode;
    assert.equal(tagValue.hasError,false,`{widget value=${word}}`);
    assert.equal(tagValue.firstNamedChild.namedChildren[1].childForFieldName('value').type,'identifier');
  }
- for(const source of ['{true ===}', '{!}', '{$a->f(tru)}', '{TRUE value=1}', '{/if}', '{if}', '{foreach}']) assert.equal(parser().parse(source).rootNode.hasError,true,source);
+ for(const source of ['{true ===}', '{!}', '{TRUE value=1}', '{/if}', '{if}', '{foreach}']) assert.equal(parser().parse(source).rootNode.hasError,true,source);
+ const identifierArgument=parser().parse('{$a->f(tru)}').rootNode.firstNamedChild.childForFieldName('value').childrenForFieldName('argument')[0];
+ assert.deepEqual([identifierArgument.type,identifierArgument.text],['identifier','tru']);
 });
 test('Primitive incremental opening tag and argument keyword boundaries',()=>{
- for(const [initial,before,after,error] of [['{$before}{true}{$after}','true','true_widget',false],['{$before}{$a->f(true)}{$after}','true','trueish',true]]) {
+ for(const [initial,before,after,error] of [['{$before}{true}{$after}','true','true_widget',false],['{$before}{$a->f(true)}{$after}','true','trueish',false]]) {
   const p=parser();let source=initial,tree=p.parse(source);const startIndex=source.indexOf(before);
   for(const [removed,added,hasError] of [[before,after,error],[after,before,false]]) {
    const next=source.slice(0,startIndex)+added+source.slice(startIndex+removed.length);
