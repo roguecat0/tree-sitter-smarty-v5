@@ -45,9 +45,14 @@ test('Constant delimiters adjacency and explicit scope exclusions',()=>{
  for(const name of ['self','SELF','SeLf','parent','PARENT','PaReNt']) {
   const source=`{${name}::READY}`;assert.equal(parser().parse(source).rootNode.hasError,true,source);assert.match(reference(source).error,/static class/);
  }
- for(const source of ['{\\App\\Thing::READY}','{Thing::READY()}','{Thing::READY->name}']) {
+ for(const source of ['{\\App\\Thing::READY}','{Thing::READY->name}']) {
   assert.equal(reference(source).error,null,source);assert.equal(parser().parse(source).rootNode.hasError,true,source);
  }
+ const methodSource='{Thing::READY()}';
+ assert.equal(reference(methodSource).error,null,methodSource);
+ const methodRoot=parser().parse(methodSource).rootNode;
+ assert.equal(methodRoot.hasError,false,methodRoot.toString());
+ assert.equal(methodRoot.firstNamedChild.childForFieldName('value').type,'static_method_call_expression');
  for(const source of ['{$class::READY}','{Thing::$member}']) assert.equal(parser().parse(source).rootNode.hasError,true,source);
 });
 test('Constant output boundary and broken colon edits match fresh trees',()=>{

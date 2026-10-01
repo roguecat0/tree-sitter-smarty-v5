@@ -118,9 +118,15 @@ comments and independent closers. The recorder routes function values through
 its modifier-in-expression callback; it reports the callee and counts supplied
 arguments after the first as modifier parameters. This projection does not
 verify argument values, runtime function behavior, plugin resolution, or
-callee semantics. Namespaced callees, variable/dynamic callees, static `::`
-calls, function-result chains, and nonordinary argument forms remain outside
-this subset. Evidence:
+callee semantics. Namespaced callees, variable/dynamic callees,
+function-result chains, and nonordinary argument forms remain outside this
+subset. Static class method calls produce `static_method_call_expression` with
+`class` and `method` identifier fields and repeated ordinary `argument` fields.
+The node is distinct from `class_constant_expression`, composes through the
+contexts listed below, and does not include method-result chains. Smarty's
+`{Thing::READY()}` is a method call; the pinned recorder accepts it. The former
+constant-only test exclusion was corrected after that direct observation.
+Evidence:
 [call trees](corpus/standalone-function-calls.txt) and
 [reference/recovery/edit checks](standalone-function-calls.test.mjs).
 
@@ -208,11 +214,23 @@ compilation for literal output, without executing plugins. Evidence:
 
 Adjacent static `Class::NAME` values produce `class_constant_expression` with
 `class: (identifier)` and `constant: (identifier)` fields and anonymous `::`.
-Both names retain exact spelling, including contextual control/primitive words.
-Constants compose as primary expressions and modifier arguments; `{Class}` stays
-a generic tag. Internal whitespace is rejected. Case-insensitive `self`/`parent`
-are excluded class receivers but remain generic tag names. Namespaces, dynamic
-receivers, static calls/properties, constant access suffixes, global constants
-and runtime symbol validation remain outside this bounded feature.
+Static class method calls such as `Class::method($value)` produce a distinct
+`static_method_call_expression` with `class` and `method` identifier fields and
+repeated `argument` fields. They compose in outputs, conditions, foreach
+sources, generic-tag arguments and attributes, function/method arguments,
+modifier inputs/arguments, bracket indices, and array keys/values. A direct
+generic-tag value retains the complete call rather than splitting it into a
+constant plus another argument. Do not classify a method call as a class
+constant plus separate tag arguments. Method-result chains remain unsupported.
+Class and method names retain exact spelling. Control-word and primitive-token
+class names, such as `if`, `true`, and `null`, are accepted and represented by
+identifier nodes. Constants compose as primary expressions and modifier
+arguments; `{Class}` stays a generic tag. Internal whitespace is rejected.
+Case-insensitive `self`/`parent` remain excluded static class receivers; the
+pinned recorder rejects those forms. Namespaces, dynamic receivers, static
+properties, constant access suffixes, global constants and runtime symbol
+validation remain outside this bounded feature.
 Evidence: [constant trees](corpus/class-constants.txt) and
-[reference/field/range/edit checks](class-constants.test.mjs).
+[reference/field/range/edit checks](class-constants.test.mjs); [static method
+call trees](corpus/static-class-method-calls.txt) and
+[reference/full-engine/recovery/edit checks](static-class-method-calls.test.mjs).

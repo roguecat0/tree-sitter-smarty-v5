@@ -27,6 +27,7 @@ Cartesian suite merely to fill the matrix.
 | Function call (`name(...)`) | yes [FC-output](#ev-fc-output) | yes [FC-condition](#ev-fc-condition) | ? [U-function-source](#ev-u-function-source) | yes [FC-tag-pos](#ev-fc-tag-pos) | yes [FC-tag-attr](#ev-fc-tag-attr) | yes [FC-call-arg](#ev-fc-call-arg) | yes [FC-mod-input](#ev-fc-mod-input) | yes [FC-mod-arg](#ev-fc-mod-arg) | ? [U-function-bracket](#ev-u-function-bracket) | ? [U-function-array-key](#ev-u-function-array-key) | ? [U-function-array-value](#ev-u-function-array-value) |
 | Array literal | ? [U-array-output](#ev-u-array-output) | yes [AR-condition](#ev-ar-condition) | ? [U-array-source](#ev-u-array-source) | yes [AR-tag-pos](#ev-ar-tag-pos) | yes [AR-tag-attr](#ev-ar-tag-attr) | yes [AR-call-arg](#ev-ar-call-arg) | ? [U-array-mod-input](#ev-u-array-mod-input) | yes [AR-mod-arg](#ev-ar-mod-arg) | yes [AR-bracket](#ev-ar-bracket) | ? [U-array-array-key](#ev-u-array-array-key) | yes [AR-array-value](#ev-ar-array-value) |
 | Class constant (`Class::NAME`) | yes [CC-output](#ev-cc-output) | yes [CC-condition](#ev-cc-condition) | ? [U-constant-source](#ev-u-constant-source) | yes [CC-tag-pos](#ev-cc-tag-pos) | yes [CC-tag-attr](#ev-cc-tag-attr) | yes [CC-call-arg](#ev-cc-call-arg) | yes [CC-mod-input](#ev-cc-mod-input) | yes [CC-mod-arg](#ev-cc-mod-arg) | yes [CC-bracket](#ev-cc-bracket) | yes [CC-array-key](#ev-cc-array-key) | yes [CC-array-value](#ev-cc-array-value) |
+| Static class method call (`Class::method(...)`) | yes [SM-output](#ev-sm-output) | yes [SM-condition](#ev-sm-condition) | yes [SM-source](#ev-sm-source) | yes [SM-tag-pos](#ev-sm-tag-pos) | yes [SM-tag-attr](#ev-sm-tag-attr) | yes [SM-call-arg](#ev-sm-call-arg) | yes [SM-mod-input](#ev-sm-mod-input) | yes [SM-mod-arg](#ev-sm-mod-arg) | yes [SM-bracket](#ev-sm-bracket) | yes [SM-array-key](#ev-sm-array-key) | yes [SM-array-value](#ev-sm-array-value) |
 | Bare identifier (modifier and generic-tag direct values) | — | — | — | yes [GT-ID-pos](#ev-gt-id-pos) | yes [GT-ID-attr](#ev-gt-id-attr) | — | — | yes [MOD-ID-arg](#ev-mod-id-arg) | — | — | — |
 
 ## Cell notation and evidence
@@ -74,6 +75,32 @@ mechanically editing an unchanged entry. Reconcile verified syntax claims with
 [`test/CONTRACT.md`](../test/CONTRACT.md) and the affected rows in
 [`docs/features.md`](features.md); update those documents only when the audit
 establishes that their current statements need correction or clarification.
+
+## Static class method call composition audit
+
+Each cell has a hand-authored expected tree and fixture-driven Node check; the
+Smarty 5.8.4 recorder accepts the syntax but cannot inspect the call's class,
+method, or argument values. Its projection exposes tag names and ordered
+argument names/counts, plus modifier/output events. The checks establish one
+static call node and its fields across the listed contexts. The direct generic
+tag cases verify that the call remains one positional or attribute value. The
+full engine compiles the controlled `DateTime` example; this does not verify
+runtime registration or behavior. The prior parser split the generic-tag calls
+and errored in the other contexts.
+
+| Cell keys | Exact minimized composition | Current boundary | Smarty observation |
+| --- | --- | --- | --- |
+| <a id="ev-sm-output"></a>SM-output | Output: `{Thing::make($x)}` | One `static_method_call_expression` owns class, method, and argument. | [hand tree](../test/corpus/static-class-method-calls.txt#L30), [check](../test/static-class-method-calls.test.mjs#L8) |
+| <a id="ev-sm-condition"></a>SM-condition | Condition: `{if Thing::isReady($x)}Y{/if}` | One call is the `condition` field. | [hand tree](../test/corpus/static-class-method-calls.txt#L42), [check](../test/static-class-method-calls.test.mjs#L8) |
+| <a id="ev-sm-source"></a>SM-source | Foreach source: `{foreach Thing::items() as $item}{$item}{/foreach}` | One call is the `source` field. | [hand tree](../test/corpus/static-class-method-calls.txt#L57), [check](../test/static-class-method-calls.test.mjs#L8) |
+| <a id="ev-sm-tag-pos"></a>SM-tag-pos | Positional value: `{widget Thing::make($x)}` | One positional argument owns the complete call. | [hand tree](../test/corpus/static-class-method-calls.txt#L72), [check](../test/static-class-method-calls.test.mjs#L8) |
+| <a id="ev-sm-tag-attr"></a>SM-tag-attr | Attribute value: `{widget value=Thing::make($x)}` | The `value` attribute owns the complete call; no extra positional argument appears. | [hand tree](../test/corpus/static-class-method-calls.txt#L85), [check](../test/static-class-method-calls.test.mjs#L8) |
+| <a id="ev-sm-call-arg"></a>SM-call-arg | Call argument: `{strlen(Thing::make($x))}`; method argument: `{$o->run(Thing::make($x))}` | The nested call is one `argument` field in each form. | [hand trees](../test/corpus/static-class-method-calls.txt#L101), [check](../test/static-class-method-calls.test.mjs#L8) |
+| <a id="ev-sm-mod-input"></a>SM-mod-input | Modifier input: `{Thing::make($x)|escape}` | The modifier `value` is the complete call. | [hand tree](../test/corpus/static-class-method-calls.txt#L130), [check](../test/static-class-method-calls.test.mjs#L8) |
+| <a id="ev-sm-mod-arg"></a>SM-mod-arg | Modifier argument: `{$x|default:Thing::make($x)}` | The modifier `argument` is the complete call. | [hand tree](../test/corpus/static-class-method-calls.txt#L144), [check](../test/static-class-method-calls.test.mjs#L8) |
+| <a id="ev-sm-bracket"></a>SM-bracket | Bracket index: `{$a[Thing::make($x)]}` | The index field is the complete call. | [hand tree](../test/corpus/static-class-method-calls.txt#L159), [check](../test/static-class-method-calls.test.mjs#L8) |
+| <a id="ev-sm-array-key"></a>SM-array-key | Array key: `{[Thing::make($x)=>1]}` | The array element `key` field is the complete call. | [hand tree](../test/corpus/static-class-method-calls.txt#L173), [check](../test/static-class-method-calls.test.mjs#L8) |
+| <a id="ev-sm-array-value"></a>SM-array-value | Array value: `{[1=>Thing::make($x)]}` | The array element `value` field is the complete call. | [hand tree](../test/corpus/static-class-method-calls.txt#L188), [check](../test/static-class-method-calls.test.mjs#L8) |
 
 ## Task 015 evidence index
 

@@ -108,7 +108,7 @@ export default grammar({
     _primary: $ => choice($._nonliteral_primary, $.boolean, $.null),
     _nonliteral_primary: $ => choice(
       $.variable, $.loop_metadata_expression, $.config_variable, $.member_expression, $.method_call_expression, $.function_call_expression, $.index_expression, alias($._config_index, $.index_expression), $.array_literal,
-      $.number, $.string, $.parenthesized_expression, $.class_constant_expression,
+      $.number, $.string, $.parenthesized_expression, $.static_method_call_expression, $.class_constant_expression,
     ),
     // Smarty item metadata is an adjacent static suffix on a variable. Keep
     // the property as syntax rather than validating runtime loop bindings.
@@ -162,6 +162,18 @@ export default grammar({
       "->", field("method", reserved("property", $.identifier)), "(",
       optional(seq(field("argument", $._expression), repeat(seq(",", field("argument", $._expression))))), ")",
     )),
+    // Static calls are a distinct primary expression. Keep the class and method
+    // identifiers separate from class constants and preserve each argument.
+    // Match the class-name tokens accepted by static constants, including
+    // control words and primitive literals while excluding self and parent.
+    static_method_call_expression: $ => prec(9, seq(
+      field("class", choice(
+        reserved("class", $.identifier), alias(choice(...controlWords), $.identifier),
+        alias($.boolean, $.identifier), alias($.null, $.identifier),
+      )), token.immediate("::"),
+      field("method", reserved("property", alias(token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/), $.identifier))), "(",
+      optional(seq(field("argument", $._expression), repeat(seq(",", field("argument", $._expression))))), ")",
+    )),
     // Calls on a static unqualified identifier are expressions, including the
     // tag-shaped `{name(args)}` form which Smarty compiles as function output.
     function_call_expression: $ => prec.left(8, seq(
@@ -192,6 +204,6 @@ export default grammar({
       field("value", $._modified), "|", field("name", $.identifier),
       repeat(seq(":", field("argument", $._modifier_argument))),
     )),
-    _modifier_argument: $ => choice($.variable, $.config_variable, $.member_expression, $.method_call_expression, $.function_call_expression, $.index_expression, alias($._config_index, $.index_expression), $.array_literal, $.number, $.string, $.parenthesized_expression, $.boolean, $.null, $.class_constant_expression, $.identifier, alias($._modifier_identifier, $.identifier)),
+    _modifier_argument: $ => choice($.variable, $.config_variable, $.member_expression, $.method_call_expression, $.function_call_expression, $.static_method_call_expression, $.index_expression, alias($._config_index, $.index_expression), $.array_literal, $.number, $.string, $.parenthesized_expression, $.boolean, $.null, $.class_constant_expression, $.identifier, alias($._modifier_identifier, $.identifier)),
   }
 });

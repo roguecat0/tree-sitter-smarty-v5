@@ -1,0 +1,247 @@
+==================
+Empty static call
+==================
+{Thing::make()}
+---
+(source_file
+  (output
+    value: (static_method_call_expression
+      class: (identifier)
+      method: (identifier))))
+
+==================
+Multiple ordinary arguments
+==================
+{Thing::make($item->name, State::READY)}
+---
+(source_file
+  (output
+    value: (static_method_call_expression
+      class: (identifier)
+      method: (identifier)
+      argument: (member_expression
+        object: (variable name: (identifier))
+        member: (identifier))
+      argument: (class_constant_expression
+        class: (identifier)
+        constant: (identifier)))))
+
+==================
+Output
+==================
+{Thing::make($x)}
+---
+(source_file
+  (output
+    value: (static_method_call_expression
+      class: (identifier)
+      method: (identifier)
+      argument: (variable name: (identifier)))))
+
+==================
+Condition
+==================
+{if Thing::isReady($x)}Y{/if}
+---
+(source_file
+  (if_block
+    (if_tag
+      condition: (static_method_call_expression
+        class: (identifier)
+        method: (identifier)
+        argument: (variable name: (identifier))))
+    (text)
+    (if_close_tag)))
+
+==================
+Foreach source
+==================
+{foreach Thing::items() as $item}{$item}{/foreach}
+---
+(source_file
+  (foreach_block
+    (foreach_tag
+      source: (static_method_call_expression
+        class: (identifier)
+        method: (identifier))
+      item: (variable name: (identifier)))
+    (output value: (variable name: (identifier)))
+    (foreach_close_tag)))
+
+==================
+Generic tag positional argument
+==================
+{widget Thing::make($x)}
+---
+(source_file
+  (custom_tag
+    name: (identifier)
+    argument: (static_method_call_expression
+      class: (identifier)
+      method: (identifier)
+      argument: (variable name: (identifier)))))
+
+==================
+Generic tag attribute value
+==================
+{widget value=Thing::make($x)}{/widget}
+---
+(source_file
+  (custom_tag
+    name: (identifier)
+    (attribute
+      name: (identifier)
+      value: (static_method_call_expression
+        class: (identifier)
+        method: (identifier)
+        argument: (variable name: (identifier)))))
+  (custom_close_tag name: (identifier)))
+
+==================
+Function call argument
+==================
+{strlen(Thing::make($x))}
+---
+(source_file
+  (output
+    value: (function_call_expression
+      name: (identifier)
+      argument: (static_method_call_expression
+        class: (identifier)
+        method: (identifier)
+        argument: (variable name: (identifier))))))
+
+==================
+Object method argument
+==================
+{$o->run(Thing::make($x))}
+---
+(source_file
+  (output
+    value: (method_call_expression
+      object: (variable name: (identifier))
+      method: (identifier)
+      argument: (static_method_call_expression
+        class: (identifier)
+        method: (identifier)
+        argument: (variable name: (identifier))))))
+
+==================
+Modifier input
+==================
+{Thing::make($x)|escape}
+---
+(source_file
+  (output
+    value: (modifier_expression
+      value: (static_method_call_expression
+        class: (identifier)
+        method: (identifier)
+        argument: (variable name: (identifier)))
+      name: (identifier))))
+
+==================
+Modifier argument
+==================
+{$x|default:Thing::make($x)}
+---
+(source_file
+  (output
+    value: (modifier_expression
+      value: (variable name: (identifier))
+      name: (identifier)
+      argument: (static_method_call_expression
+        class: (identifier)
+        method: (identifier)
+        argument: (variable name: (identifier))))))
+
+==================
+Bracket index
+==================
+{$a[Thing::make($x)]}
+---
+(source_file
+  (output
+    value: (index_expression
+      object: (variable name: (identifier))
+      index: (static_method_call_expression
+        class: (identifier)
+        method: (identifier)
+        argument: (variable name: (identifier))))))
+
+==================
+Array key
+==================
+{[Thing::make($x)=>1]}
+---
+(source_file
+  (output
+    value: (array_literal
+      (array_element
+        key: (static_method_call_expression
+          class: (identifier)
+          method: (identifier)
+          argument: (variable name: (identifier)))
+        value: (number)))))
+
+==================
+Array value
+==================
+{[1=>Thing::make($x)]}
+---
+(source_file
+  (output
+    value: (array_literal
+      (array_element
+        key: (number)
+        value: (static_method_call_expression
+          class: (identifier)
+          method: (identifier)
+          argument: (variable name: (identifier)))))))
+
+==================
+Control-word class receiver
+==================
+{if::foo()}
+---
+(source_file
+  (output
+    value: (static_method_call_expression
+      class: (identifier)
+      method: (identifier))))
+
+==================
+Boolean class receiver
+==================
+{true::foo()}
+---
+(source_file
+  (output
+    value: (static_method_call_expression
+      class: (identifier)
+      method: (identifier))))
+
+==================
+Null class receiver
+==================
+{null::foo()}
+---
+(source_file
+  (output
+    value: (static_method_call_expression
+      class: (identifier)
+      method: (identifier))))
+
+==================
+Missing call closer preserves following output
+==================
+{Thing::make($x}{$after}
+---
+(source_file
+  (output
+    value: (static_method_call_expression
+      class: (identifier)
+      method: (identifier)
+      argument: (variable name: (identifier))
+      (MISSING ")")))
+  (output value: (variable name: (identifier))))
