@@ -17,6 +17,7 @@ Cartesian suite merely to fill the matrix.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Variable / config variable | yes [V-output](#ev-v-output) | yes [V-condition](#ev-v-condition) | yes [V-source](#ev-v-source) | yes [V-tag-pos](#ev-v-tag-pos) | yes [V-tag-attr](#ev-v-tag-attr) | yes [V-call-arg](#ev-v-call-arg) | yes [V-mod-input](#ev-v-mod-input) | yes [V-mod-arg](#ev-v-mod-arg) | yes [V-bracket](#ev-v-bracket) | ? [U-variable-array-key](#ev-u-variable-array-key) | yes [V-array-value](#ev-v-array-value) |
 | Primitive / string / number | yes [P-output](#ev-p-output) | yes [P-condition](#ev-p-condition) | ? [U-primitive-source](#ev-u-primitive-source) | ? [U-primitive-tag-pos](#ev-u-primitive-tag-pos) | yes [P-tag-attr](#ev-p-tag-attr) | yes [P-call-arg](#ev-p-call-arg) | yes [P-mod-input](#ev-p-mod-input) | yes [P-mod-arg](#ev-p-mod-arg) | yes [P-bracket](#ev-p-bracket) | yes [P-array-key](#ev-p-array-key) | yes [P-array-value](#ev-p-array-value) |
+| Interpolated string (double-quoted) | yes [IS-output](#ev-is-output) | ? [U-is-condition](#ev-u-is-condition) | ? [U-is-source](#ev-u-is-source) | ? [U-is-tag-pos](#ev-u-is-tag-pos) | yes [IS-tag-attr](#ev-is-tag-attr) | ? [U-is-call-arg](#ev-u-is-call-arg) | ? [U-is-mod-input](#ev-u-is-mod-input) | yes [IS-mod-arg](#ev-is-mod-arg) | ? [U-is-bracket](#ev-u-is-bracket) | ? [U-is-array-key](#ev-u-is-array-key) | ? [U-is-array-value](#ev-u-is-array-value) |
 | Parenthesized expression | yes [PA-output](#ev-pa-output) | ? [U-parenthesized-condition](#ev-u-parenthesized-condition) | ? [U-parenthesized-source](#ev-u-parenthesized-source) | ? [U-parenthesized-tag-pos](#ev-u-parenthesized-tag-pos) | ? [U-parenthesized-tag-attr](#ev-u-parenthesized-tag-attr) | yes [PA-call-arg](#ev-pa-call-arg) | yes [PA-mod-input](#ev-pa-mod-input) | yes [PA-mod-arg](#ev-pa-mod-arg) | yes [PA-bracket](#ev-pa-bracket) | yes [PA-array-key](#ev-pa-array-key) | ? [U-parenthesized-array-value](#ev-u-parenthesized-array-value) |
 | Unary / arithmetic / comparison / boolean expression | yes [OP-output](#ev-op-output) | yes [OP-condition](#ev-op-condition) | ? [U-operator-source](#ev-u-operator-source) | yes [OP-tag-pos](#ev-op-tag-pos) | yes [OP-tag-attr](#ev-op-tag-attr) | yes [OP-call-arg](#ev-op-call-arg) | limited [OP-mod-input](#ev-op-mod-input) | limited [OP-mod-arg](#ev-op-mod-arg) | limited [OP-bracket](#ev-op-bracket) | limited [OP-array-key](#ev-op-array-key) | ? [U-operator-array-value](#ev-u-operator-array-value) |
 | Modifier expression | yes [M-output](#ev-m-output) | ? [U-modifier-condition](#ev-u-modifier-condition) | ? [U-modifier-source](#ev-u-modifier-source) | ? [U-modifier-tag-pos](#ev-u-modifier-tag-pos) | yes [M-tag-attr](#ev-m-tag-attr) | ? [U-modifier-call-arg](#ev-u-modifier-call-arg) | yes [M-mod-input](#ev-m-mod-input) | ? [U-modifier-mod-arg](#ev-u-modifier-mod-arg) | ? [U-modifier-bracket](#ev-u-modifier-bracket) | ? [U-modifier-array-key](#ev-u-modifier-array-key) | ? [U-modifier-array-value](#ev-u-modifier-array-value) |
@@ -58,7 +59,13 @@ cannot observe.
 modifier values; it is not an audited support claim. The `MOD-ID-arg` cell is
 tracked separately from the Task 015 expression-composition totals below
 because Task 017 adds a modifier-only atom/context pairing. The two `GT-ID`
-cells record the direct generic-tag pairings verified by Task 018.
+cells record the direct generic-tag pairings verified by Task 018. The
+`Interpolated string` row is also separate from the historical Task 015
+totals. Task 020's implementation has passing tree and reference evidence for
+the three cells marked `yes` below: output, custom-tag attribute, and modifier
+argument. Independent implementation review accepted. The other eight
+pairings remain unknown; the three tested cells do not establish broader
+composition support.
 
 The evidence link format may point several cells to one combined hand tree and
 check when that fixture directly demonstrates all named cases. A cell may
@@ -102,6 +109,56 @@ and errored in the other contexts.
 | <a id="ev-sm-array-key"></a>SM-array-key | Array key: `{[Thing::make($x)=>1]}` | The array element `key` field is the complete call. | [hand tree](../test/corpus/static-class-method-calls.txt#L173), [check](../test/static-class-method-calls.test.mjs#L8) |
 | <a id="ev-sm-array-value"></a>SM-array-value | Array value: `{[1=>Thing::make($x)]}` | The array element `value` field is the complete call. | [hand tree](../test/corpus/static-class-method-calls.txt#L188), [check](../test/static-class-method-calls.test.mjs#L8) |
 
+## Task 020 interpolated-string composition audit
+
+Task 020's implementation and independent review are complete. Its
+hand-authored trees and Node/reference/render checks are present in the
+[interpolation fixtures](../test/corpus/interpolated-strings.txt) and
+[interpolation checks](../test/interpolated-strings.test.mjs). The three `yes`
+cells below have passing trees and pinned-reference checks; the recorder
+confirms syntax/events but does not inspect interpolation structure or values.
+The other eight pairings remain
+`?` because this audit did not test them; they are not declared unsupported or
+excluded from the project target.
+
+| Cell | Exact minimized composition | Current result and evidence |
+| --- | --- | --- |
+| <a id="ev-is-output"></a>IS-output | Output: `{"Hello $name"}` | **yes:** hand tree retains fragment and variable interpolation; fixture passes pinned Smarty reference and full-engine render. [fixture](../test/corpus/interpolated-strings.txt); [Node checks](../test/interpolated-strings.test.mjs). |
+| <a id="ev-is-tag-attr"></a>IS-tag-attr | Custom-tag attribute: `{widget value="id_{$item}"}` | **yes:** hand tree preserves the attribute field and braced variable interpolation; fixture passes pinned Smarty reference. [fixture](../test/corpus/interpolated-strings.txt); [Node checks](../test/interpolated-strings.test.mjs). |
+| <a id="ev-is-mod-arg"></a>IS-mod-arg | Modifier argument: `{$value|default:"id_{$item}"}` | **yes:** hand tree preserves the modifier argument field and braced variable interpolation; fixture passes pinned Smarty reference. [fixture](../test/corpus/interpolated-strings.txt); [Node checks](../test/interpolated-strings.test.mjs). |
+
+The backtick boundary is distinct from the three context cells above. In pinned
+Smarty 5.8.4, a backtick immediately followed by `$` enters `TAGBODY`. Braces
+inside ordinary backticks still start interpolation, with the backticks
+preserved as string text. The function-like text in backticks that are not
+immediately followed by `$` does not evaluate as a backtick expression. These
+full-engine render results use `$name = "world"`:
+
+```text
+{"Hello `$name`"}         => Hello world
+{"Hello `{$name}`"}       => Hello `world`
+{"Hello `strtoupper($name)`"} => Hello `strtoupper(world)`
+```
+
+The pinned lexer rule is `backtick dollar` in
+[`TemplateLexer.plex`](../vendor/smarty/smarty/src/Lexer/TemplateLexer.plex)
+(around lines 658–663); full-engine render evidence and the source audit are
+recorded in [Task 020](tasks/020-double-quoted-interpolation.md). Of the 23
+current earliest-tag corpus contexts, all 23 contain a real direct-dollar,
+braced, or immediate-backtick-dollar interpolation; six use the last form.
+None is counted solely because a literal backtick-delimited function spelling
+was mistaken for expression interpolation.
+
+Task 020 also covers the lexer's dollar-ID boundary: non-ID dollars remain
+literal string contents (`$`, `$!`, `$5`, and `Price $5` keep the `string`
+node), while digit-prefixed `$5a` and `$5_` are interpolated variable nodes.
+Pinned Smarty reference and full-engine checks cover both the literal outputs
+and digit-prefixed variable rendering. The numeric prefix is supported only in
+this interpolation path; unquoted `{$5a}` is valid Smarty but remains an
+unsupported follow-up outside this task. A literal
+`$` or `$5` fragment immediately followed by `$name` also remains a fragment
+before the interpolation, rendering `$world` or `$5world` respectively.
+
 ## Task 015 evidence index
 
 Keys in the matrix link to the evidence groups below. Each `yes` group names a
@@ -133,6 +190,8 @@ tree.
 
 <a id="ev-u-variable-array-key"></a><a id="ev-u-primitive-source"></a><a id="ev-u-primitive-tag-pos"></a><a id="ev-u-parenthesized-condition"></a><a id="ev-u-parenthesized-source"></a><a id="ev-u-parenthesized-tag-pos"></a><a id="ev-u-parenthesized-tag-attr"></a><a id="ev-u-parenthesized-array-value"></a><a id="ev-u-operator-source"></a><a id="ev-u-operator-array-value"></a><a id="ev-u-modifier-condition"></a><a id="ev-u-modifier-source"></a><a id="ev-u-modifier-tag-pos"></a><a id="ev-u-modifier-call-arg"></a><a id="ev-u-modifier-mod-arg"></a><a id="ev-u-modifier-bracket"></a><a id="ev-u-modifier-array-key"></a><a id="ev-u-modifier-array-value"></a><a id="ev-u-property-source"></a><a id="ev-u-property-call-arg"></a><a id="ev-u-property-bracket"></a><a id="ev-u-property-array-value"></a><a id="ev-u-method-bracket"></a><a id="ev-u-method-array-key"></a><a id="ev-u-method-array-value"></a><a id="ev-u-index-source"></a><a id="ev-u-index-call-arg"></a><a id="ev-u-index-bracket"></a><a id="ev-u-index-array-key"></a><a id="ev-u-index-array-value"></a><a id="ev-u-metadata-source"></a><a id="ev-u-metadata-tag-pos"></a><a id="ev-u-metadata-bracket"></a><a id="ev-u-metadata-array-key"></a><a id="ev-u-metadata-array-value"></a><a id="ev-u-function-source"></a><a id="ev-u-function-bracket"></a><a id="ev-u-function-array-key"></a><a id="ev-u-function-array-value"></a><a id="ev-u-array-output"></a><a id="ev-u-array-source"></a><a id="ev-u-array-mod-input"></a><a id="ev-u-array-array-key"></a><a id="ev-u-constant-source"></a>
 
+<a id="ev-u-is-condition"></a><a id="ev-u-is-source"></a><a id="ev-u-is-tag-pos"></a><a id="ev-u-is-call-arg"></a><a id="ev-u-is-mod-input"></a><a id="ev-u-is-bracket"></a><a id="ev-u-is-array-key"></a><a id="ev-u-is-array-value"></a>
+
 The cells marked `?` are unknown rather than unsupported. Each linked key names
 the exact form/context pair. Follow-up is to reduce that pair to one source,
 write its expected tree manually, and check pinned Smarty behavior before
@@ -149,8 +208,11 @@ bracket-index expression, array key, and array value; loop metadata–foreach
 source, positional argument, bracket-index expression, array key, and array
 value; function call–foreach source, bracket-index expression, array key, and
 array value; array literal–output, foreach source, modifier input, and array
-key; class constant–foreach source. The hand-written table supplies a concrete
-follow-up pair for every unknown key; no cell is promoted by grammar routing.
+key; class constant–foreach source; interpolated string–condition, foreach
+source, positional argument, function/method argument, modifier input,
+bracket-index expression, array key, and array value. The hand-written table
+supplies a concrete follow-up pair for every unknown key; no cell is promoted
+by grammar routing.
 
 ## Task 015 audit run record
 

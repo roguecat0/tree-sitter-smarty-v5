@@ -16,7 +16,10 @@ const classReservedWords = [...cases("self"), ...cases("parent")];
 
 export default grammar({
   name: "smarty2",
-  externals: $ => [$.text, $._output_attribute_error_marker],
+  externals: $ => [
+    $.text, $._output_attribute_error_marker,
+    $.string_fragment, $._backtick_interpolation_start,
+  ],
   extras: _ => [/\s/],
   word: $ => $.identifier,
   reserved: {
@@ -108,7 +111,7 @@ export default grammar({
     _primary: $ => choice($._nonliteral_primary, $.boolean, $.null),
     _nonliteral_primary: $ => choice(
       $.variable, $.loop_metadata_expression, $.config_variable, $.member_expression, $.method_call_expression, $.function_call_expression, $.index_expression, alias($._config_index, $.index_expression), $.array_literal,
-      $.number, $.string, $.parenthesized_expression, $.static_method_call_expression, $.class_constant_expression,
+      $.number, $.string, $.interpolated_string, $.parenthesized_expression, $.static_method_call_expression, $.class_constant_expression,
     ),
     // Smarty item metadata is an adjacent static suffix on a variable. Keep
     // the property as syntax rather than validating runtime loop bindings.
@@ -194,7 +197,27 @@ export default grammar({
     boolean: _ => choice(...cases("true"), ...cases("false")),
     null: _ => choice(...cases("null")),
     number: _ => /[0-9]+(?:\.[0-9]+)?/,
-    string: _ => choice(/'[^'\\]*(?:\\.[^'\\]*)*'/, /"[^"\\$]*(?:\\.[^"\\$]*)*"/),
+    string: _ => choice(
+      /'[^'\\]*(?:\\.[^'\\]*)*'/,
+      /"(?:[^"\\$]|\\.|\$[^A-Za-z0-9_$]|\$[0-9]+[^A-Za-z0-9_$]|\$\$*[^A-Za-z0-9_$]|\$\$*[0-9]+[^A-Za-z0-9_$]|\$[0-9]+\$\$*[^A-Za-z0-9_$])*(?:\$[0-9]*)?(?:\$\$*)?"/,
+    ),
+    // Smarty switches lexer modes inside double quotes. External tokens keep
+    // literal fragments distinct from actual variable/tag interpolation, and
+    // preserve the existing string node when a quote contains no interpolation.
+    interpolated_string: $ => seq(
+      '"', repeat($.string_fragment), $.string_interpolation,
+      repeat(choice($.string_fragment, $.string_interpolation)), '"',
+    ),
+    string_interpolation: $ => choice(
+      field("value", choice($.variable, alias($._interpolated_digit_id, $.variable))),
+      seq("{", field("value", $._expression), "}"),
+      seq($._backtick_interpolation_start, field("value", $._expression), token.immediate("`")),
+    ),
+    // Smarty's double-quoted lexer accepts digit-prefixed IDs. Keep that
+    // boundary local to interpolation instead of broadening variables in tags.
+    _interpolated_digit_id: $ => seq(
+      "$", field("name", alias(token.immediate(/[0-9]+[a-zA-Z_][a-zA-Z0-9_]*/), $.identifier)),
+    ),
     parenthesized_expression: $ => seq("(", $._expression, ")"),
     binary_expression: $ => choice(
       ...[[1, ["+", "-"]], [2, ["*", "/", "%"]]].map(([precedence, operators]) =>
@@ -204,6 +227,6 @@ export default grammar({
       field("value", $._modified), "|", field("name", $.identifier),
       repeat(seq(":", field("argument", $._modifier_argument))),
     )),
-    _modifier_argument: $ => choice($.variable, $.config_variable, $.member_expression, $.method_call_expression, $.function_call_expression, $.static_method_call_expression, $.index_expression, alias($._config_index, $.index_expression), $.array_literal, $.number, $.string, $.parenthesized_expression, $.boolean, $.null, $.class_constant_expression, $.identifier, alias($._modifier_identifier, $.identifier)),
+    _modifier_argument: $ => choice($.variable, $.config_variable, $.member_expression, $.method_call_expression, $.function_call_expression, $.static_method_call_expression, $.index_expression, alias($._config_index, $.index_expression), $.array_literal, $.number, $.string, $.interpolated_string, $.parenthesized_expression, $.boolean, $.null, $.class_constant_expression, $.identifier, alias($._modifier_identifier, $.identifier)),
   }
 });

@@ -47,10 +47,19 @@ custom literal sequences, alternate delimiters, or `auto_literal=false`.
 Evidence: [manual Smarty-reference trees](corpus/smarty-reference.txt) and
 [full-engine/reference/edit/recovery checks](default-auto-literal.test.mjs).
 
-Currently not supported: other built-in blocks, word operator aliases, bitwise operators,
-dynamic member access, dynamic config variables,
-interpolated strings, literal blocks, configurable delimiters,
-or HTML injection. These are current gaps to assess and address according to
+Double-quoted strings support direct, braced, and immediate-backtick-dollar
+interpolation, and preserve dollars not followed by a Smarty ID as literal
+string content. Digit-prefixed Smarty IDs are supported only in that
+interpolation path; unquoted `{$5a}` remains unsupported outside Task 020. The
+reviewed composition contexts are output, generic-tag attribute, and modifier
+argument; other pairings remain unverified. The 23 current earliest-error
+contexts and syntax boundary are audited in
+[task 020](../docs/tasks/020-double-quoted-interpolation.md); backticks not
+followed immediately by `$` remain string content,
+literal blocks, configurable delimiters,
+or HTML injection. Other built-in blocks, word operator aliases, bitwise
+operators, dynamic member access, and dynamic config variables remain current
+gaps to assess and address according to
 common usage and usefulness to parser consumers; the explicit plugin/custom-tag
 boundary is the exception. Recovery on unfinished and malformed input is part
 of the parser's goal, especially for interactive editor use, and should be

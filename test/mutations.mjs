@@ -8,6 +8,12 @@ import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const original = readFileSync(join(root, 'grammar.js'), 'utf8');
 const mutations = [
+  { name: 'interpolation loses the expression value field', fixture: 'Variable inside double-quoted output string',
+    from: 'field("value", choice($.variable, alias($._interpolated_digit_id, $.variable)))',
+    to: 'field("item", choice($.variable, alias($._interpolated_digit_id, $.variable)))' },
+  { name: 'digit-prefixed interpolation path is missing', fixture: 'Digit-prefixed Smarty ID is interpolated',
+    from: 'choice($.variable, alias($._interpolated_digit_id, $.variable))',
+    to: '$.variable' },
   { name: 'class constant name loses its field', fixture: 'Class constant output',
     from: 'field("constant", alias(token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/), $.identifier))',
     to: 'field("value", alias(token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/), $.identifier))' },

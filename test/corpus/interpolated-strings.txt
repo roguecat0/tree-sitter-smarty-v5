@@ -1,0 +1,225 @@
+==================
+Variable inside double-quoted output string
+==================
+{"Hello $name"}
+---
+(source_file
+  (output
+    value: (interpolated_string
+      (string_fragment)
+      (string_interpolation value: (variable name: (identifier))))))
+
+==================
+Braced member expression with surrounding fragments
+==================
+{"Hello {$user->name}!"}
+---
+(source_file
+  (output
+    value: (interpolated_string
+      (string_fragment)
+      (string_interpolation
+        value: (member_expression
+          object: (variable name: (identifier))
+          member: (identifier)))
+      (string_fragment))))
+
+==================
+Metadata interpolation in a generic tag attribute
+==================
+{widget value="id_{$item@key}"}
+---
+(source_file
+  (custom_tag
+    name: (identifier)
+    (attribute
+      name: (identifier)
+      value: (interpolated_string
+        (string_fragment)
+        (string_interpolation
+          value: (loop_metadata_expression
+            item: (variable name: (identifier))
+            property: (identifier)))))))
+
+==================
+Immediate backtick-dollar variable interpolation
+==================
+{"Hello `$name`"}
+---
+(source_file
+  (output
+    value: (interpolated_string
+      (string_fragment)
+      (string_interpolation value: (variable name: (identifier))))))
+
+==================
+Backtick-dollar method expression retains its call
+==================
+{"Hello `$user->get_name()`"}
+---
+(source_file
+  (output
+    value: (interpolated_string
+      (string_fragment)
+      (string_interpolation
+        value: (method_call_expression
+          object: (variable name: (identifier))
+          method: (identifier))))))
+
+==================
+Braced interpolation retains literal surrounding backticks
+==================
+{"Hello `{$name}`"}
+---
+(source_file
+  (output
+    value: (interpolated_string
+      (string_fragment)
+      (string_interpolation value: (variable name: (identifier)))
+      (string_fragment))))
+
+==================
+Function-like text stays literal around direct variable interpolation
+==================
+{"Hello `strtoupper($name)`"}
+---
+(source_file
+  (output
+    value: (interpolated_string
+      (string_fragment)
+      (string_interpolation value: (variable name: (identifier)))
+      (string_fragment))))
+
+==================
+Braced interpolation in a direct modifier argument
+==================
+{$value|default:"id_{$item}"}
+---
+(source_file
+  (output
+    value: (modifier_expression
+      value: (variable name: (identifier))
+      name: (identifier)
+      argument: (interpolated_string
+        (string_fragment)
+        (string_interpolation value: (variable name: (identifier)))))))
+
+==================
+Ordinary double-quoted string retains its node
+==================
+{"plain text"}
+---
+(source_file (output value: (string)))
+
+==================
+Single-quoted variable text is not interpolated
+==================
+{'$name'}
+---
+(source_file (output value: (string)))
+
+==================
+Single-quoted braced text is not interpolated
+==================
+{'{$name}'}
+---
+(source_file (output value: (string)))
+
+==================
+Standalone dollar remains quoted string text
+==================
+{"$"}
+---
+(source_file (output value: (string)))
+
+==================
+Dollar before punctuation remains quoted string text
+==================
+{"$!"}
+---
+(source_file (output value: (string)))
+
+==================
+Dollar before digits remains quoted string text
+==================
+{"$5"}
+---
+(source_file (output value: (string)))
+
+==================
+Price with dollar and digits remains quoted string text
+==================
+{"Price $5"}
+---
+(source_file (output value: (string)))
+
+==================
+Repeated literal dollars remain quoted string text
+==================
+{"$$"}
+---
+(source_file (output value: (string)))
+
+==================
+Digit-prefixed Smarty ID is interpolated
+==================
+{"$5a"}
+---
+(source_file
+  (output
+    value: (interpolated_string
+      (string_interpolation
+        value: (variable
+          name: (identifier))))))
+
+==================
+Digit-prefixed Smarty ID may start with underscore
+==================
+{"$5_"}
+---
+(source_file
+  (output
+    value: (interpolated_string
+      (string_interpolation
+        value: (variable
+          name: (identifier))))))
+
+==================
+Literal dollar fragment precedes variable interpolation
+==================
+{"$$name"}
+---
+(source_file
+  (output
+    value: (interpolated_string
+      (string_fragment)
+      (string_interpolation
+        value: (variable
+          name: (identifier))))))
+
+==================
+Digit suffix stays literal before variable interpolation
+==================
+{"$5$name"}
+---
+(source_file
+  (output
+    value: (interpolated_string
+      (string_fragment)
+      (string_interpolation
+        value: (variable
+          name: (identifier))))))
+
+==================
+Malformed interpolation preserves following output
+==================
+{"Hello {$name"}{$after}
+---
+(source_file
+  (output
+    value: (interpolated_string
+      (string_fragment)
+      (string_interpolation
+        value: (variable name: (identifier))
+        (MISSING "}"))))
+  (output value: (variable name: (identifier))))
