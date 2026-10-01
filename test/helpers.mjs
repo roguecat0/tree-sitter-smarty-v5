@@ -49,6 +49,23 @@ export function observations(node) {
     case 'foreachelse_tag': case 'foreach_close_tag':
       events.push({ kind: 'tag', name: node.type === 'foreachelse_tag' ? 'foreachelse' : 'foreachclose', arguments: [] });
       break;
+    case 'for_tag': {
+      const header = node.namedChildren.find(child => child.type === 'range_for_header' || child.type === 'c_style_for_header');
+      const attributes = [
+        ...header.namedChildren.filter(child => child.type === 'attribute' || child.type === 'for_option'),
+        ...header.childrenForFieldName('argument'),
+        ...(header.childForFieldName('max') ? [header.childForFieldName('max')] : []),
+      ].sort((left, right) => left.startIndex - right.startIndex)
+        .map(child => ({name: child.type === 'attribute' ? child.childForFieldName('name').text : child.type === 'for_option' || child.type === 'identifier' ? null : 'max'}));
+      const arguments_ = header.type === 'range_for_header'
+        ? [...attributes, {name: 'start'}, {name: 'to'}, ...(header.childForFieldName('step') ? [{name: 'step'}] : [])]
+        : [...attributes, {name: 'start'}, {name: 'ifexp'}, {name: 'var'}, {name: 'step'}];
+      events.push({kind: 'tag', name: 'for', arguments: arguments_});
+      break;
+    }
+    case 'forelse_tag': case 'for_close_tag':
+      events.push({kind: 'tag', name: node.type === 'forelse_tag' ? 'forelse' : 'forclose', arguments: []});
+      break;
     case 'modifier_expression':
       events.push({ kind: 'modifier', name, arguments: node.childrenForFieldName('argument').length });
       break;

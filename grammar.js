@@ -12,7 +12,7 @@
 /** @param {string} word */
 const cases = word => [...word].reduce((forms, ch) => forms.flatMap(form => [form + ch, form + ch.toUpperCase()]), /** @type {string[]} */ ([""]));
 const primitiveWords = [...cases("true"), ...cases("false"), ...cases("null")];
-const controlWords = ["if", "else", "elseif", "foreach", "foreachelse"];
+const controlWords = ["if", "else", "elseif", "foreach", "foreachelse", "for", "forelse"];
 const classReservedWords = [...cases("self"), ...cases("parent")];
 
 export default grammar({
@@ -29,10 +29,10 @@ export default grammar({
     property: _ => [],
     class: _ => classReservedWords,
   },
-  conflicts: $ => [[$.elseif_clause], [$.else_clause], [$.foreachelse_clause]],
+  conflicts: $ => [[$.elseif_clause], [$.else_clause], [$.foreachelse_clause], [$.forelse_clause]],
   rules: {
     source_file: $ => repeat($._node),
-    _node: $ => choice($.text, $.output, $.custom_tag, $.custom_close_tag, $.if_block, $.comment, $.foreach_block),
+    _node: $ => choice($.text, $.output, $.custom_tag, $.custom_close_tag, $.if_block, $.comment, $.foreach_block, $.for_block),
     // A single token hides all template syntax and stops at the first *}.
     // Star runs cannot consume a closing brace; the following newline is text.
     comment: _ => token(seq("{*", /([^*]|\*+[^*}])*/, /\*+/, "}")),
@@ -97,6 +97,40 @@ export default grammar({
     foreachelse_clause: $ => seq($.foreachelse_tag, repeat($._node)),
     foreachelse_tag: _ => seq("{", "foreachelse", "}"),
     foreach_close_tag: _ => seq("{/", "foreach", "}"),
+    for_block: $ => seq($.for_tag, repeat($._node), optional($.forelse_clause), $.for_close_tag),
+    for_tag: $ => seq("{", "for", choice($.range_for_header, $.c_style_for_header), "}"),
+    range_for_header: $ => seq(
+      field("target", $._for_target), "=", field("start", $._expression), alias(token(prec(2, /[tT][oO]/)), "to"),
+      field("end", $._expression),
+      optional(seq("step", field("step", $._expression))),
+      repeat(choice(
+        seq("max", "=", field("max", $._expression)),
+        $.attribute,
+        $.for_option,
+        field("argument", $._for_bare_argument),
+      )),
+      optional(field("argument", alias("step", $.identifier))),
+    ),
+    c_style_for_header: $ => seq(
+      field("initializer", $.for_initializer), repeat(seq(",", field("initializer", $.for_initializer))),
+      ";", field("condition", $._expression), ";", field("update", $.for_update),
+      repeat(choice($.attribute, $.for_option, field("argument", $._for_bare_argument))),
+      optional(field("argument", alias("step", $.identifier))),
+    ),
+    for_initializer: $ => seq(field("target", $._for_target), "=", field("value", $._expression)),
+    for_update: $ => seq(
+      field("target", $._for_target),
+      choice(
+        field("operator", choice("++", "--")),
+        seq("=", field("value", $._expression)),
+      ),
+    ),
+    _for_target: $ => choice($.variable, $.index_expression, alias($._config_index, $.index_expression)),
+    _for_bare_argument: $ => $.identifier,
+    for_option: _ => "nocache",
+    forelse_clause: $ => seq($.forelse_tag, repeat($._node)),
+    forelse_tag: _ => seq("{", "forelse", "}"),
+    for_close_tag: _ => seq("{/", "for", "}"),
     _expression: $ => $._logical_or,
     // Layer comparison operands so an unparenthesized second comparison cannot
     // silently acquire associativity. Aliases preserve the public binary tree.

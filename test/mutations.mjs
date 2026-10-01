@@ -23,6 +23,12 @@ const mutations = [
   { name: 'foreach source gets the wrong field', fixture: 'Simple foreach',
     from: 'field("source", $._expression)',
     to: 'field("value", $._expression)' },
+  { name: 'nested for block is no longer composable', fixture: 'nested loop ownership',
+    from: '$.if_block, $.comment, $.foreach_block, $.for_block)',
+    to: '$.if_block, $.comment, $.foreach_block)' },
+  { name: 'C-style header falls back to the range tree', fixture: 'C-style multiple initializers and increment',
+    from: 'for_tag: $ => seq("{", "for", choice($.range_for_header, $.c_style_for_header), "}"),',
+    to: 'for_tag: $ => seq("{", "for", $.range_for_header, "}"),' },
   { name: 'boolean operator levels are swapped', fixture: 'Boolean precedence',
     from: 'field("operator", "||"), field("right", $._logical_and)',
     to: 'field("operator", "&&"), field("right", $._logical_and)',
@@ -41,8 +47,8 @@ const mutations = [
     from: 'member_expression: $ => prec.left(5, seq(\n      field("object", choice($.variable, $.member_expression, $.method_call_expression, $.index_expression))',
     to: 'member_expression: $ => prec.left(5, seq(\n      field("value", choice($.variable, $.member_expression, $.method_call_expression, $.index_expression))' },
   { name: 'comment swallowed as text', fixture: 'Comment hides tags and quotes',
-    from: '$.if_block, $.comment, $.foreach_block)',
-    to: '$.if_block, alias($.comment, $.text), $.foreach_block)' },
+    from: '$.if_block, $.comment, $.foreach_block, $.for_block)',
+    to: '$.if_block, alias($.comment, $.text), $.foreach_block, $.for_block)' },
   { name: 'custom tag swallowed as text', fixture: 'Custom tag arguments',
     from: 'choice($.text, $.output, $.custom_tag,',
     to: 'choice($.text, $.output, alias($.custom_tag, $.text),' },
@@ -55,21 +61,22 @@ const mutations = [
 ];
 
 console.log('\nChecking that deliberate grammar bugs are caught:');
-for (const mutation of mutations) {
-  const dir = mkdtempSync(join(tmpdir(), 'smarty-mutation-'));
-  try {
-    cpSync(join(root, 'tree-sitter.json'), join(dir, 'tree-sitter.json'));
-    mkdirSync(join(dir, 'test'), { recursive: true });
-    cpSync(join(root, 'test/corpus'), join(dir, 'test/corpus'), { recursive: true });
-    mkdirSync(join(dir, 'src'), { recursive: true });
-    cpSync(join(root, 'src/tree_sitter'), join(dir, 'src/tree_sitter'), { recursive: true });
-    cpSync(join(root, 'src/scanner.c'), join(dir, 'src/scanner.c'));
-    writeFileSync(join(dir, 'package.json'), '{"type":"module"}');
-    const options = { cwd: dir, encoding: 'utf8', timeout: 30_000, env: process.env };
-    // Establish that this isolated setup works before attributing failure to a bug.
-    writeFileSync(join(dir, 'grammar.js'), original);
-    execFileSync('tree-sitter', ['generate'], options);
-    execFileSync('tree-sitter', ['test', '--show-fields', '--include', mutation.fixture], options);
+const dir = mkdtempSync(join(tmpdir(), 'smarty-mutation-'));
+try {
+  cpSync(join(root, 'tree-sitter.json'), join(dir, 'tree-sitter.json'));
+  mkdirSync(join(dir, 'test'), { recursive: true });
+  cpSync(join(root, 'test/corpus'), join(dir, 'test/corpus'), { recursive: true });
+  mkdirSync(join(dir, 'src'), { recursive: true });
+  cpSync(join(root, 'src/tree_sitter'), join(dir, 'src/tree_sitter'), { recursive: true });
+  cpSync(join(root, 'src/scanner.c'), join(dir, 'src/scanner.c'));
+  writeFileSync(join(dir, 'package.json'), '{"type":"module"}');
+  const options = { cwd: dir, encoding: 'utf8', timeout: 30_000, env: process.env };
+  // The main runner has already passed the full unmodified corpus. Establish
+  // that this isolated workspace is usable once, then regenerate only mutants.
+  writeFileSync(join(dir, 'grammar.js'), original);
+  execFileSync('tree-sitter', ['generate'], options);
+  execFileSync('tree-sitter', ['test', '--show-fields', '--include', mutations[0].fixture], options);
+  for (const mutation of mutations) {
     assert.equal(original.split(mutation.from).length, 2, 'Mutation must match exactly once');
     let modified = original.replace(mutation.from, mutation.to);
     if (mutation.alsoFrom) {
@@ -83,7 +90,7 @@ for (const mutation of mutations) {
     assert.equal(result.status, 1, `Bug escaped: ${mutation.name}\n${result.stdout}\n${result.stderr}`);
     assert.match(result.stdout, /1 failure:/, 'Must be a tree assertion failure, not a build/tool failure');
     console.log(`  CAUGHT: ${mutation.name} (${mutation.fixture})`);
-  } finally {
-    rmSync(dir, { recursive: true, force: true });
   }
+} finally {
+  rmSync(dir, { recursive: true, force: true });
 }

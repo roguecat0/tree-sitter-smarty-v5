@@ -1,0 +1,209 @@
+==================
+range for
+==================
+{for $i=0 to $end}{$i}{/for}
+---
+(source_file
+  (for_block
+    (for_tag (range_for_header
+      target: (variable name: (identifier))
+      start: (number)
+      end: (variable name: (identifier))))
+    (output value: (variable name: (identifier)))
+    (for_close_tag)))
+
+==================
+range options and forelse
+==================
+{for $i=1 to 3 step 2 max=4 nocache}{$i}{forelse}empty{/for}
+---
+(source_file
+  (for_block
+    (for_tag (range_for_header
+      target: (variable name: (identifier))
+      start: (number)
+      end: (number)
+      step: (number)
+      max: (number)
+      (for_option)))
+    (output value: (variable name: (identifier)))
+    (forelse_clause (forelse_tag) (text))
+    (for_close_tag)))
+
+==================
+range trailing bare shorthand argument
+==================
+{for $i=0 to 3 step}{$i}{/for}
+---
+(source_file
+  (for_block
+    (for_tag (range_for_header
+      target: (variable name: (identifier))
+      start: (number)
+      end: (number)
+      argument: (identifier)))
+    (output value: (variable name: (identifier)))
+    (for_close_tag)))
+
+==================
+range indexed target and method bound
+==================
+{for $a[$k]=0 to $value_type->get_count($name)-1}{$a[$k]}{/for}
+---
+(source_file
+  (for_block
+    (for_tag (range_for_header
+      target: (index_expression
+        object: (variable name: (identifier))
+        index: (variable name: (identifier)))
+      start: (number)
+      end: (binary_expression
+        left: (method_call_expression
+          object: (variable name: (identifier))
+          method: (identifier)
+          argument: (variable name: (identifier)))
+        right: (number))))
+    (output value: (index_expression
+      object: (variable name: (identifier))
+      index: (variable name: (identifier))))
+    (for_close_tag)))
+
+==================
+C-style multiple initializers and increment
+==================
+{for $i=0,$j=1; $i<3; $i++}{$i}{/for}
+---
+(source_file
+  (for_block
+    (for_tag (c_style_for_header
+      initializer: (for_initializer target: (variable name: (identifier)) value: (number))
+      initializer: (for_initializer target: (variable name: (identifier)) value: (number))
+      condition: (binary_expression
+        left: (variable name: (identifier))
+        right: (number))
+      update: (for_update
+        target: (variable name: (identifier)))))
+    (output value: (variable name: (identifier)))
+    (for_close_tag)))
+
+==================
+C-style expression assignment update
+==================
+{for $i=0; $i<3; $i=$i+1}{$i}{/for}
+---
+(source_file
+  (for_block
+    (for_tag (c_style_for_header
+      initializer: (for_initializer target: (variable name: (identifier)) value: (number))
+      condition: (binary_expression
+        left: (variable name: (identifier))
+        right: (number))
+      update: (for_update
+        target: (variable name: (identifier))
+        value: (binary_expression
+          left: (variable name: (identifier))
+          right: (number)))))
+    (output value: (variable name: (identifier)))
+    (for_close_tag)))
+
+==================
+C-style decrement
+==================
+{for $i=3; $i>0; $i--}{$i}{/for}
+---
+(source_file
+  (for_block
+    (for_tag (c_style_for_header
+      initializer: (for_initializer target: (variable name: (identifier)) value: (number))
+      condition: (binary_expression
+        left: (variable name: (identifier))
+        right: (number))
+      update: (for_update
+        target: (variable name: (identifier)))))
+    (output value: (variable name: (identifier)))
+    (for_close_tag)))
+
+==================
+C-style indexed target
+==================
+{for $a[$k]=0; $a[$k]<3; $a[$k]++}{$a[$k]}{/for}
+---
+(source_file
+  (for_block
+    (for_tag (c_style_for_header
+      initializer: (for_initializer target: (index_expression
+        object: (variable name: (identifier))
+        index: (variable name: (identifier))) value: (number))
+      condition: (binary_expression
+        left: (index_expression
+          object: (variable name: (identifier))
+          index: (variable name: (identifier)))
+        right: (number))
+      update: (for_update
+        target: (index_expression
+          object: (variable name: (identifier))
+          index: (variable name: (identifier))))))
+    (output value: (index_expression
+      object: (variable name: (identifier))
+      index: (variable name: (identifier))))
+    (for_close_tag)))
+
+==================
+C-style max remains syntactic attribute
+==================
+{for $i=0; $i<3; $i++ max=2 nocache}{$i}{/for}
+---
+(source_file
+  (for_block
+    (for_tag (c_style_for_header
+      initializer: (for_initializer target: (variable name: (identifier)) value: (number))
+      condition: (binary_expression
+        left: (variable name: (identifier))
+        right: (number))
+      update: (for_update
+        target: (variable name: (identifier)))
+      (attribute name: (identifier) value: (number))
+      (for_option)))
+    (output value: (variable name: (identifier)))
+    (for_close_tag)))
+
+==================
+nested loop ownership
+==================
+{for $i=0 to 2}{foreach $items as $item}{if $item}{$i}{/if}{foreachelse}none{/foreach}{forelse}zero{/for}
+---
+(source_file
+  (for_block
+    (for_tag (range_for_header
+      target: (variable name: (identifier))
+      start: (number)
+      end: (number)))
+    (foreach_block
+      (foreach_tag source: (variable name: (identifier)) item: (variable name: (identifier)))
+      (if_block
+        (if_tag condition: (variable name: (identifier)))
+        (output value: (variable name: (identifier)))
+        (if_close_tag))
+      (foreachelse_clause (foreachelse_tag) (text))
+      (foreach_close_tag))
+    (forelse_clause (forelse_tag) (text))
+    (for_close_tag)))
+
+==================
+C-style nocache
+==================
+{for $i=0; $i<2; $i++ nocache}{unknown value=$i}{/for}
+---
+(source_file
+  (for_block
+    (for_tag (c_style_for_header
+      initializer: (for_initializer target: (variable name: (identifier)) value: (number))
+      condition: (binary_expression
+        left: (variable name: (identifier))
+        right: (number))
+      update: (for_update
+        target: (variable name: (identifier)))
+      (for_option)))
+    (custom_tag name: (identifier)
+      (attribute name: (identifier) value: (variable name: (identifier))))
+    (for_close_tag)))

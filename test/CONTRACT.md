@@ -54,6 +54,26 @@ nodes, optional `else_clause`, and `if_close_tag`. Conditions have a `condition`
 field. Branch clauses contain their opening tag and body nodes. Generic tags
 must not consume malformed built-in control tags.
 
+Standard `{for}` blocks are nested as `for_block` nodes with a `for_tag`, direct
+body nodes, optional `forelse_clause`, and `for_close_tag`. `for_tag` retains
+distinct `range_for_header` and `c_style_for_header` structures. Range headers
+preserve a target, start/end expressions, optional `step`, optional `max`,
+`nocache`, and parser-accepted trailing shorthand arguments. C-style headers
+preserve ordered initializers, a condition, one assignment/increment/decrement
+update, and syntactically accepted attributes including `max` even when the
+full compiler rejects that attribute. Indexed targets keep their
+`index_expression` tree. `{forelse}` belongs only to `{for}` and remains
+distinct from `{foreachelse}`. Nested for/foreach/if blocks own their own
+closers. The recording compiler checks only a syntax projection and does not
+validate branch pairing; pinned full-engine checks cover orphan/duplicate
+branches, missing closers, and crossed loop ownership. For the tested malformed
+C-style header with an omitted update, Tree-sitter currently puts the loop's
+own closer in a top-level `ERROR`, while retaining a neighboring valid
+`if_close_tag` and following output as separate siblings. This exact recovery
+shape is fixed by test. Evidence: [for loop trees](corpus/for-loops.txt),
+[reference/compiler/recovery/edit checks](for-loops.test.mjs), and
+[Task 026 corpus report and structural review](../docs/tasks/026-for-loops.md).
+
 The manually specified trees in `test/corpus/*.txt` are the structural
 contract. Do not regenerate their expectations from parser output to fix a failure.
 The reference tests compare a smaller projection (ordered tag names, argument
