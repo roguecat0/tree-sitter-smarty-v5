@@ -294,6 +294,14 @@ file-SHA-256, newline records. All 467 per-file path/hash pairs in the new
 application report match `/tmp/smarty-013-after.json`; only the grammar hash
 and parse results reflect the current parser.
 
+Corpus roots are kept separate on disk: the application templates are under
+`corpus/application/`, the selected Smarty test fixtures under
+`corpus/upstream-smarty-v5.8.4-core/`, and the demo under
+`corpus/upstream-smarty-v5.8.4-example/`. The default reporter reads only the
+application root; the two upstream reports use explicit source paths. This
+organization change preserves the upstream output paths and does not alter the
+recorded Task 024 parser evidence or source hashes.
+
 All 19 clean core files were structurally inspected. Their parse-tree observations:
 
 - `TemplateSource/Comments/templates/longcomment.tpl`: explicit comment node.

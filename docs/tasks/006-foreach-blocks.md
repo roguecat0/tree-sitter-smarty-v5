@@ -13,7 +13,7 @@ a simple variable binding, optional key binding, and at most one `foreachelse`:
 {foreach $items as $item}{$item}{foreachelse}Empty{/foreach}
 ```
 
-`corpus/toolbar.tpl:5-16` supplies a method-call source and a loop body containing
+`corpus/application/toolbar.tpl:5-16` supplies a method-call source and a loop body containing
 outputs, modifiers and comments. Reduce it to neutral identifiers. Key binding
 and `foreachelse` are reference-backed synthetic cases; no local provenance is
 claimed for those forms. The initial lexical report found `foreach` in 244
@@ -135,7 +135,7 @@ do not claim the existing recorder proves pairing.
   regressions. All 16 newly clean files were inspected for explicit loop fields,
   body/branch ownership and closing nodes (19 loops total). Local structure
   evidence is `/tmp/smarty-006-review.json`; reports stay local.
-- The tracked toolbar composition minimizes `corpus/toolbar.tpl:5-16`. Newly
+- The tracked toolbar composition minimizes `corpus/application/toolbar.tpl:5-16`. Newly
   clean `action_types/action_value_instruction.tpl` additionally demonstrates
   nested loops with an outer empty branch; synthetic nesting trees protect that
   structure. No existing generic foreach expected tree required replacement.

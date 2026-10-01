@@ -10,8 +10,8 @@ Add symbolic comparisons `== != === !== < <= > >=`, boolean `&& ||`, and prefix
 supported, not only inside `if`; retain the narrower modifier-argument boundary
 unless independently verified (parentheses can carry a full expression).
 
-`corpus/action_types/action_value_afmelden.tpl:2-3` supplies negated calls and
-conjunctions. `corpus/menu_button.tpl:5` supplies comparisons against an empty
+`corpus/application/action_types/action_value_afmelden.tpl:2-3` supplies negated calls and
+conjunctions. `corpus/application/menu_button.tpl:5` supplies comparisons against an empty
 string, `&&`, and a numeric comparison; minimize to
 `{if $button->get_icon() != '' && $level > 0}Y{/if}`. Static constants and
 bitwise operators elsewhere in those files are not part of this task.
@@ -150,6 +150,6 @@ evaluate arbitrary corpus source to establish precedence.
   `action_types/action_value_test_post.tpl` (`!`),
   `action_types/action_value_textarea.tpl` (`!=`), and `app_doc.tpl` (`==`).
   Local structure review is saved in `/tmp/smarty-005-review.json`.
-- The tracked icon condition minimizes `corpus/menu_button.tpl:5`. Word aliases,
+- The tracked icon condition minimizes `corpus/application/menu_button.tpl:5`. Word aliases,
   bitwise operators, constants/literals, increment/decrement and the other scoped
   exclusions remain unsupported. Clean parsing is not runtime validation.

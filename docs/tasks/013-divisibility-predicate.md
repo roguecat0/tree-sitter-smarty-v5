@@ -25,9 +25,9 @@ implementation owner must capture a fresh corpus baseline for the actual
 starting grammar and compare it with a hash-matched after report.
 
 The source occurrences are highly repetitive row-striping conditions, for
-example `corpus/view_wage_work/wage_work_repairs_params.tpl:26`,
-`corpus/action_types/action_value_replace_part.tpl:46`, and
-`corpus/view_module/check_status.tpl:67`. They include both item metadata
+example `corpus/application/view_wage_work/wage_work_repairs_params.tpl:26`,
+`corpus/application/action_types/action_value_replace_part.tpl:46`, and
+`corpus/application/view_module/check_status.tpl:67`. They include both item metadata
 (`$repair@index is div by 2`) and standalone calls
 (`count($value_type->get_objects()) is div by 2`).
 

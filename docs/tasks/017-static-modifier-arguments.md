@@ -22,7 +22,7 @@ template's failure. The remaining match is in `history.tpl`, whose template
 has a parse error elsewhere.
 
 For example,
-`corpus/view_admin/action_types/search_action_type.tpl:90` contains
+`corpus/application/view_admin/action_types/search_action_type.tpl:90` contains
 `{$app->urls['go_page']->get_url('page', 'var_page')|escape:quotes}`; its
 reported error starts immediately before `quotes`. The same file's line 35
 has `|escape:'quotes'`, a quoted string argument that is not part of this

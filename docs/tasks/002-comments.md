@@ -5,8 +5,8 @@ Status: complete (2026-09-22). Dependencies: initial baseline only.
 ## Scope and motivation
 
 Recognize `{* ... *}` as a named `comment` node, including multiline and empty
-comments. Corpus evidence: `corpus/toolbar.tpl` starts with a multiline comment;
-`corpus/action_types/action_value_add_action.tpl` comments out HTML and Smarty.
+comments. Corpus evidence: `corpus/application/toolbar.tpl` starts with a multiline comment;
+`corpus/application/action_types/action_value_add_action.tpl` comments out HTML and Smarty.
 The initial report finds comment markers in 132 failing files.
 
 Exclude `{literal}`, HTML comments as special nodes, interpolation, and custom
@@ -46,13 +46,13 @@ comments and reports a missing terminator. Establish termination at the first
 - `npm test` first failed on eight new comment trees; after implementation and
   the reference clarification below it passes 25 trees, 40 Node checks and 4
   mutation checks. The new mutation proves aliasing a comment to text is caught.
-- `npm run corpus:report -- ./corpus /tmp/smarty-002-after.json`, compared with
+- `npm run corpus:report -- ./corpus/application /tmp/smarty-002-after.json`, compared with
   `/tmp/smarty-001-after.json`: identical hashes for all 467 files; 13 → 15 clean,
   454 → 452 failing; no clean-to-failing regressions. Both newly clean files
   (`extensions/gps/gps_print_labels.tpl` and
   `view_admin/name_list_instructions/dlg_map_nl.tpl`) have explicit comment leaves,
   with first-terminator ranges inspected. Reports are local temporary artifacts.
-- `corpus/toolbar.tpl:1-3` supplies the minimized multiline helper comment in the
+- `corpus/application/toolbar.tpl:1-3` supplies the minimized multiline helper comment in the
   LF/CRLF trees. Its real first comment was checked for exact delimiter range;
   the rest of that template still uses unsupported syntax.
 - Reference tests verify skipped-body behavior, first terminator and unterminated

@@ -5,7 +5,7 @@ Status: complete (2026-09-22). Dependencies: initial baseline only; recommended 
 ## Scope and motivation
 
 Add `$user->name` and repeated static property access such as `$app->template->name`.
-Corpus evidence: `corpus/toolbar.tpl` contains `$app->template` as the receiver of
+Corpus evidence: `corpus/application/toolbar.tpl` contains `$app->template` as the receiver of
 a later method call. Many other object-access hints include calls, so this task
 alone may clear few files. The initial report finds `->` in 412 failing files.
 
@@ -59,11 +59,11 @@ PHP receiver forms.
   support repeated static members. Smarty accepts `{$user->if->else->elseif}`;
   the grammar therefore clears reserved words only for property names, keeping
   malformed control-tag rejection intact. No proposed contract correction needed.
-- `npm run corpus:report -- ./corpus /tmp/smarty-003-after.json` compared with
+- `npm run corpus:report -- ./corpus/application /tmp/smarty-003-after.json` compared with
   `/tmp/smarty-002-after.json`: identical hashes for all 467 templates; 15 → 15
   clean, 452 → 452 failing; no clean-to-failing regressions. Reports remain local
   temporary artifacts. No newly clean files to promote wholesale.
-- `corpus/toolbar.tpl:5` supplies `$app->template`, isolated from the later call
+- `corpus/application/toolbar.tpl:5` supplies `$app->template`, isolated from the later call
   as `{$app->template}` in the tracked corpus-receiver fixture. Its explicit
   variable receiver and member-name fields were inspected. This does not claim
   support for the original method call or full template.

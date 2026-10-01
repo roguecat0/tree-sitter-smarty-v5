@@ -13,7 +13,7 @@ bare-word values, constants, numeric formats, output attributes or assignment.
 On 2026-09-22 a raw lexical scan found primitive words in 254 of the 467 local
 `.tpl` files. This includes JavaScript, comments and quoted text and is only a
 triage hint, not a count of failing Smarty expressions.
-`corpus/action_types/action_value_afmelden.tpl:16` supplies a method argument
+`corpus/application/action_types/action_value_afmelden.tpl:16` supplies a method argument
 `get_key_values(true)`; reduce it to `{$user->find(true)}`. Null and mixed-case
 forms are synthetic reference-backed cases, not claimed corpus discoveries.
 

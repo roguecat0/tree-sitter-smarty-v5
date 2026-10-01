@@ -94,7 +94,16 @@ Tasks [007: index access](docs/tasks/007-index-access.md),
 [009: class constants](docs/tasks/009-class-constants.md) are also complete.
 Further syntax expansions need separate briefs.
 
-Check real-world coverage against the local application corpus:
+The ignored local corpora have separate roots:
+
+- `corpus/application/` contains the fixed application templates and supplies
+  the real-world completeness signal.
+- `corpus/upstream-smarty-v5.8.4-core/` contains selected official Smarty test
+  templates, materialized on demand from a pinned checkout.
+- `corpus/upstream-smarty-v5.8.4-example/` contains the official demo template
+  and is reported separately from the positive upstream tests.
+
+The default report reads only the application corpus:
 
 ```sh
 npm run corpus:report
@@ -107,3 +116,10 @@ application while any remain. Clean parses still need structural review.
 Minimized, reviewed examples belong in the tracked
 `test/corpus/` regression set. Public CI runs `npm test` without needing the
 private local application corpus.
+
+To report either upstream root, pass it explicitly, for example:
+
+```sh
+npm run corpus:report -- ./corpus/upstream-smarty-v5.8.4-core /tmp/smarty-upstream-core.json
+npm run corpus:report -- ./corpus/upstream-smarty-v5.8.4-example /tmp/smarty-upstream-example.json
+```

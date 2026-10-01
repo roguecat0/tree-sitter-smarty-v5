@@ -16,8 +16,8 @@ variable/property chain, properties after calls, and repeated calls:
 {$user->get_profile()->get_name()}
 ```
 
-`corpus/toolbar.tpl:5-7` supplies property receivers, one-argument calls and
-modifier composition. `corpus/action_types/action_value_afmelden.tpl:45` supplies
+`corpus/application/toolbar.tpl:5-7` supplies property receivers, one-argument calls and
+modifier composition. `corpus/application/action_types/action_value_afmelden.tpl:45` supplies
 `$action->get_user()->get_name()`. Reduce these to neutral names in tracked tests;
 do not promise support for either full template. The last measured baseline is
 15 clean / 452 failing out of 467 files; rerun it before implementation.
@@ -123,7 +123,7 @@ Local reports `/tmp/smarty-004-before.json` and `/tmp/smarty-004-after.json` hav
 identical hashes for all 467 inputs: **15 → 27 clean**, **452 → 440 failing**,
 no regressions. All 12 newly clean files were inspected for explicit method
 receiver/name fields (19 zero-argument calls total). The tracked toolbar fixture
-minimizes `corpus/toolbar.tpl:5-7`; repeated calls also minimize the cited action
+minimizes `corpus/application/toolbar.tpl:5-7`; repeated calls also minimize the cited action
 example. Corpus acceptance does not establish runtime behavior. Dynamic names,
 standalone calls, indexing, static access and the other listed exclusions remain.
 

@@ -84,7 +84,7 @@ command.
 Alternative corpus and output path:
 
 ```sh
-npm run corpus:report -- ./corpus /tmp/smarty-before.json
+npm run corpus:report -- ./corpus/application /tmp/smarty-before.json
 ```
 
 Save before/after reports outside `build/`: rebuilding the native binding clears
@@ -95,9 +95,15 @@ reduce representative examples, and update `docs/features.md` plus bounded task
 briefs for confirmed syntax or recovery gaps. A complete-looking inventory does
 not override unexplained errors in the application corpus.
 
-`corpus/` is locally supplied and ignored by Git. Reports contain source snippets;
-they stay local under ignored `build/` by default. Public CI uses tracked fixtures.
-Do not add the entire corpus or its reports to the repository to satisfy CI.
+The ignored local corpus roots are separate: `corpus/application/` is the fixed
+application completeness corpus; `corpus/upstream-smarty-v5.8.4-core/` contains
+selected official Smarty test templates; and
+`corpus/upstream-smarty-v5.8.4-example/` contains the separate upstream demo.
+The default report reads only the application root. Pass an upstream root
+explicitly to report it, and keep those results separate. Reports contain source
+snippets; they stay local under ignored `build/` by default. Public CI uses
+tracked fixtures. Do not add local corpora or their reports to the repository to
+satisfy CI.
 
 ## Promote evidence into the regression set
 

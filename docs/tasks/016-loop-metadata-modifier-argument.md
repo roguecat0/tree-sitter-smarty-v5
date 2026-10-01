@@ -165,9 +165,9 @@ is `7be93e55730e9256245a89955c0f40d25e220e2586b0c6ebc4c9c7614de2378d` at
 workspace revision `c5a52804129d2e006e8086954d38144fc81278a6` (uncommitted task
 work).
 
-Application corpus commands were `npm run corpus:report -- ./corpus
+Application corpus commands were `npm run corpus:report -- ./corpus/application
 /tmp/smarty-016-before.json` before the grammar edit and
-`npm run corpus:report -- ./corpus /tmp/smarty-016-after.json` afterward. Both
+`npm run corpus:report -- ./corpus/application /tmp/smarty-016-after.json` afterward. Both
 reports covered the same 467 files with identical input path/SHA-256 pairs.
 Before and after results are 449 parse-clean and 18 failing. Their generated
 grammar hashes were `04cafb5d5214b5de784cb156a80d55adf69f92ff7a8f24dec7194d9bbdf27255`

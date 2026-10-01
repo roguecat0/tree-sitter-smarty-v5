@@ -11,12 +11,12 @@ as call arguments. Task creation owner: residual hash-matched corpus report
 The post-010 report has the same hashes for all 467 Smarty-accepted corpus
 sources as its baseline: 99 clean and 368 failing. Standalone calls are a
 confirmed high-value cluster within those failures. For example,
-`corpus/action_types/action_value_afmelden.tpl:45` contains
+`corpus/application/action_types/action_value_afmelden.tpl:45` contains
 `action_date=date($dateformat,$action->get_date())` and
 `{if !$value_type->no_to_textbox() && is_valid_id($value_type->get_to()->get_id())}`;
 the residual report records errors at line 45, columns 114 and 119, within the
 `is_valid_id` call. The separate
-`corpus/action_types/instruction_changed.tpl:1` begins
+`corpus/application/action_types/instruction_changed.tpl:1` begins
 `{if in_array($action->get_action_type_id(),$new_instruction_action_type_ids)}`
 and also reports errors on the call name and arguments. Similar snippets show
 calls such as `isset`, `intval`, `date`, `in_array`, and `is_valid_id` across
@@ -297,7 +297,7 @@ boundary now records this remaining gap.
   5.8.4. Function calls appear in the recorder as modifier events; the
   recorder counts arguments after the first as modifier parameters and does
   not validate runtime calls.
-- Command `npm run corpus:report -- ./corpus /tmp/smarty-011-final-after.json`
+- Command `npm run corpus:report -- ./corpus/application /tmp/smarty-011-final-after.json`
   produced a parser hash-matched report for the final generated parser.
   Its parser hash is `367c09919242b1359f6b0431ad126e3baca253494292a590fb17d8374a9dcdfa`
   (matches `src/parser.c`).

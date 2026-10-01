@@ -16,8 +16,14 @@ Read `test/CONTRACT.md`, `docs/features.md`, and the selected brief in
 
 - Install locked dependencies: `composer install` and `npm ci`.
 - Required acceptance gate: `npm test` (regenerates and rebuilds first).
-- Local corpus evidence: `npm run corpus:report`. Save its JSON outside `build/`
-  before another build if comparing before/after; node-gyp rebuild clears build/.
+- Local application corpus evidence: `npm run corpus:report` reads the ignored
+  `corpus/application/` tree by default. Save its JSON outside `build/` before
+  another build if comparing before/after; node-gyp rebuild clears `build/`.
+- Keep the three ignored corpus roots separate: application templates in
+  `corpus/application/`, upstream Smarty core fixtures in
+  `corpus/upstream-smarty-v5.8.4-core/`, and the upstream demo in
+  `corpus/upstream-smarty-v5.8.4-example/`. Report upstream roots explicitly;
+  do not combine their results with the application corpus.
 - New Node checks go in `test/*.test.mjs`; the runner discovers them automatically.
 - Expected trees go in `test/corpus/*.txt`; Tree-sitter discovers them automatically.
 - The PHP reference adapter is `test/reference.php`; no application plugins are needed.

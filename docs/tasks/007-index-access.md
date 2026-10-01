@@ -32,10 +32,10 @@ array literals, section/foreach metadata semantics and dynamic config names.
 On 2026-09-22, raw lexical searches over all 467 local `.tpl` files found dot
 access hints in 187 files and variable-bracket hints in 35. These overlap and
 include strings/comments; they are not failing-file counts or coverage estimates.
-`corpus/action_types/action_value_afmelden.tpl:23-24` supplies the minimized
-`{$row['module']->get_status()}`; `corpus/history.tpl:35` supplies a property with
+`corpus/application/action_types/action_value_afmelden.tpl:23-24` supplies the minimized
+`{$row['module']->get_status()}`; `corpus/application/history.tpl:35` supplies a property with
 an indexed value followed by a call inside commented-out template code; it is
-provenance for a syntax example, not evidence of an active parse failure. `corpus/toolbar.tpl:4` supplies a static dot
+provenance for a syntax example, not evidence of an active parse failure. `corpus/application/toolbar.tpl:4` supplies a static dot
 chain through `$smarty.const`. Treat that chain syntactically; no special-variable
 runtime support is claimed.
 

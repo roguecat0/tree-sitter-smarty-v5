@@ -50,7 +50,7 @@ export function inspect(source, timeoutMicros = 2_000_000) {
 
 function main() {
   const root = fileURLToPath(new URL('..', import.meta.url));
-  const dir = resolve(process.argv[2] || join(root, 'corpus'));
+  const dir = resolve(process.argv[2] || join(root, 'corpus/application'));
   const output = resolve(process.argv[3] || join(root, 'build/corpus-report.json'));
   const paths = listTemplates(dir);
   if (!paths.length) throw new Error(`No .tpl files found in ${dir}; nothing was measured`);

@@ -21,9 +21,9 @@ files, `@last` 10 times, and `@first` 7 times. Counts are lexical triage and
 overlap other syntax errors; they do not predict how many whole files this task
 will clean.
 
-Concrete examples include `corpus/action_types/action_value_measurement.tpl:29`
+Concrete examples include `corpus/application/action_types/action_value_measurement.tpl:29`
 and `:39` (`$value@index` in output) and
-`corpus/extensions/gsmr/stock.tpl:8` (`$row@first` and `$row@index` in
+`corpus/application/extensions/gsmr/stock.tpl:8` (`$row@first` and `$row@index` in
 conditions). The minimized valid form
 `{foreach $items as $item}{$item@index}{/foreach}` is accepted by Smarty 5.8.4's
 recording compiler and full compiler, while the current Tree-sitter parse reports

@@ -23,9 +23,9 @@ Do not combine static method calls into this task simply because they share `::`
 On 2026-09-22 raw lexical hints for `word::UPPERCASE_NAME` occurred in 228 of
 467 local `.tpl` files. These overlapping hints include comments/strings and are
 not failing-file diagnoses or promised clean-file improvements.
-`corpus/action_types/action_value_afmelden.tpl:1,43-44` supplies class constants
+`corpus/application/action_types/action_value_afmelden.tpl:1,43-44` supplies class constants
 in conditions; reduce to the `State::READY` condition above.
-`corpus/menu_button.tpl:5` composes constants with bitwise `&`; that entire
+`corpus/application/menu_button.tpl:5` composes constants with bitwise `&`; that entire
 expression remains unsupported and belongs in a later operator brief.
 
 ## Tree contract
@@ -105,7 +105,7 @@ constant fields; their structure needs explicit tree and range checks.
   remain supported. Namespaced constants and static calls are valid Smarty
   forms deferred to separate receiver/call contracts, rather than claimed
   invalid language. No application symbol lookup or execution was added.
-- `npm run corpus:report -- ./corpus /tmp/smarty-009-after.json` compared with
+- `npm run corpus:report -- ./corpus/application /tmp/smarty-009-after.json` compared with
   `/tmp/smarty-009-before.json`: **71 → 98 clean**, **396 → 369 failing**,
   identical hashes for all 467 templates and no clean-to-failing regressions.
   All 27 newly clean files were inspected for explicit class/constant fields:

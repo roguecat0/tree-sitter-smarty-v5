@@ -10,7 +10,7 @@ corpus manifest `913469d341dc4d60ec6d4ab2b2ba78ce5abee3313cd56eb48642e76eafe73c0
 The hash-matched report measures 467 Smarty-accepted files: 98 clean and 369
 failing. `get_url([` occurs in error snippets from 53 distinct failing files
 (770 error entries, including overlapping errors). For example,
-`corpus/view_wage_work/wage_work_repairs_params.tpl:30` calls
+`corpus/application/view_wage_work/wage_work_repairs_params.tpl:30` calls
 `$app->urls['go_page']->get_url(['view'=>'view_wage_work.edit_repair_param',
 'param_id'=>$wage_work_repair_param->get_id()])`. The reduced
 `{$user->find(["id"=>1, "active"=>true])}` currently produces an `ERROR` in

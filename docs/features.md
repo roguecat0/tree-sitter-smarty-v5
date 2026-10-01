@@ -12,6 +12,11 @@ when corpus failures reveal unsupported practical syntax.
 Project completion requires zero parse errors in the fixed local application
 corpus, plus structural review of newly clean files; this inventory is a living
 map toward that result, not a substitute for it.
+The ignored application files live under `corpus/application/`. Upstream Smarty
+test fixtures live separately under `corpus/upstream-smarty-v5.8.4-core/`, and
+the official demo lives under `corpus/upstream-smarty-v5.8.4-example/`. The
+default reporter reads only the application root; upstream roots are optional
+evidence and must be reported separately.
 Project-specific plugins and arbitrary custom tag semantics remain out of scope,
 while unknown tags should preserve supported structure and expressions.
 

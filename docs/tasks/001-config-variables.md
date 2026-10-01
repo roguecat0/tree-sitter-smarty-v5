@@ -5,8 +5,8 @@ Status: complete (2026-09-22). Dependencies: initial baseline only.
 ## Scope and motivation
 
 Add `#name#` expressions, including `{#name#}`, modifier input, and custom-tag
-attribute values. Corpus evidence: `corpus/add_url_dialog.tpl` uses `{#name#}`
-and `{#url#}`; `corpus/app_doc.tpl` uses `{#edit#|escape:"htmlall"}`. The initial
+attribute values. Corpus evidence: `corpus/application/add_url_dialog.tpl` uses `{#name#}`
+and `{#url#}`; `corpus/application/app_doc.tpl` uses `{#edit#|escape:"htmlall"}`. The initial
 report finds this hint in 412 failing files. These examples need no application
 plugins or loaded configuration values to recognize their syntax.
 
@@ -44,11 +44,11 @@ The surrounding `output` and `modifier_expression` shapes remain unchanged:
 - `npm test` failed on all six new trees before implementation, then passed:
   15 trees, 27 Node checks, all 3 mutation checks. PHP subprocesses required an
   approved execution outside the local sandbox; no test bypass was added.
-- `npm run corpus:report -- ./corpus /tmp/smarty-001-before.json` and the
+- `npm run corpus:report -- ./corpus/application /tmp/smarty-001-before.json` and the
   corresponding `/tmp/smarty-001-after.json`: identical hashes for all 467 files;
   6 → 13 clean, 461 → 454 failing; no clean-to-failing regressions.
   Reports stay local and temporary. Config node names were inspected in all
-  seven newly clean files. `corpus/add_url_dialog.tpl:4-5` supplies the reduced
+  seven newly clean files. `corpus/application/add_url_dialog.tpl:4-5` supplies the reduced
   adjacent `{#name#}{#url#}` outputs in the tracked boundary fixture.
 - Smarty 5.8.4 accepts all fixture forms and rejects `{# title#}` and `{#title #}`.
   Immediate tokens enforce this observed boundary. Reference projection checks
