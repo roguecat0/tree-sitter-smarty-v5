@@ -47,7 +47,7 @@ test('Foreach required whitespace and contextual as keyword', () => {
 
 test('Foreach malformed modern forms and compiler-invalid positional values stay distinct', () => {
   const cases = ['{foreach $items as }{/foreach}','{foreach $items as $key =>}{/foreach}',
-    '{foreach $items as item}{/foreach}', '{foreach $items as $item name="loop"}{/foreach}'];
+    '{foreach $items as item}{/foreach}'];
   for(const source of cases) assert.equal(parser().parse(source).rootNode.hasError,true,source);
   for(const source of ['{foreach $items item}{/foreach}','{foreach $items item key loop}{/foreach}',
     '{foreach from=$items item=item}{/foreach}']) {

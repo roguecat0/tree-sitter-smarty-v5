@@ -1352,6 +1352,31 @@
                 }
               },
               {
+                "type": "REPEAT",
+                "content": {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "attribute"
+                    },
+                    {
+                      "type": "ALIAS",
+                      "content": {
+                        "type": "SYMBOL",
+                        "name": "foreach_nocache_attribute"
+                      },
+                      "named": true,
+                      "value": "attribute"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "foreach_option"
+                    }
+                  ]
+                }
+              },
+              {
                 "type": "STRING",
                 "value": "}"
               }
@@ -1423,6 +1448,15 @@
                           "name": "attribute"
                         },
                         {
+                          "type": "ALIAS",
+                          "content": {
+                            "type": "SYMBOL",
+                            "name": "foreach_nocache_attribute"
+                          },
+                          "named": true,
+                          "value": "attribute"
+                        },
+                        {
                           "type": "SYMBOL",
                           "name": "foreach_option"
                         },
@@ -1453,6 +1487,55 @@
     "_legacy_foreach_argument": {
       "type": "SYMBOL",
       "name": "_tag_attribute_value"
+    },
+    "foreach_nocache_attribute": {
+      "type": "PREC",
+      "value": 1,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "FIELD",
+            "name": "name",
+            "content": {
+              "type": "ALIAS",
+              "content": {
+                "type": "STRING",
+                "value": "nocache"
+              },
+              "named": true,
+              "value": "identifier"
+            }
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "IMMEDIATE_TOKEN",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "\\s+"
+                }
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          },
+          {
+            "type": "STRING",
+            "value": "="
+          },
+          {
+            "type": "FIELD",
+            "name": "value",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_tag_attribute_value"
+            }
+          }
+        ]
+      }
     },
     "foreach_option": {
       "type": "STRING",

@@ -259,10 +259,11 @@ is also supported as a direct modifier argument, retaining its
 in [016](../docs/tasks/016-loop-metadata-modifier-argument.md). Legacy headers
 are also standard syntax. Nonempty named/positional legacy headers have a
 `legacy_foreach_header` child retaining source-ordered `attribute` and
-`argument` fields; `nocache` is an explicit `foreach_option`. The parser-valid
-empty `{foreach}` list has no header child. These nodes preserve syntax and do
-not validate required attributes, positional value types, bindings, or runtime
-iteration behavior; full-compiler checks distinguish those compiler errors.
+`argument` fields; bare `nocache` is an explicit `foreach_option`. The
+parser-valid empty `{foreach}` list has no header child. These nodes preserve
+syntax and do not validate required attributes, positional value types,
+bindings, or runtime iteration behavior; full-compiler checks distinguish
+those compiler errors.
 Modern and legacy loops share directly owned `foreachelse_clause` branches.
 Recorder events preserve legacy entry order and names, while modern events
 normalize their binding names; the recorder does not validate pairing.
@@ -273,10 +274,19 @@ Full-compiler checks supplement exact trees for that purpose. Evidence:
 [legacy reference/compiler/recovery/edit checks](legacy-foreach.test.mjs), and
 [item metadata trees](corpus/loop-metadata.txt) and
 [item metadata checks](loop-metadata.test.mjs).
-Standard modern `as` headers that append ordinary attributes/options after the
-binding (for example `name="loop"` or bare `nocache`) remain a confirmed parser
-gap. The legacy valued option forms `nocache=true` and `nocache=false` are also
-confirmed standard syntax gaps; keep both forms in the next foreach-header task.
+Pinned Smarty accepts modern `as` headers with trailing `name`, `key`,
+`properties`, `from`, and `item` attributes and `nocache`, despite designer
+prose saying the modern form has no named attributes. The modern tree retains
+source-ordered trailing entries as direct `attribute`/`foreach_option` children
+after the synthesized `source`, optional `key`, and `item` fields; redundant
+`from`/`item` names remain attributes. Bare `nocache` is a `foreach_option`;
+valued `nocache` is an `attribute` in either header form, with whitespace
+around `=` preserved. The compiler accepts `true`, `false`, `1`, and `0`,
+quoted or unquoted; other values can be parser-valid yet fail compiler option
+validation. Recorder checks cover names/order, not values or runtime cache
+effects. See the [028 trees](corpus/foreach-header-options.txt),
+[028 checks](foreach-header-options.test.mjs), and
+[028 evidence](../docs/tasks/028-foreach-header-options.md).
 
 Dot/bracket read access produces left-nested `index_expression` with `object` and
 `index` fields. Dot keys are adjacent ASCII identifiers or unsigned integers;

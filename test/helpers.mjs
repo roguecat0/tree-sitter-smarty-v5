@@ -39,8 +39,8 @@ export function observations(node) {
       }[node.type], arguments: [] });
       break;
     case 'foreach_tag':
-      // Smarty normalizes header names and emits item before key, even though
-      // a keyed header's source order is source/key/item. Trees check that order.
+      // Smarty emits physical trailing attributes/options before its normalized
+      // modern from/item/key arguments. Trees retain the actual source order.
       {
         const legacyHeader = node.namedChildren.find(child => child.type === 'legacy_foreach_header');
         if (legacyHeader) {
@@ -48,7 +48,12 @@ export function observations(node) {
             .sort((left,right) => left.startIndex-right.startIndex)
             .map(child => ({name: child.type === 'attribute' ? child.childForFieldName('name').text : null}))});
         } else if (node.childForFieldName('source')) {
+          const trailing = node.namedChildren
+            .filter(child => child.type === 'attribute' || child.type === 'foreach_option')
+            .sort((left,right) => left.startIndex-right.startIndex)
+            .map(child => ({name: child.type === 'attribute' ? child.childForFieldName('name').text : null}));
           events.push({ kind: 'tag', name: 'foreach', arguments: [
+            ...trailing,
             { name: 'from' }, { name: 'item' },
             ...(node.childForFieldName('key') ? [{ name: 'key' }] : []),
           ] });

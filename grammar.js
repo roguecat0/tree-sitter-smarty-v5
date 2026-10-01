@@ -95,17 +95,30 @@ export default grammar({
         // Smarty requires whitespace around contextual `as`; generic tag names
         // and keyword-named properties keep their ordinary identifier behavior.
         alias(token.immediate(prec(2, /\s+as\s+/)), "as"),
-        optional(seq(field("key", $.variable), "=>")), field("item", $.variable), "}",
+        optional(seq(field("key", $.variable), "=>")), field("item", $.variable),
+        // Modern binding headers accept the same ordinary trailing attributes
+        // and bare option flags as legacy headers. Keep them as direct, ordered
+        // children after the synthesized source/key/item fields.
+        repeat(choice($.attribute, alias($.foreach_nocache_attribute, $.attribute), $.foreach_option)), "}",
       )),
       // Tree-sitter cannot create a named node from an empty repeat; an empty
       // legacy list is therefore represented by the absence of a header node.
       seq("{", "foreach", optional(token.immediate(/\s+/)), "}"),
       seq("{", "foreach", alias(repeat1(seq(
         token.immediate(/\s+/),
-        choice($.attribute, $.foreach_option, field("argument", $._legacy_foreach_argument)),
+        choice($.attribute, alias($.foreach_nocache_attribute, $.attribute), $.foreach_option, field("argument", $._legacy_foreach_argument)),
       )), $.legacy_foreach_header), "}"),
     ),
     _legacy_foreach_argument: $ => $._tag_attribute_value,
+    // A dedicated alternative shares the `nocache` token with the bare option.
+    // The following `=` distinguishes a valued attribute, whose public shape
+    // is still the same name/value fields as every other attribute. Consume
+    // optional spacing immediately after the keyword so the option token does
+    // not win before a separated equals sign.
+    foreach_nocache_attribute: $ => prec(1, seq(
+      field("name", alias("nocache", $.identifier)), optional(token.immediate(/\s+/)), "=",
+      field("value", $._tag_attribute_value),
+    )),
     foreach_option: _ => "nocache",
     foreachelse_clause: $ => seq($.foreachelse_tag, repeat($._node)),
     foreachelse_tag: _ => seq("{", "foreachelse", "}"),

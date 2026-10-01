@@ -1542,9 +1542,17 @@
       }
     },
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": false,
       "types": [
+        {
+          "type": "attribute",
+          "named": true
+        },
+        {
+          "type": "foreach_option",
+          "named": true
+        },
         {
           "type": "legacy_foreach_header",
           "named": true

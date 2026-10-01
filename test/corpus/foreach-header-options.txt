@@ -1,0 +1,149 @@
+========================================================
+Modern foreach options follow synthesized binding fields
+========================================================
+{foreach $items as $item name="rows" nocache}{$item}{/foreach}
+---
+(source_file
+  (foreach_block
+    (foreach_tag
+      source: (variable name: (identifier))
+      item: (variable name: (identifier))
+      (attribute name: (identifier) value: (string))
+      (foreach_option))
+    (output value: (variable name: (identifier)))
+    (foreach_close_tag)))
+
+===================================================================
+Keyed modern options preserve source order and foreachelse ownership
+===================================================================
+{foreach $items as $key => $item properties="first,last" nocache="false"}{$item@first|escape}{foreachelse}none{/foreach}
+---
+(source_file
+  (foreach_block
+    (foreach_tag
+      source: (variable name: (identifier))
+      key: (variable name: (identifier))
+      item: (variable name: (identifier))
+      (attribute name: (identifier) value: (string))
+      (attribute name: (identifier) value: (string)))
+    (output value: (modifier_expression
+      value: (loop_metadata_expression item: (variable name: (identifier)) property: (identifier))
+      name: (identifier)))
+    (foreachelse_clause (foreachelse_tag) (text))
+    (foreach_close_tag)))
+
+===========================================================
+Modern redundant bindings stay ordinary trailing attributes
+===========================================================
+{foreach $items as $item item=$otherItem from=$other}{/foreach}
+---
+(source_file
+  (foreach_block
+    (foreach_tag
+      source: (variable name: (identifier))
+      item: (variable name: (identifier))
+      (attribute name: (identifier) value: (variable name: (identifier)))
+      (attribute name: (identifier) value: (variable name: (identifier))))
+    (foreach_close_tag)))
+
+============================================================
+Method-call source with valued nocache and nested legacy loop
+============================================================
+{foreach $repo->rows() as $row key="rows" nocache=1}{foreach from=$row item=$entry nocache="true"}{$entry}{/foreach}{/foreach}
+---
+(source_file
+  (foreach_block
+    (foreach_tag
+      source: (method_call_expression
+        object: (variable name: (identifier))
+        method: (identifier))
+      item: (variable name: (identifier))
+      (attribute name: (identifier) value: (string))
+      (attribute name: (identifier) value: (number)))
+    (foreach_block
+      (foreach_tag
+        (legacy_foreach_header
+          (attribute name: (identifier) value: (variable name: (identifier)))
+          (attribute name: (identifier) value: (variable name: (identifier)))
+          (attribute name: (identifier) value: (string))))
+      (output value: (variable name: (identifier)))
+      (foreach_close_tag))
+    (foreach_close_tag)))
+
+===================================================
+Legacy valued option with nested modern option loop
+===================================================
+{foreach from=$items item=items nocache=false}{foreach $items as $item name="inner" nocache=0}{$item}{/foreach}{/foreach}
+---
+(source_file
+  (foreach_block
+    (foreach_tag
+      (legacy_foreach_header
+        (attribute name: (identifier) value: (variable name: (identifier)))
+        (attribute name: (identifier) value: (identifier))
+        (attribute name: (identifier) value: (boolean))))
+    (foreach_block
+      (foreach_tag
+        source: (variable name: (identifier))
+        item: (variable name: (identifier))
+        (attribute name: (identifier) value: (string))
+        (attribute name: (identifier) value: (number)))
+      (output value: (variable name: (identifier)))
+      (foreach_close_tag))
+    (foreach_close_tag)))
+
+====================================================================
+Valued nocache retains compiler-invalid expressions in legacy syntax
+====================================================================
+{foreach from=$items item=$item nocache=$flag}{$item}{/foreach}
+---
+(source_file
+  (foreach_block
+    (foreach_tag
+      (legacy_foreach_header
+        (attribute name: (identifier) value: (variable name: (identifier)))
+        (attribute name: (identifier) value: (variable name: (identifier)))
+        (attribute name: (identifier) value: (variable name: (identifier)))))
+    (output value: (variable name: (identifier)))
+    (foreach_close_tag)))
+
+===========================================================
+Whitespace before the nocache equals sign remains attribute syntax
+===========================================================
+{foreach from=$items item=item nocache = "false"}{/foreach}
+---
+(source_file
+  (foreach_block
+    (foreach_tag
+      (legacy_foreach_header
+        (attribute name: (identifier) value: (variable name: (identifier)))
+        (attribute name: (identifier) value: (identifier))
+        (attribute name: (identifier) value: (string))))
+    (foreach_close_tag)))
+
+============================================================
+Whitespace after the nocache equals sign remains attribute syntax
+============================================================
+{foreach from=$items item=item nocache= true}{/foreach}
+---
+(source_file
+  (foreach_block
+    (foreach_tag
+      (legacy_foreach_header
+        (attribute name: (identifier) value: (variable name: (identifier)))
+        (attribute name: (identifier) value: (identifier))
+        (attribute name: (identifier) value: (boolean))))
+    (foreach_close_tag)))
+
+============================================================
+Modern nocache value with spaces around equals
+============================================================
+{foreach $items as $item nocache = "false"}{/foreach}
+---
+(source_file
+  (foreach_block
+    (foreach_tag
+      source: (variable name: (identifier))
+      item: (variable name: (identifier))
+      (attribute name: (identifier) value: (string)))
+    (foreach_close_tag)))
