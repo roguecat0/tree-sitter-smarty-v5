@@ -164,6 +164,7 @@ export default grammar({
       optional(seq(field("argument", $._expression), repeat(seq(",", field("argument", $._expression))))), ")",
     )),
     identifier: _ => /[a-zA-Z_][a-zA-Z0-9_]*/,
+    _modifier_identifier: _ => token(/[0-9]+[a-zA-Z_][a-zA-Z0-9_]*/),
     // Control/primitive words are contextual class names, but self/parent are
     // explicitly rejected by Smarty. Both sides of :: require adjacency.
     class_constant_expression: $ => prec(8, seq(
@@ -186,6 +187,6 @@ export default grammar({
       field("value", $._modified), "|", field("name", $.identifier),
       repeat(seq(":", field("argument", $._modifier_argument))),
     )),
-    _modifier_argument: $ => choice($.variable, $.config_variable, $.member_expression, $.method_call_expression, $.function_call_expression, $.index_expression, alias($._config_index, $.index_expression), $.array_literal, $.number, $.string, $.parenthesized_expression, $.boolean, $.null, $.class_constant_expression),
+    _modifier_argument: $ => choice($.variable, $.config_variable, $.member_expression, $.method_call_expression, $.function_call_expression, $.index_expression, alias($._config_index, $.index_expression), $.array_literal, $.number, $.string, $.parenthesized_expression, $.boolean, $.null, $.class_constant_expression, $.identifier, alias($._modifier_identifier, $.identifier)),
   }
 });

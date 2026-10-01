@@ -27,7 +27,7 @@ all Smarty variants are covered. `Partial` means only the described forms work.
 | Arithmetic | Partial: binary `+ - * / %`, parentheses and prefix `+ -`; see operator row | initial trees; precedence mutation; operator-field check |
 | Generic tags | Partial: names, positional expressions, named attributes; no bare-word values | initial trees; [reference tests](../test/reference.test.mjs) |
 | Custom closing tags | Supported as independent tags; pairing deliberately unspecified | initial mismatched-name case |
-| Modifiers | Partial: chains and simple arguments; unrestricted names | initial trees; renamed-extension checks |
+| Modifiers | Partial: chains and supported expression arguments, including one direct static `ID` token after a modifier colon; bare identifiers remain unsupported in other value contexts | initial trees; renamed-extension checks; [017 trees and checks](tasks/017-static-modifier-arguments.md) |
 | If/elseif/else | Partial: nested blocks using supported expression forms | initial trees; [edit tests](../test/incremental.test.mjs) |
 | Config variables | Partial: static ASCII names in expressions; bounded read indices; no dynamic names | [001](tasks/001-config-variables.md) |
 | Smarty comments | Supported: `{* ... *}` through first terminator; non-nesting | [002](tasks/002-comments.md) |
@@ -39,7 +39,7 @@ all Smarty variants are covered. `Partial` means only the described forms work.
 | Static class constants | Partial: adjacent static `Class::NAME` expressions | [009](tasks/009-class-constants.md) |
 | Array literals | Partial: `[...]` and `array(...)`, keyed/list values, nesting and trailing commas | [010](tasks/010-array-literals.md) |
 | Comparison/boolean/unary operators | Partial: symbolic comparisons, `&&`/`\|\|`, prefix `! + -`, and exact `is div by` expression predicate; other word aliases and `is ...` predicates remain unsupported | [005](tasks/005-condition-operators.md); [013](tasks/013-divisibility-predicate.md) |
-| Foreach blocks | Partial: modern `as` headers, optional key and `foreachelse`; static item metadata suffixes parse as expressions, except a confirmed direct modifier-argument composition gap recorded in [015](tasks/015-composition-audit.md); legacy headers and runtime binding/metadata validation remain out of scope | [006](tasks/006-foreach-blocks.md); [012](tasks/012-loop-metadata.md); [016 noncanonical draft candidate](tasks/016-loop-metadata-modifier-argument.md) |
+| Foreach blocks | Partial: modern `as` headers, optional key and `foreachelse`; static item metadata suffixes parse as expressions, except a confirmed direct modifier-argument composition gap recorded in [015](tasks/015-composition-audit.md); legacy headers and runtime binding/metadata validation remain out of scope | [006](tasks/006-foreach-blocks.md); [012](tasks/012-loop-metadata.md); [016 deferred candidate](tasks/016-loop-metadata-modifier-argument.md) |
 | Other built-in blocks | Unimplemented structurally; some names parse as generic tags | Inheritance, capture, etc. need explicit contracts |
 | Literal blocks/auto-literal | Partial: default `{`/`}` boundaries follow `auto_literal=true`, including whitespace after `{`, `{}`, and raw right braces; `{literal}` regions and non-default delimiter/configuration behavior remain gaps | [014 trees and checks](tasks/014-default-auto-literal-boundary.md) |
 | Configurable delimiters | Unimplemented | Design decision needed |

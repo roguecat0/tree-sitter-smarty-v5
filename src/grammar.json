@@ -2142,6 +2142,13 @@
       "type": "PATTERN",
       "value": "[a-zA-Z_][a-zA-Z0-9_]*"
     },
+    "_modifier_identifier": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "[0-9]+[a-zA-Z_][a-zA-Z0-9_]*"
+      }
+    },
     "class_constant_expression": {
       "type": "PREC",
       "value": 8,
@@ -2744,6 +2751,19 @@
         {
           "type": "SYMBOL",
           "name": "class_constant_expression"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "identifier"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_modifier_identifier"
+          },
+          "named": true,
+          "value": "identifier"
         }
       ]
     }

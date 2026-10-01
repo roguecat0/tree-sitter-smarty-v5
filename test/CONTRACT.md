@@ -126,7 +126,13 @@ equality comparisons, `&&`, `||`. Arithmetic/booleans associate left, prefixes
 right. Relational and equality levels each forbid unparenthesized repeated
 comparisons; parentheses can make grouping explicit. Adjacent prefix sign pairs
 are excluded INCDEC syntax; spaced signs such as `+ +$a` are nested unary nodes.
-Modifier arguments retain the prior narrow subset; parenthesize full expressions.
+Modifier arguments retain the current narrow subset; parenthesize full
+expressions. A direct static Smarty `ID` after a modifier colon is an
+`identifier` argument, including IDs with a digit prefix such as `123foo`;
+pure decimal tokens remain `number` nodes. This exception is limited to direct
+modifier arguments and does not make bare identifiers general expressions,
+generic-tag values, function arguments, or array values. See [017 trees and
+checks](../docs/tasks/017-static-modifier-arguments.md).
 The exact Smarty predicate `is div by` is also a `binary_expression` with a
 named `div_by_operator`; it is available anywhere the shared full-expression
 rule is used, including outputs, conditions, and parenthesized modifier

@@ -1,0 +1,34 @@
+==================
+Bare modifier identifier
+==================
+{$x|escape:quotes}
+---
+(source_file (output value: (modifier_expression value: (variable name: (identifier)) name: (identifier) argument: (identifier))))
+
+==================
+Digit-prefixed modifier identifier
+==================
+{$x|default:123foo}
+---
+(source_file (output value: (modifier_expression value: (variable name: (identifier)) name: (identifier) argument: (identifier))))
+
+==================
+Identifier followed by another modifier
+==================
+{$x|default:foo|escape:'htmlall'}
+---
+(source_file (output value: (modifier_expression value: (modifier_expression value: (variable name: (identifier)) name: (identifier) argument: (identifier)) name: (identifier) argument: (string))))
+
+==================
+Existing primitive and class constant arguments
+==================
+{$x|m:true:false:null:Widget::NAME}
+---
+(source_file (output value: (modifier_expression value: (variable name: (identifier)) name: (identifier) argument: (boolean) argument: (boolean) argument: (null) argument: (class_constant_expression class: (identifier) constant: (identifier)))))
+
+==================
+Pure numeric modifier argument
+==================
+{$x|m:123}
+---
+(source_file (output value: (modifier_expression value: (variable name: (identifier)) name: (identifier) argument: (number))))

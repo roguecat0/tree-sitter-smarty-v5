@@ -1,7 +1,10 @@
 # 016 — Loop metadata as a modifier argument
 
-Status: brief draft; task-creation review required. Depends on Task 012 loop
-metadata and Task 015's composition audit.
+Status: deferred; task-creation review has not started. The composition gap is
+confirmed by Task 015, but a scan of the current 467-template corpus found no
+direct `$x|modifier:$item@index` example. Task 017 has a stronger corpus-backed
+priority. Revisit 016 after that task or if corpus evidence identifies real
+uses. Dependencies: Task 012 loop metadata and Task 015's composition audit.
 
 ## Motivation and evidence
 
