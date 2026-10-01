@@ -32,6 +32,25 @@ Cartesian suite merely to fill the matrix.
 | Static class method call (`Class::method(...)`) | yes [SM-output](#ev-sm-output) | yes [SM-condition](#ev-sm-condition) | yes [SM-source](#ev-sm-source) | yes [SM-tag-pos](#ev-sm-tag-pos) | yes [SM-tag-attr](#ev-sm-tag-attr) | yes [SM-call-arg](#ev-sm-call-arg) | yes [SM-mod-input](#ev-sm-mod-input) | yes [SM-mod-arg](#ev-sm-mod-arg) | yes [SM-bracket](#ev-sm-bracket) | yes [SM-array-key](#ev-sm-array-key) | yes [SM-array-value](#ev-sm-array-value) |
 | Bare identifier (modifier, generic-tag, primary-expression, and array-key positions) | yes [ID-output](#ev-id-output) | yes [ID-condition](#ev-id-condition) | ? | yes [GT-ID-pos](#ev-gt-id-pos) | yes [GT-ID-attr](#ev-gt-id-attr) | yes [ID-call-arg](#ev-id-call-arg) | ? | yes [MOD-ID-arg](#ev-mod-id-arg) | ? | yes — bare ID keys already have a hand-authored tree in [array literals](../test/corpus/array-literals.txt#L12) | yes [ID-array-value](#ev-id-array-value) |
 
+## Generic-tag attribute-name composition
+
+Attribute spelling is a tag-structure concern rather than an expression row in
+the matrix above. The `tag_attribute_name` leaf is tested in the same
+`attribute` `name` field with string, variable, direct bare-ID, and
+parenthesized-expression values. It supports the corpus-backed `data-*` and
+`aria-*` forms, digit prefixes, multi-segment single-colon names such as
+`foo:bar:baz`. Smarty 5.8.4 accepts `{widget foo:bar:baz=MODE}{$later}` and
+`{widget foo:=MODE}{$later}`; the first has a positive Tree-sitter tree, while
+the valid terminal-colon form remains an explicit error/recovery gap with
+following output preserved. `{widget foo:}` without `=` is malformed.
+Smarty also accepts both `{widget foo::bar=MODE}` and
+`{widget foo::bar = MODE data-id = "x"}`; Tree-sitter deliberately retains them
+as error/recovery cases, with a later independent output still navigable. The
+reference assertions and hand-authored positive/recovery trees are in
+[Task 023](tasks/023-smarty-tag-attribute-names.md#partial-boundary-revision-2026-10-01).
+Terminal-colon and repeated-colon attributes remain explicit project-level
+partial gaps and are not claimed Smarty syntax rejections.
+
 ## Cell notation and evidence
 
 Replace each `?` with `yes`, `limited`, or `no`, followed by links or a brief

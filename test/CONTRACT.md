@@ -24,6 +24,20 @@ booleans, nulls, variables, strings, and class constants retain their existing
 node types. Bare IDs are also primary expressions in the tested output,
 condition, function/method argument, and array-element value contexts. See
 [018 trees and checks](../docs/tasks/018-generic-tag-identifier-values.md).
+The attribute-name field preserves simple ASCII identifiers and existing
+primitive aliases. It also supports `tag_attribute_name` leaves for hyphenated
+names, digit-prefixed names, and nonempty segments separated by single colons
+(for example `data-id`, `123data-id`, and `foo:bar:baz`). These leaves are
+local to the attribute `name` field and do not broaden expression identifiers.
+Smarty 5.8.4 accepts terminal-colon `foo:=MODE` and repeated-colon `foo::bar=`
+spellings, but this partial Tree-sitter contract retains both as explicit
+error/recovery gaps and preserves following independent output. The malformed
+`{widget foo:}` form is also an error/recovery case and is rejected by Smarty.
+Task 023 specifies all three boundary witnesses, their Smarty recorder results,
+and hand-authored Tree-sitter expectations in
+[Task 023](../docs/tasks/023-smarty-tag-attribute-names.md#partial-boundary-revision-2026-10-01).
+This is an explicit project gap for a future separately reviewed task. Eight
+corpus roots with `data-*`/`aria-*` names are covered by the Task 023 fixture.
 `custom_close_tag` has a `name`. These nodes do not assert block pairing or
 plugin availability.
 

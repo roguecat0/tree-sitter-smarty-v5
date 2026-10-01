@@ -57,9 +57,17 @@ export default grammar({
       $.attribute, field("argument", $._tag_argument_value),
     )), "}"),
     custom_close_tag: $ => seq("{/", field("name", $.identifier), "}"),
-    // Primitive tokens also occur where a tag accepts a named attribute.
-    _attribute_name: $ => choice($.identifier, alias($.boolean, $.identifier), alias($.null, $.identifier)),
+    // Support common hyphenated, single-colon, and digit-prefixed ATTR names
+    // locally in this field; ordinary names keep their existing node shape.
+    _attribute_name: $ => choice(
+      $.identifier, alias($.boolean, $.identifier), alias($.null, $.identifier), $.tag_attribute_name,
+    ),
     attribute: $ => seq(field("name", $._attribute_name), "=", field("value", $._tag_attribute_value)),
+    tag_attribute_name: _ => token(choice(
+      /[0-9]+[a-zA-Z_][a-zA-Z0-9_-]*(?::[a-zA-Z0-9_-]+)*/,
+      /[a-zA-Z_][a-zA-Z0-9_-]*-[a-zA-Z0-9_-]*(?::[a-zA-Z0-9_-]+)*/,
+      /[a-zA-Z_][a-zA-Z0-9_-]*:[a-zA-Z0-9_-]+(?::[a-zA-Z0-9_-]+)*/,
+    )),
     // Smarty's tag value productions accept a direct ID in these two tag-only
     // positions. Keep it out of _expression so a bare name does not become a
     // general value in outputs, conditions, or other expression contexts.

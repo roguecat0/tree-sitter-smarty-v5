@@ -1,0 +1,36 @@
+==================
+Smarty-valid repeated colons remain an error with later output
+==================
+{widget foo::bar=MODE}{$later}
+---
+(source_file
+  (ERROR
+    (identifier)
+    (class_constant_expression class: (identifier) constant: (identifier))
+    (string_fragment))
+  (output value: (variable name: (identifier))))
+
+==================
+Spaced equals repeated colon error keeps later output
+==================
+{widget foo::bar = MODE data-id = "x"}{$later}
+---
+(source_file
+  (ERROR
+    (identifier)
+    (class_constant_expression class: (identifier) constant: (identifier))
+    (string_fragment))
+  (text)
+  (output value: (variable name: (identifier))))
+
+==================
+Terminal colon without equals is malformed but recovers output
+==================
+{widget foo:}{$later}
+---
+(source_file
+  (ERROR
+    (identifier)
+    (identifier)
+    (string_fragment))
+  (output value: (variable name: (identifier))))

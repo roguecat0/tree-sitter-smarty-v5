@@ -1,0 +1,21 @@
+==================
+Multi-segment single-colon attribute name
+==================
+{widget foo:bar:baz=MODE}{$later}
+---
+(source_file
+  (custom_tag name: (identifier)
+    (attribute name: (tag_attribute_name) value: (identifier)))
+  (output value: (variable name: (identifier))))
+
+==================
+Smarty-valid terminal single colon remains an error with later output
+==================
+{widget foo:=MODE}{$later}
+---
+(source_file
+  (ERROR
+    (identifier)
+    (identifier)
+    (string_fragment))
+  (output value: (variable name: (identifier))))

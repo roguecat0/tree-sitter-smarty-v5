@@ -206,6 +206,10 @@
           {
             "type": "identifier",
             "named": true
+          },
+          {
+            "type": "tag_attribute_name",
+            "named": true
           }
         ]
       },
@@ -2829,6 +2833,10 @@
   {
     "type": "tRue",
     "named": false
+  },
+  {
+    "type": "tag_attribute_name",
+    "named": true
   },
   {
     "type": "text",

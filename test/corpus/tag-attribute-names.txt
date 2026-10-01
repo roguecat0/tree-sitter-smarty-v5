@@ -1,0 +1,15 @@
+==================
+Smarty generic tag attribute names
+==================
+{widget class="box" data-id="x" aria-label=$label foo:bar=MODE 123data-id=($value + 1)}
+---
+(source_file
+  (custom_tag name: (identifier)
+    (attribute name: (identifier) value: (string))
+    (attribute name: (tag_attribute_name) value: (string))
+    (attribute name: (tag_attribute_name) value: (variable name: (identifier)))
+    (attribute name: (tag_attribute_name) value: (identifier))
+    (attribute name: (tag_attribute_name) value: (parenthesized_expression
+      (binary_expression
+        left: (variable name: (identifier))
+        right: (number))))))
