@@ -44,14 +44,19 @@ current inventory, so the task-creation loop must keep expanding or correcting
 that inventory until the corpus gate passes. The inventory is a living map, not
 a fixed ceiling.
 
-The starting inventory already names gaps that must be assessed: standalone
-function calls, array literals, string interpolation, bitwise and word
-operators, other built-in blocks (including inheritance/capture/switch forms),
-literal blocks/auto-literal, configurable delimiters, and HTML injections or
-queries. Recovery is a cross-cutting requirement. The task creator and reviewer
-must determine whether each belongs in this release target; the list is not an
-instruction to implement every item. New syntax families require the same
-reviewed scope decision before entering the queue.
+The starting inventory already names gaps including standalone function calls,
+array literals, string interpolation, bitwise and word operators, other
+built-in blocks (including inheritance/capture/switch forms), literal
+blocks/auto-literal, configurable delimiters, and HTML injections or queries.
+All confirmed standard Smarty 5 syntax is in the parser target, including forms
+that take several bounded tasks to implement. Difficulty and corpus frequency
+guide task ordering and decomposition; they do not justify excluding standard
+syntax. Each task creator still verifies actual Smarty behavior, identifies
+the exact syntax boundary, and specifies structural and recovery evidence.
+Plugin execution, arbitrary plugin semantics, and separate editor integrations
+such as HTML injections remain outside the grammar target unless the project
+scope is explicitly changed. Recovery is a cross-cutting requirement, and new
+standard syntax families must enter the inventory and reviewed task queue.
 
 ## The five roles
 
