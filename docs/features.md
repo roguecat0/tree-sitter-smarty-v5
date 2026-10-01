@@ -38,7 +38,7 @@ all Smarty variants are covered. `Partial` means only the described forms work.
 | Boolean/null literals | Supported: case-insensitive literals; bare section indices excluded | [008](tasks/008-primitive-literals.md) |
 | Static class constants | Partial: adjacent static `Class::NAME` expressions | [009](tasks/009-class-constants.md) |
 | Array literals | Partial: `[...]` and `array(...)`, keyed/list values, nesting and trailing commas | [010](tasks/010-array-literals.md) |
-| Comparison/boolean/unary operators | Partial: symbolic comparisons, `&&`/`\|\|`, prefix `! + -`; Smarty's `is div by` predicate is a confirmed gap; other word aliases and `is ...` predicates remain unsupported | [005](tasks/005-condition-operators.md); [013](tasks/013-divisibility-predicate.md) |
+| Comparison/boolean/unary operators | Partial: symbolic comparisons, `&&`/`\|\|`, prefix `! + -`, and exact `is div by` expression predicate; other word aliases and `is ...` predicates remain unsupported | [005](tasks/005-condition-operators.md); [013](tasks/013-divisibility-predicate.md) |
 | Foreach blocks | Partial: modern `as` headers, optional key and `foreachelse`; static item metadata suffixes parse as expressions, except a confirmed direct modifier-argument composition gap recorded in [015](tasks/015-composition-audit.md); legacy headers and runtime binding/metadata validation remain out of scope | [006](tasks/006-foreach-blocks.md); [012](tasks/012-loop-metadata.md); [016 noncanonical draft candidate](tasks/016-loop-metadata-modifier-argument.md) |
 | Other built-in blocks | Unimplemented structurally; some names parse as generic tags | Inheritance, capture, etc. need explicit contracts |
 | Literal blocks/auto-literal | Partial: default `{`/`}` boundaries follow `auto_literal=true`, including whitespace after `{`, `{}`, and raw right braces; `{literal}` regions and non-default delimiter/configuration behavior remain gaps | [014 trees and checks](tasks/014-default-auto-literal-boundary.md) |
@@ -209,3 +209,27 @@ structured Smarty nodes rather than only text. Default `{`/`}` auto-literal
 behavior is now supported within the stated contract; `{literal}` blocks and
 the remaining 281 corpus failures still need later work. See the task brief for
 the full new-file list and saved report locations.
+
+## Divisibility predicate evidence (2026-10-01)
+
+Task [013](tasks/013-divisibility-predicate.md) adds the exact `is div by`
+operator to the shared expression ladder. It produces `binary_expression` with
+`left`, named `div_by_operator`, and `right` fields in outputs, conditions,
+parenthesized modifier arguments, and other existing full-expression positions.
+The right operand is a supported value, including unary and parenthesized
+forms. Other `tlop` variants and direct unparenthesized modifier arguments
+remain gaps. Hand-written trees cover metadata and call operands, relational
+and arithmetic grouping, unary RHS, boolean composition, output expressions,
+and parenthesized modifier arguments. Smarty reference checks compare only
+observable events; fixed full-engine cases independently verify controlled
+rendering and PHP translation behavior.
+
+`npm test` passes 142 corpus trees, 211 Node checks, and all 11 mutation
+checks. Hash-matched corpus reports `/tmp/smarty-013-before-v2.json` and
+`/tmp/smarty-013-after.json` contain the same 467 source hashes and show
+**186 → 240 clean**, **281 → 227 failing**, with no regressions. All 54 newly
+clean files were structurally inspected: they contain 63 `div_by_operator`
+nodes with explicit binary left/right fields and supported operand nodes. No
+existing expectation changed. The final parser hash is
+`829aa943ed57457b277c998f2e6478d4029e147282c925442e7df5dae08574b6`; remaining
+227 errors continue to represent unresolved corpus gaps.

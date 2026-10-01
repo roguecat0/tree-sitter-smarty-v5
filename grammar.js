@@ -80,7 +80,16 @@ export default grammar({
     _equality_expression: $ => prec(-2, seq(field("left", $._relational), field("operator", choice("==", "!=", "===", "!==")), field("right", $._relational))),
     _relational: $ => choice($._arithmetic, alias($._relational_expression, $.binary_expression)),
     _relational_expression: $ => prec(-1, seq(field("left", $._arithmetic), field("operator", choice("<", "<=", ">", ">=")), field("right", $._arithmetic))),
-    _arithmetic: $ => choice($._unary, $.binary_expression),
+    _arithmetic: $ => choice($._unary, $.binary_expression, alias($._div_by_expression, $.binary_expression)),
+    // Match Smarty's expr ::= expr tlop value: the left is a full arithmetic
+    // expression, while the RHS stops at one value. The low precedence lets
+    // relational expressions consume the predicate on their right; precedence
+    // and parentheses are pinned by the hand-written task trees.
+    _div_by_expression: $ => prec.left(0, seq(
+      field("left", $._arithmetic), field("operator", $.div_by_operator),
+      token.immediate(/\s+/), field("right", $._unary),
+    )),
+    div_by_operator: _ => token(/is\s+div\s+by/),
     _unary: $ => choice($._modified, $.unary_expression),
     unary_expression: $ => choice($._not_expression, $._sign_expression),
     _not_expression: $ => prec(3, seq(field("operator", "!"), field("argument", $._unary))),

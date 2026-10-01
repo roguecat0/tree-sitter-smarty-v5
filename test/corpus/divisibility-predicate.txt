@@ -1,0 +1,62 @@
+==================
+Foreach metadata divisibility predicate
+==================
+{foreach $items as $item}{if $item@index is div by 2}even{else}odd{/if}{/foreach}
+---
+(source_file (foreach_block (foreach_tag source: (variable name: (identifier)) item: (variable name: (identifier))) (if_block (if_tag condition: (binary_expression left: (loop_metadata_expression item: (variable name: (identifier)) property: (identifier)) operator: (div_by_operator) right: (number))) (text) (else_clause (else_tag) (text)) (if_close_tag)) (foreach_close_tag)))
+
+==================
+Function call divisibility predicate
+==================
+{if count($rows) is div by 2}even{/if}
+---
+(source_file (if_block (if_tag condition: (binary_expression left: (function_call_expression name: (identifier) argument: (variable name: (identifier))) operator: (div_by_operator) right: (number))) (text) (if_close_tag)))
+
+==================
+Relational left composition
+==================
+{if 0 < 4 is div by 2}T{/if}
+---
+(source_file (if_block (if_tag condition: (binary_expression left: (number) right: (binary_expression left: (number) operator: (div_by_operator) right: (number)))) (text) (if_close_tag)))
+
+==================
+Parenthesized relational left composition
+==================
+{if (0 < 4) is div by 2}T{/if}
+---
+(source_file (if_block (if_tag condition: (binary_expression left: (parenthesized_expression (binary_expression left: (number) right: (number))) operator: (div_by_operator) right: (number))) (text) (if_close_tag)))
+
+==================
+Arithmetic around divisibility predicate
+==================
+{if 4 + 2 is div by 3}F{/if}{if 4 is div by 2 + 1}T{/if}{if 4 is div by (2 + 1)}F{/if}
+---
+(source_file (if_block (if_tag condition: (binary_expression left: (binary_expression left: (number) right: (number)) operator: (div_by_operator) right: (number))) (text) (if_close_tag)) (if_block (if_tag condition: (binary_expression left: (binary_expression left: (number) operator: (div_by_operator) right: (number)) right: (number))) (text) (if_close_tag)) (if_block (if_tag condition: (binary_expression left: (number) operator: (div_by_operator) right: (parenthesized_expression (binary_expression left: (number) right: (number))))) (text) (if_close_tag)))
+
+==================
+Unary right operand
+==================
+{if 4 is div by -2}T{/if}
+---
+(source_file (if_block (if_tag condition: (binary_expression left: (number) operator: (div_by_operator) right: (unary_expression argument: (number)))) (text) (if_close_tag)))
+
+==================
+Boolean composition
+==================
+{if ($item@index is div by 2) && (count($rows) is div by 3) || $flag}Y{/if}
+---
+(source_file (if_block (if_tag condition: (binary_expression left: (binary_expression left: (parenthesized_expression (binary_expression left: (loop_metadata_expression item: (variable name: (identifier)) property: (identifier)) operator: (div_by_operator) right: (number))) right: (parenthesized_expression (binary_expression left: (function_call_expression name: (identifier) argument: (variable name: (identifier))) operator: (div_by_operator) right: (number)))) right: (variable name: (identifier)))) (text) (if_close_tag)))
+
+==================
+Divisibility in output expression
+==================
+{$n is div by 2}
+---
+(source_file (output value: (binary_expression left: (variable name: (identifier)) operator: (div_by_operator) right: (number))))
+
+==================
+Divisibility in parenthesized modifier argument
+==================
+{$x|default:($n is div by 2)}
+---
+(source_file (output value: (modifier_expression value: (variable name: (identifier)) name: (identifier) argument: (parenthesized_expression (binary_expression left: (variable name: (identifier)) operator: (div_by_operator) right: (number))))))

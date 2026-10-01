@@ -1,21 +1,28 @@
-# 013 — `is div by` condition predicate
+# 013 — `is div by` expression predicate
 
-Status: brief accepted (2026-10-01); queued behind higher-priority tasks 014–015.
-Independent brief review accepted (2026-10-01) after
-one revision round. Dependencies: 005 symbolic condition operators, 011
-standalone function calls, and 012 foreach item metadata. Task creation owner:
-hash-matched local corpus report `/tmp/smarty-012-after.json`.
+Status: complete (2026-10-01). Independent brief review accepted after two
+revision rounds; implementation review accepted with no actionable findings.
+The previous condition-only brief was accepted, but
+implementation exploration showed that scope conflicts with the pinned Smarty
+production and shared expression ladder; that disposition is superseded by
+this revision. Dependencies: 005 symbolic condition operators,
+011 standalone function calls, and 012 foreach item metadata. Task creation
+owner: hash-matched local corpus report `/tmp/smarty-012-after.json`.
 
 ## Motivation and corpus evidence
 
-The current report was generated with grammar hash
+The task-creation baseline report, captured after Task 012, was generated with grammar hash
 `e5a3e67725a10d3dbabe62ec0987a0b5b972821a4f7fc4a7a73ebb4a39ce530f` and records
 467 inputs: 142 parse cleanly and 325 contain errors. Scanning the exact source
 files for the case-insensitive phrase `is div by` finds 149 occurrences in 125
 templates: 123 failing templates and two already-clean templates. A report error
 falls within 20 source characters of 144 occurrences. The proximity count is
 triage evidence, not proof that this phrase causes every nearby error. Reports
-from tasks 011 and 012 have the same 467 input hashes.
+from tasks 011 and 012 have the same 467 input hashes. These counts are
+historical task-creation motivation, not the current corpus status: Task 014
+later reported 186 clean and 281 failing inputs. Before implementation, the
+implementation owner must capture a fresh corpus baseline for the actual
+starting grammar and compare it with a hash-matched after report.
 
 The source occurrences are highly repetitive row-striping conditions, for
 example `corpus/view_wage_work/wage_work_repairs_params.tpl:26`,
@@ -37,17 +44,75 @@ below; runtime results do not by themselves establish the structural tree.
 
 ## Scope and proposed tree
 
-Recognize the exact `is div by` predicate in existing condition expressions.
+Recognize the exact `is div by` predicate as a general expression operator
+where the existing grammar accepts full expressions, not only in `if` and
+`elseif` conditions. Output expressions provide the representative
+non-condition case; other uses follow only where the current grammar already
+uses its shared full-expression rule. This task does not add new expression
+contexts. Do not add support for any other `tlop` spelling. The pinned
+production is `expr ::= expr tlop value`; it is part of Smarty's general `expr`
+grammar rather than an `if`-condition-only rule.
+
 Represent it as a `binary_expression` with `left`, `operator`, and `right`
-fields, preserving its existing operands. Use a named `div_by_operator` node for
-the three-word operator so the spelling and source range can be tested; its text
-must be `is div by`, with normal inter-word spacing retained in the source. The
-left side accepts the currently supported expression grammar, including
-`loop_metadata_expression` and `function_call_expression`. The right side is a
-currently supported value, including unary `+`, `-`, and `!`, or a parenthesized
-supported expression, matching the pinned Smarty production
-`expr ::= expr tlop value`. Word `not` remains outside this task's supported
-unary subset.
+fields, preserving the public tree shape already used by supported operators.
+Use a named `div_by_operator` node for the three-word operator so its spelling
+and source range can be tested; whitespace between words is accepted as by
+Smarty's lexer, and the node retains the exact source slice (normalize
+whitespace to compare its spelling). The left side accepts the currently supported
+expression grammar, including `loop_metadata_expression` and
+`function_call_expression`. The right side is a currently supported value,
+including unary `+`, `-`, and `!`, or a parenthesized supported expression,
+matching the pinned production's `value`. Word `not` remains outside this
+task's supported unary subset.
+
+Add this manually specified non-condition tree for a minimized Smarty output
+example. It distinguishes shared-expression scope from a condition-only
+interpretation:
+
+```smarty
+{$n is div by 2}
+```
+
+```text
+(source_file
+  (output value: (binary_expression
+    left: (variable name: (identifier))
+    operator: (div_by_operator)
+    right: (number))))
+```
+
+The Smarty 5.8.4 full engine compiles this output expression without error and
+renders `1` with `n=4` and the empty string with `n=5`. The recording adapter
+reports one output event for both cases; it cannot establish the expression
+tree or inspect values. Use the manual tree and full-engine observations for
+those separate claims.
+
+An existing parenthesized full-expression position inside a modifier argument
+also inherits the operator. A direct unparenthesized modifier argument remains
+outside this task because the current grammar's `_modifier_argument` is narrower
+than `_expression`; this scope boundary does not assert that Smarty rejects the
+direct form, which remains a separate grammar gap to assess:
+
+```smarty
+{$x|default:($n is div by 2)}
+```
+
+```text
+(source_file
+  (output value: (modifier_expression
+    value: (variable name: (identifier))
+    name: (identifier)
+    argument: (parenthesized_expression
+      (binary_expression
+        left: (variable name: (identifier))
+        operator: (div_by_operator)
+        right: (number))))))
+```
+
+The Smarty 5.8.4 recorder accepts this fixture and reports a `default`
+modifier with one argument followed by output. The full engine compiles it and
+renders `1` for `n=4` and empty output for `n=5`. The recorder does not expose
+the modifier argument's expression tree or value.
 
 ```smarty
 {foreach $items as $item}{if $item@index is div by 2}even{/if}{/foreach}
@@ -214,10 +279,12 @@ reference limitation.
 
 ## Acceptance work
 
-1. Before grammar edits, add `test/corpus/divisibility-predicate.txt` with the
-   hand-written metadata and function-call trees above, plus a composed
-   condition tree. Add `test/divisibility-predicate.test.mjs` with failing
-   assertions. Keep `if`/`else` closers and adjacent text explicit.
+1. Keep the seven existing hand-written TDD fixtures intact. Before grammar
+   edits, add the output-expression and parenthesized-modifier trees above to
+   `test/corpus/divisibility-predicate.txt`, retaining the existing metadata,
+   function-call, precedence, unary and composition trees. Add or extend
+   `test/divisibility-predicate.test.mjs` with a failing assertion for the
+   output tree. Keep `if`/`else` closers and adjacent text explicit.
 2. Assert the operator node's exact `is div by` spelling/range and `left`,
    `operator`, and `right` fields, including a metadata left operand and a
    function-call left operand. For `0 < 4 is div by 2`, assert the outer `<`
@@ -225,11 +292,23 @@ reference limitation.
    predicate and parenthesized relational left operand. Check both `<` and
    `is div by` operator spellings/ranges. Assert the `+` operator and operand
    nesting in both arithmetic cases. Check full composition with `&&`, `||`,
-   and parentheses. Use
+   and parentheses. Assert that the output expression's `value` is the
+   `binary_expression` and that its operator's normalized spelling and exact
+   raw source range match the condition cases. Assert the modifier's direct
+   argument remains a `parenthesized_expression` whose inner expression has
+   the predicate tree. Preserve the exact text and
+   source ranges of neighboring `+`, `-`, and `==` operator nodes and foreach
+   item bindings in regression checks; adding the new expression production
+   must not shift existing token boundaries or field ranges. Use
    `fixtures('divisibility-predicate.txt')` for Smarty-visible event comparison
    and state that event agreement cannot establish the predicate tree.
 3. Use fixed `fullEngine()` examples with numeric literals to reproduce the
-   true/false, relational, and arithmetic outcomes in the reference section.
+   true/false, relational, arithmetic, output-expression, and parenthesized
+   modifier-argument outcomes in the reference section. For both
+   `{$n is div by 2}` and `{$x|default:($n is div by 2)}`, assert successful
+   compilation and results for `n=4` and `n=5` as recorded above. Use
+   `fixtures('divisibility-predicate.txt')`/`reference()` for both non-condition
+   forms and state that recorder agreement cannot establish their inner trees.
    Add parentheses to make the comparison cases explicit. Assert structural
    precedence from the hand-authored trees and pinned parser production, not
    from emitted PHP's runtime behavior or the recording adapter.
@@ -242,9 +321,13 @@ reference limitation.
    the operator or an operand. Preserve an existing mutation's fault if source
    anchors need an update.
 6. Keep `is not div by`, `is even/odd [by]`, symbolic and word aliases (`eq`,
-   `and`, and similar), other `is ...` predicates, bitwise operators, and
-   non-condition expression contexts out of this task. They remain project
-   gaps; do not broaden the grammar based on the shared lexer token.
+   `and`, and similar), other `is ...` predicates, and bitwise operators out of
+   this task. They remain project gaps; do not broaden the grammar based on the
+   shared lexer token. The exact `is div by` operator applies only in existing
+   full-expression positions. Do not expand narrower grammar positions such as
+   direct modifier arguments or bare array keys merely to make them accept this
+   form; existing parenthesized full expressions in those positions inherit
+   the operator through the shared expression rule.
 7. Run `npm test` and hash-matched before/after corpus reports outside `build/`.
    Inspect all newly clean file trees and regressions. Preserve all corpus
    inputs; report actual counts and remaining errors, with no clean-file quota.
@@ -267,19 +350,69 @@ reference limitation.
 
 ## Brief-review disposition
 
-Independent task-creation review accepted (2026-10-01) after one revision
-round. The owner accepted and
-addressed all three findings: the `<` case has an independently traced
-relational-outer tree with the predicate on its right, plus the parenthesized
-predicate-outer contrast; arithmetic on the left, after the RHS, and inside a
-parenthesized RHS has explicit trees and exact full-engine results with the PHP
-translation caveat; and the RHS includes a unary expression case grounded in
-the `value` production and a full-engine observation. Incomplete examples now
-say only that the full engine reports no error, not that it accepts their
-syntax. Re-review accepted with no remaining findings.
+The previous condition-only brief was accepted on 2026-10-01, then superseded
+after implementation exploration showed that a parallel condition grammar
+conflicted with shared expression rules and shifted operator/foreach source
+ranges. The revised brief makes this one exact operator in the shared
+expression ladder, consistent with the pinned `expr ::= expr tlop value`
+production. It adds a manually specified output-expression tree and verified
+Smarty compiler/reference observation as the non-condition proof. Review also
+identified that existing parenthesized modifier arguments inherit the shared
+expression rule; that tree and its reference observation are explicit, while
+direct unparenthesized modifier arguments remain excluded. The seven original
+TDD fixtures remain intact. Independent task creation review accepted the
+revision after two rounds (2026-10-01), with no remaining findings.
 
-## Implementation evidence (fill after implementation)
+## Implementation evidence
 
-Tree/reference/full-engine/edit links; commands/results; corpus report paths and
-hash comparison; newly clean tree review; changed expectations; and remaining
-operator forms.
+`grammar.js` adds one left-associative shared arithmetic production whose named
+`div_by_operator` token spans the exact lower-case `is ... div ... by` source
+spelling, including its original inter-word whitespace. As in Smarty's pinned
+lexer, whitespace is required before the right value; that trailing separator
+is outside the named operator range. Its left operand uses the current
+arithmetic grammar and its right operand uses the current unary/value grammar.
+The public shape is `binary_expression` with `left`, `operator`, and `right`
+fields. This follows the pinned `expr ::= expr tlop value` production in all
+existing full-expression positions. It does not add new direct
+`_modifier_argument` or other narrower contexts; an existing parenthesized
+modifier argument inherits the predicate through its inner full expression.
+Generated sources are current.
+
+Hand-authored trees in [divisibility-predicate.txt](../../test/corpus/divisibility-predicate.txt)
+cover foreach metadata and call operands, relational and arithmetic grouping,
+unary RHS, boolean composition, an output expression, and a parenthesized
+modifier argument. [Node checks](../../test/divisibility-predicate.test.mjs)
+assert operator text/ranges and fields, output/modifier tree shape, reference
+events, full-engine outcomes, missing-operand recovery, and incremental edit
+equivalence. Event comparisons verify only Smarty-visible names/counts; manual
+trees establish expression structure. Full-engine cases verify controlled
+rendering but the PHP translation's precedence can differ from the source tree.
+Other `tlop` forms (`is not div by`, `is even/odd by`) remain unsupported; the
+direct modifier-argument and bare array-key forms remain outside this task. No
+existing expectation changed.
+
+Test-first proof: before the grammar change, `npm test` reported 133 successful
+and 9 failing corpus parses; all nine new manually specified trees failed, while
+the existing 133 passed. Final `npm test` passes 142 corpus trees, 211 Node
+checks, and all 11 mutation checks. Hash-matched reports
+`/tmp/smarty-013-before-v2.json` and `/tmp/smarty-013-after-v2.json` preserve the
+same 467 source hashes and show 186 clean / 281 failing before and 240 clean /
+227 failing after, with no regressions. The parser hashes are
+`e6e522b8203e05dfa4e601284cc91e4b4d4e848f3ef67a947e505c5ae4c66963` before and
+`829aa943ed57457b277c998f2e6478d4029e147282c925442e7df5dae08574b6` after.
+All 54 newly clean trees were structurally inspected: together they contain 63
+`div_by_operator` nodes under `binary_expression` nodes with explicit left/right fields;
+the left nodes are loop metadata or method calls, and the right nodes are
+numbers. The full list and per-file node counts were recorded in the owner's
+handoff. The corpus still has 227 parse failures, which remain unresolved
+completeness gaps.
+
+## Implementation-review disposition
+
+Independent implementation review accepted (2026-10-01) with no actionable
+findings. The reviewer reproduced `npm test` and the hash-matched corpus report,
+verified the generated parser, checked all 54 newly clean trees for structured
+operator nodes, confirmed the manual tree and range assertions against the
+pinned Smarty grammar and precedence traces, and verified recovery/edit and
+reference-limit evidence. The orchestrator marked this task complete after
+review acceptance.

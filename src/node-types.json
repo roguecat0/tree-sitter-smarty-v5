@@ -404,6 +404,10 @@
             "named": false
           },
           {
+            "type": "div_by_operator",
+            "named": true
+          },
+          {
             "type": "||",
             "named": false
           }
@@ -2245,6 +2249,10 @@
   },
   {
     "type": "comment",
+    "named": true
+  },
+  {
+    "type": "div_by_operator",
     "named": true
   },
   {

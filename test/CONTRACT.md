@@ -127,6 +127,16 @@ right. Relational and equality levels each forbid unparenthesized repeated
 comparisons; parentheses can make grouping explicit. Adjacent prefix sign pairs
 are excluded INCDEC syntax; spaced signs such as `+ +$a` are nested unary nodes.
 Modifier arguments retain the prior narrow subset; parenthesize full expressions.
+The exact Smarty predicate `is div by` is also a `binary_expression` with a
+named `div_by_operator`; it is available anywhere the shared full-expression
+rule is used, including outputs, conditions, and parenthesized modifier
+arguments. The operator's source range spans `is` through `by`, retaining the
+original whitespace between words. Its left side uses supported expressions;
+its right side uses a supported value, including unary and parenthesized forms.
+Other word aliases and `is ...` predicates remain unsupported, as do direct
+unparenthesized modifier arguments that use the narrower argument rule. Evidence:
+[divisibility trees](corpus/divisibility-predicate.txt) and
+[reference/full-engine/recovery/edit checks](divisibility-predicate.test.mjs).
 Evidence: [operator trees](corpus/condition-operators.txt) and
 [reference/full-engine/edit checks](condition-operators.test.mjs). The full-engine
 helper uses only controlled fixtures and temporary compile directories. It does
