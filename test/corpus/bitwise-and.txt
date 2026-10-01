@@ -1,0 +1,41 @@
+==================
+Bitwise AND output
+==================
+{$a & $b}
+---
+(source_file (output value: (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier)))))
+
+==================
+Bitwise AND condition
+==================
+{if $flags & $smarty.const.FLAG_OK}Y{/if}
+---
+(source_file (if_block (if_tag condition: (binary_expression left: (variable name: (identifier)) right: (index_expression object: (index_expression object: (variable name: (identifier)) index: (identifier)) index: (identifier)))) (text) (if_close_tag)))
+
+==================
+Equality binds inside the right operand
+==================
+{if 5 & 3 == 1}T{else}F{/if}
+---
+(source_file (if_block (if_tag condition: (binary_expression left: (number) right: (binary_expression left: (number) right: (number)))) (text) (else_clause (else_tag) (text)) (if_close_tag)))
+
+==================
+Relational comparison binds inside the right operand
+==================
+{if 5 & 3 < 2}T{else}F{/if}
+---
+(source_file (if_block (if_tag condition: (binary_expression left: (number) right: (binary_expression left: (number) right: (number)))) (text) (else_clause (else_tag) (text)) (if_close_tag)))
+
+==================
+Bitwise AND in generic tag attribute
+==================
+{widget value=($a & $b)}
+---
+(source_file (custom_tag name: (identifier) (attribute name: (identifier) value: (parenthesized_expression (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier)))))))
+
+==================
+Bitwise AND in parenthesized modifier argument
+==================
+{$x|default:($a & $b)}
+---
+(source_file (output value: (modifier_expression value: (variable name: (identifier)) name: (identifier) argument: (parenthesized_expression (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier)))))))

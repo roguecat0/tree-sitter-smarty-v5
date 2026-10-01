@@ -20,6 +20,7 @@ Cartesian suite merely to fill the matrix.
 | Interpolated string (double-quoted) | yes [IS-output](#ev-is-output) | ? [U-is-condition](#ev-u-is-condition) | ? [U-is-source](#ev-u-is-source) | ? [U-is-tag-pos](#ev-u-is-tag-pos) | yes [IS-tag-attr](#ev-is-tag-attr) | ? [U-is-call-arg](#ev-u-is-call-arg) | ? [U-is-mod-input](#ev-u-is-mod-input) | yes [IS-mod-arg](#ev-is-mod-arg) | ? [U-is-bracket](#ev-u-is-bracket) | ? [U-is-array-key](#ev-u-is-array-key) | ? [U-is-array-value](#ev-u-is-array-value) |
 | Parenthesized expression | yes [PA-output](#ev-pa-output) | ? [U-parenthesized-condition](#ev-u-parenthesized-condition) | ? [U-parenthesized-source](#ev-u-parenthesized-source) | ? [U-parenthesized-tag-pos](#ev-u-parenthesized-tag-pos) | ? [U-parenthesized-tag-attr](#ev-u-parenthesized-tag-attr) | yes [PA-call-arg](#ev-pa-call-arg) | yes [PA-mod-input](#ev-pa-mod-input) | yes [PA-mod-arg](#ev-pa-mod-arg) | yes [PA-bracket](#ev-pa-bracket) | yes [PA-array-key](#ev-pa-array-key) | ? [U-parenthesized-array-value](#ev-u-parenthesized-array-value) |
 | Unary / arithmetic / comparison / boolean expression | yes [OP-output](#ev-op-output) | yes [OP-condition](#ev-op-condition) | ? [U-operator-source](#ev-u-operator-source) | yes [OP-tag-pos](#ev-op-tag-pos) | yes [OP-tag-attr](#ev-op-tag-attr) | yes [OP-call-arg](#ev-op-call-arg) | limited [OP-mod-input](#ev-op-mod-input) | limited [OP-mod-arg](#ev-op-mod-arg) | limited [OP-bracket](#ev-op-bracket) | limited [OP-array-key](#ev-op-array-key) | ? [U-operator-array-value](#ev-u-operator-array-value) |
+| Bitwise AND (`&`) | yes [BA-output](#ev-ba-output) | yes [BA-condition](#ev-ba-condition) | ? [U-bitwise](#ev-u-bitwise) | ? [U-bitwise](#ev-u-bitwise) | yes [BA-tag-attr](#ev-ba-tag-attr) | ? [U-bitwise](#ev-u-bitwise) | ? [U-bitwise](#ev-u-bitwise) | yes [BA-mod-arg](#ev-ba-mod-arg) | ? [U-bitwise](#ev-u-bitwise) | ? [U-bitwise](#ev-u-bitwise) | ? [U-bitwise](#ev-u-bitwise) |
 | Modifier expression | yes [M-output](#ev-m-output) | ? [U-modifier-condition](#ev-u-modifier-condition) | ? [U-modifier-source](#ev-u-modifier-source) | ? [U-modifier-tag-pos](#ev-u-modifier-tag-pos) | yes [M-tag-attr](#ev-m-tag-attr) | ? [U-modifier-call-arg](#ev-u-modifier-call-arg) | yes [M-mod-input](#ev-m-mod-input) | ? [U-modifier-mod-arg](#ev-u-modifier-mod-arg) | ? [U-modifier-bracket](#ev-u-modifier-bracket) | ? [U-modifier-array-key](#ev-u-modifier-array-key) | ? [U-modifier-array-value](#ev-u-modifier-array-value) |
 | Property access (`->name`) | yes [PR-output](#ev-pr-output) | yes [PR-condition](#ev-pr-condition) | ? [U-property-source](#ev-u-property-source) | yes [PR-tag-pos](#ev-pr-tag-pos) | yes [PR-tag-attr](#ev-pr-tag-attr) | ? [U-property-call-arg](#ev-u-property-call-arg) | yes [PR-mod-input](#ev-pr-mod-input) | yes [PR-mod-arg](#ev-pr-mod-arg) | ? [U-property-bracket](#ev-u-property-bracket) | yes [PR-array-key](#ev-pr-array-key) | ? [U-property-array-value](#ev-u-property-array-value) |
 | Method call (`->name(...)`) | yes [MC-output](#ev-mc-output) | yes [MC-condition](#ev-mc-condition) | yes [MC-source](#ev-mc-source) | yes [MC-tag-pos](#ev-mc-tag-pos) | yes [MC-tag-attr](#ev-mc-tag-attr) | yes [MC-call-arg](#ev-mc-call-arg) | yes [MC-mod-input](#ev-mc-mod-input) | yes [MC-mod-arg](#ev-mc-mod-arg) | ? [U-method-bracket](#ev-u-method-bracket) | ? [U-method-array-key](#ev-u-method-array-key) | ? [U-method-array-value](#ev-u-method-array-value) |
@@ -159,6 +160,23 @@ unsupported follow-up outside this task. A literal
 `$` or `$5` fragment immediately followed by `$name` also remains a fragment
 before the interpolation, rendering `$world` or `$5world` respectively.
 
+## Task 021 bitwise AND composition audit (complete)
+
+The reviewed grammar accepts `&` in the tested shared-expression contexts
+below. Pinned Smarty 5.8.4 accepts each minimized source. The reference
+projection confirms syntax and outer events only; hand-authored trees establish
+operand structure, and controlled full-engine checks establish precedence and
+values. Other context cells remain unverified. Corpus evidence and
+implementation limitations are recorded in
+[completed Task 021](tasks/021-bitwise-and.md).
+
+| Cell | Minimized composition | Current result and evidence |
+| --- | --- | --- |
+| <a id="ev-ba-output"></a>BA-output | Output: `{$a & $b}` | **yes:** hand tree exposes `binary_expression` in the output value; the pinned recorder reports one output. [fixture](../test/corpus/bitwise-and.txt); [checks](../test/bitwise-and.test.mjs); [Task 021](tasks/021-bitwise-and.md) |
+| <a id="ev-ba-condition"></a>BA-condition | Condition: `{if $flags & $smarty.const.FLAG_OK}Y{/if}` | **yes:** hand tree exposes method/value and config-index operands under the condition; the recorder reports the `if` and closer. The corpus gains 12 structurally inspected condition roots. [fixture](../test/corpus/bitwise-and.txt); [checks](../test/bitwise-and.test.mjs); [Task 021](tasks/021-bitwise-and.md) |
+| <a id="ev-ba-tag-attr"></a>BA-tag-attr | Generic-tag attribute: `{widget value=($a & $b)}` | **yes:** hand tree exposes the parenthesized bitwise expression in the attribute value; pinned recording parser accepts the tag and named argument (full compiler lacks an application `widget` plugin). [fixture](../test/corpus/bitwise-and.txt); [checks](../test/bitwise-and.test.mjs); [Task 021](tasks/021-bitwise-and.md) |
+| <a id="ev-ba-mod-arg"></a>BA-mod-arg | Parenthesized modifier argument: `{$x|default:($a & $b)}` | **yes:** hand tree exposes the modifier argument and the controlled full engine compiles it; the recorder accepts `default` with one argument. [fixture](../test/corpus/bitwise-and.txt); [checks](../test/bitwise-and.test.mjs); [Task 021](tasks/021-bitwise-and.md) |
+
 ## Task 015 evidence index
 
 Keys in the matrix link to the evidence groups below. Each `yes` group names a
@@ -190,12 +208,15 @@ tree.
 
 <a id="ev-u-variable-array-key"></a><a id="ev-u-primitive-source"></a><a id="ev-u-primitive-tag-pos"></a><a id="ev-u-parenthesized-condition"></a><a id="ev-u-parenthesized-source"></a><a id="ev-u-parenthesized-tag-pos"></a><a id="ev-u-parenthesized-tag-attr"></a><a id="ev-u-parenthesized-array-value"></a><a id="ev-u-operator-source"></a><a id="ev-u-operator-array-value"></a><a id="ev-u-modifier-condition"></a><a id="ev-u-modifier-source"></a><a id="ev-u-modifier-tag-pos"></a><a id="ev-u-modifier-call-arg"></a><a id="ev-u-modifier-mod-arg"></a><a id="ev-u-modifier-bracket"></a><a id="ev-u-modifier-array-key"></a><a id="ev-u-modifier-array-value"></a><a id="ev-u-property-source"></a><a id="ev-u-property-call-arg"></a><a id="ev-u-property-bracket"></a><a id="ev-u-property-array-value"></a><a id="ev-u-method-bracket"></a><a id="ev-u-method-array-key"></a><a id="ev-u-method-array-value"></a><a id="ev-u-index-source"></a><a id="ev-u-index-call-arg"></a><a id="ev-u-index-bracket"></a><a id="ev-u-index-array-key"></a><a id="ev-u-index-array-value"></a><a id="ev-u-metadata-source"></a><a id="ev-u-metadata-tag-pos"></a><a id="ev-u-metadata-bracket"></a><a id="ev-u-metadata-array-key"></a><a id="ev-u-metadata-array-value"></a><a id="ev-u-function-source"></a><a id="ev-u-function-bracket"></a><a id="ev-u-function-array-key"></a><a id="ev-u-function-array-value"></a><a id="ev-u-array-output"></a><a id="ev-u-array-source"></a><a id="ev-u-array-mod-input"></a><a id="ev-u-array-array-key"></a><a id="ev-u-constant-source"></a>
 
-<a id="ev-u-is-condition"></a><a id="ev-u-is-source"></a><a id="ev-u-is-tag-pos"></a><a id="ev-u-is-call-arg"></a><a id="ev-u-is-mod-input"></a><a id="ev-u-is-bracket"></a><a id="ev-u-is-array-key"></a><a id="ev-u-is-array-value"></a>
+<a id="ev-u-is-condition"></a><a id="ev-u-is-source"></a><a id="ev-u-is-tag-pos"></a><a id="ev-u-is-call-arg"></a><a id="ev-u-is-mod-input"></a><a id="ev-u-is-bracket"></a><a id="ev-u-is-array-key"></a><a id="ev-u-is-array-value"></a><a id="ev-u-bitwise"></a>
 
-The cells marked `?` are unknown rather than unsupported. Each linked key names
-the exact form/context pair. Follow-up is to reduce that pair to one source,
-write its expected tree manually, and check pinned Smarty behavior before
-changing its status. The pairs are: variable/config variable–array key;
+The cells marked `?` are unknown rather than unsupported. For bitwise AND, the
+unverified contexts are foreach sources, custom-tag positional values,
+function/method arguments, modifier inputs, bracket indices, and array keys and
+values; completed Task 021 supports only its listed shared-expression contexts.
+Each linked key names the exact form/context pair. Follow-up is to reduce that
+pair to one source, write its expected tree manually, and check pinned Smarty
+behavior before changing its status. The pairs are: variable/config variable–array key;
 primitive–foreach source and positional argument; parenthesized expression–
 condition, foreach source, positional argument, attribute value, and array
 value; operator expression–foreach source and array value; modifier expression–

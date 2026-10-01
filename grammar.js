@@ -81,9 +81,11 @@ export default grammar({
     // Layer comparison operands so an unparenthesized second comparison cannot
     // silently acquire associativity. Aliases preserve the public binary tree.
     _logical_or: $ => choice($._logical_and, alias($._or_expression, $.binary_expression)),
-    _or_expression: $ => prec.left(-4, seq(field("left", $._logical_or), field("operator", "||"), field("right", $._logical_and))),
-    _logical_and: $ => choice($._equality, alias($._and_expression, $.binary_expression)),
-    _and_expression: $ => prec.left(-3, seq(field("left", $._logical_and), field("operator", "&&"), field("right", $._equality))),
+    _or_expression: $ => prec.left(-5, seq(field("left", $._logical_or), field("operator", "||"), field("right", $._logical_and))),
+    _logical_and: $ => choice($._bitwise_and, alias($._and_expression, $.binary_expression)),
+    _and_expression: $ => prec.left(-4, seq(field("left", $._logical_and), field("operator", "&&"), field("right", $._bitwise_and))),
+    _bitwise_and: $ => choice($._equality, alias($._bitwise_and_expression, $.binary_expression)),
+    _bitwise_and_expression: $ => prec.left(-3, seq(field("left", $._bitwise_and), field("operator", "&"), field("right", $._equality))),
     _equality: $ => choice($._relational, alias($._equality_expression, $.binary_expression)),
     _equality_expression: $ => prec(-2, seq(field("left", $._relational), field("operator", choice("==", "!=", "===", "!==")), field("right", $._relational))),
     _relational: $ => choice($._arithmetic, alias($._relational_expression, $.binary_expression)),

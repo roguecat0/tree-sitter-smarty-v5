@@ -166,6 +166,19 @@ Other word aliases and `is ...` predicates remain unsupported, as do direct
 unparenthesized modifier arguments that use the narrower argument rule. Evidence:
 [divisibility trees](corpus/divisibility-predicate.txt) and
 [reference/full-engine/recovery/edit checks](divisibility-predicate.test.mjs).
+Binary bitwise AND `&` is a shared-expression operator, represented by
+`binary_expression` with `left`, exact anonymous `operator`, and `right` fields.
+It binds below arithmetic, relational, and equality operators and above `&&`
+and `||`; repeated `&` operators associate left. The tested contexts are output,
+conditions, generic-tag attribute values, and parenthesized modifier arguments.
+Incomplete operands remain parse errors and recover with a missing `true` token
+under the bitwise expression, while surrounding comments, block closers, and
+later outputs remain separate. Pinned Smarty 5.8.4 rejects the malformed
+examples at `}`. Other lexer math operators `**`, `^`, `<<`, and `>>` remain
+unimplemented gaps. Evidence: [bitwise trees](corpus/bitwise-and.txt) and
+[reference, full-engine, recovery and edit checks](bitwise-and.test.mjs);
+reviewed implementation evidence and remaining unverified contexts are tracked
+in [completed Task 021](../docs/tasks/021-bitwise-and.md).
 Evidence: [operator trees](corpus/condition-operators.txt) and
 [reference/full-engine/edit checks](condition-operators.test.mjs). The full-engine
 helper uses only controlled fixtures and temporary compile directories. It does
