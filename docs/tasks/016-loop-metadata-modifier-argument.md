@@ -1,7 +1,7 @@
 # 016 — Loop metadata as a modifier argument
 
-Status: implementation. Task-creation reviewer accepted the brief on 2026-10-01
-after requiring a concrete composition tree,
+Status: complete (implementation review accepted; commit `86e8d76`).
+Task-creation reviewer accepted the brief on 2026-10-01 after requiring a concrete composition tree,
 malformed modifier-context cases, and incremental edits across `@index`.
 Dependencies: Task 012 loop
 metadata and Task 015's composition audit. The former priority deferral is

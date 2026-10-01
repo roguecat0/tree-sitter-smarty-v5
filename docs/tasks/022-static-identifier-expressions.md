@@ -1,7 +1,7 @@
 # 022 — Static identifiers as expression values
 
-Status: implementation review accepted; awaiting orchestrator completion and
-commit. Scope clarification accepted before implementation. Dependencies: 017
+Status: complete (implementation review accepted; commit `b127efa`). Scope
+clarification accepted before implementation. Dependencies: 017
 static modifier identifiers and 018 generic-tag identifier values.
 
 ## Motivation and corpus evidence

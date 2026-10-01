@@ -1,6 +1,6 @@
 # Task 024: Curated upstream Smarty core syntax corpus
 
-**Status:** implementation (brief accepted by independent review 2026-10-01)  
+**Status:** complete (implementation review accepted; commit `c5a5280`).
 **Type:** corpus provenance and reproducibility; no grammar change  
 **Depends on:** none; complete before resuming deferred [Task 016](016-loop-metadata-modifier-argument.md)
 
