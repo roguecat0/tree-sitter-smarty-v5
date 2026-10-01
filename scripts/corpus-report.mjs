@@ -18,9 +18,11 @@ const hints = {
   custom_switch: /\{switch\b/,
 };
 
+const separateUpstreamCorpora = new Set(['upstream-smarty-v5.8.4-core', 'upstream-smarty-v5.8.4-example']);
+
 export function listTemplates(dir) {
   return readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name, 'en'))
-    .flatMap(entry => entry.isDirectory() ? listTemplates(join(dir, entry.name))
+    .flatMap(entry => entry.isDirectory() && !separateUpstreamCorpora.has(entry.name) ? listTemplates(join(dir, entry.name))
       : entry.isFile() && entry.name.endsWith('.tpl') ? [join(dir, entry.name)] : []);
 }
 

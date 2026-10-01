@@ -1,0 +1,843 @@
+{
+  "schema_version": 1,
+  "upstream": {
+    "repository": "https://github.com/smarty-php/smarty",
+    "tag": "v5.8.4",
+    "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+    "license": "LGPL-3.0-or-later",
+    "license_source_path": "LICENSE",
+    "license_git_blob": "595e5993daea48906c601ecf3eff486807e5906e",
+    "license_sha256": "1fce8b1c473def8c65ecda4a960999de063f0876fbfa67ba4cad83f0a5b50b65"
+  },
+  "minimums": {
+    "positive_fixture_count": {
+      "min": 30,
+      "max": 50
+    },
+    "distinct_source_files_min": 24,
+    "core_families_min": 8
+  },
+  "entries": [
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/Comments/templates/longcomment.tpl",
+      "git_blob": "8fa2edfcb83fe255254a5e8ef498bf1c9f80b469",
+      "sha256": "0c4b501abb2d3d0ba3f3e65f237595930a591340e5282872affe6a8e5010ae31",
+      "destination": "TemplateSource/Comments/templates/longcomment.tpl",
+      "family": "comments",
+      "rationale": "Positive multi-line Smarty comment and surrounding text fixture.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/Comments/CommentsTest.php",
+        "test_source_git_blob": "b399d592e6c7a2c82d6618e56e0b03a54ae248e4",
+        "test_source_sha256": "bee26df2b8b137e9f5459eb385f3f25cbb8bb696d7920307a04d48a53d688668",
+        "test_method": "testTextComment5"
+      },
+      "exclusion_flags": []
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/ValueTests/DoubleQuoted/templates/001_closedBlock.tpl",
+      "git_blob": "1ae6304319cdc5f037af567653cb73c811d0cf7f",
+      "sha256": "2ad358f4158a4e9089171a7029b592dd955d53889a506f91c0cdb5b402693258",
+      "destination": "TemplateSource/ValueTests/DoubleQuoted/templates/001_closedBlock.tpl",
+      "family": "strings_values",
+      "rationale": "Positive interpolation of a closed if block within a double-quoted Smarty string.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/ValueTests/DoubleQuoted/DoubleQuotedStringTest.php",
+        "test_source_git_blob": "d3ea8e5ce056c1ca26c7aeeb401254e13268bd7d",
+        "test_source_sha256": "a173bcbf639764eca42a86d7d83135917df205a1d7fc720ade6855a9d05fd6a8",
+        "test_method": "testDoubleQuotedClosedBlock_001"
+      },
+      "exclusion_flags": []
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/TemplateFunction/templates/test_template_function_tag4.tpl",
+      "git_blob": "80cf6a0f5af4dbd3cff9d3b344b848491db7cf8c",
+      "sha256": "3d9615af7ec55deca3dd955d8d6e8aef1be00a7673ec69b4243b14bda3ef301d",
+      "destination": "TemplateSource/TagTests/TemplateFunction/templates/test_template_function_tag4.tpl",
+      "family": "conditionals",
+      "rationale": "Positive nested if/call composition in a template-defined function.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/TemplateFunction/CompileFunctionTest.php",
+        "test_source_git_blob": "0d3cddca7e199543a1f7656d1fd510f07bd07fb0",
+        "test_source_sha256": "481aa39e1465d8d03731f217d19d1ff9f4e9866eb35fc7f85393014638136e10",
+        "test_method": "testRecursiveFunction",
+        "data_provider": "functionProvider",
+        "provider_case_ids": [
+          "0",
+          "1"
+        ]
+      },
+      "exclusion_flags": [
+        "runtime_recursion_and_render_output"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/Foreach/templates/027_foreach.tpl",
+      "git_blob": "ad2fe7cf3a064f42cef3810d59ac18950e21a8b8",
+      "sha256": "41f3b1fe35918fd9635742ab6c39d55cd3bb7a9a9a73fc0dd7b3015e1dada080",
+      "destination": "TemplateSource/TagTests/Foreach/templates/027_foreach.tpl",
+      "family": "loops",
+      "rationale": "Positive foreach loop and metadata/control-flow structure.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/Foreach/CompileForeachTest.php",
+        "test_source_git_blob": "7370de5b787c9999061ddd4f2f0b4ae106dd2507",
+        "test_source_sha256": "7fe2ebd95f451a38126cb53b82e77d809281813d1d47877e49e1c1978b5b69da",
+        "test_method": "testForeachNested_27"
+      },
+      "exclusion_flags": [
+        "assigned_loop_values",
+        "iteration_runtime_semantics"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/Foreach/templates/028_foreach.tpl",
+      "git_blob": "8d1c07f9910b68449f7dcf46fffd0e5bb96a9f33",
+      "sha256": "5d2875d61cebc68405ca707251d6c47948d8616f79200569fa68716373f38e0e",
+      "destination": "TemplateSource/TagTests/Foreach/templates/028_foreach.tpl",
+      "family": "literal_whitespace",
+      "rationale": "Positive strip whitespace-control syntax composed with a keyed, named nested foreach.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/Foreach/CompileForeachTest.php",
+        "test_source_git_blob": "7370de5b787c9999061ddd4f2f0b4ae106dd2507",
+        "test_source_sha256": "7fe2ebd95f451a38126cb53b82e77d809281813d1d47877e49e1c1978b5b69da",
+        "test_method": "testForeachNestedNamed_28"
+      },
+      "exclusion_flags": [
+        "assigned_loop_values",
+        "render_output"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/Foreach/templates/029_foreach.tpl",
+      "git_blob": "afae1b2768e7f0c6257e3b0881c3a2d9aee1aa13",
+      "sha256": "b6a1e32a636ef40ec42f273dbf9a9c43e5e27e013c01498391895650b26fe424",
+      "destination": "TemplateSource/TagTests/Foreach/templates/029_foreach.tpl",
+      "family": "loops",
+      "rationale": "Positive foreach loop and metadata/control-flow structure.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/Foreach/CompileForeachTest.php",
+        "test_source_git_blob": "7370de5b787c9999061ddd4f2f0b4ae106dd2507",
+        "test_source_sha256": "7fe2ebd95f451a38126cb53b82e77d809281813d1d47877e49e1c1978b5b69da",
+        "test_method": "testForeachBreak_29"
+      },
+      "exclusion_flags": [
+        "assigned_loop_values",
+        "iteration_runtime_semantics"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/Foreach/templates/030_foreach.tpl",
+      "git_blob": "45feb6f343dc00128dd450776a7b7a4077b8b98c",
+      "sha256": "ee6b4e16d669975affaa03aa943708206b629ce5f0bc618dbe21a85e99cd424b",
+      "destination": "TemplateSource/TagTests/Foreach/templates/030_foreach.tpl",
+      "family": "loops",
+      "rationale": "Positive foreach loop and metadata/control-flow structure.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/Foreach/CompileForeachTest.php",
+        "test_source_git_blob": "7370de5b787c9999061ddd4f2f0b4ae106dd2507",
+        "test_source_sha256": "7fe2ebd95f451a38126cb53b82e77d809281813d1d47877e49e1c1978b5b69da",
+        "test_method": "testForeachBreak_30"
+      },
+      "exclusion_flags": [
+        "assigned_loop_values",
+        "iteration_runtime_semantics"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/Foreach/templates/031_foreach.tpl",
+      "git_blob": "70a2859bb92b95a71d4f247de32bbaa717c4ab49",
+      "sha256": "c4fe8aaf6ecc7a3ca8e578fc62bf44423f7e33981efeaebb00a5f10ecc092fc9",
+      "destination": "TemplateSource/TagTests/Foreach/templates/031_foreach.tpl",
+      "family": "loops",
+      "rationale": "Positive foreach loop and metadata/control-flow structure.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/Foreach/CompileForeachTest.php",
+        "test_source_git_blob": "7370de5b787c9999061ddd4f2f0b4ae106dd2507",
+        "test_source_sha256": "7fe2ebd95f451a38126cb53b82e77d809281813d1d47877e49e1c1978b5b69da",
+        "test_method": "testForeachBreak_31"
+      },
+      "exclusion_flags": [
+        "assigned_loop_values",
+        "iteration_runtime_semantics"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/Foreach/templates/032_foreach.tpl",
+      "git_blob": "c0bae38b5eacc57009e413cfc1799510374be8b4",
+      "sha256": "f3803fcadaefb8b18d3310d26e88b2d1e2b620573e3644fcdace47668391743f",
+      "destination": "TemplateSource/TagTests/Foreach/templates/032_foreach.tpl",
+      "family": "loops",
+      "rationale": "Positive foreach loop and metadata/control-flow structure.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/Foreach/CompileForeachTest.php",
+        "test_source_git_blob": "7370de5b787c9999061ddd4f2f0b4ae106dd2507",
+        "test_source_sha256": "7fe2ebd95f451a38126cb53b82e77d809281813d1d47877e49e1c1978b5b69da",
+        "test_method": "testForeachContinue_32"
+      },
+      "exclusion_flags": [
+        "assigned_loop_values",
+        "iteration_runtime_semantics"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/Foreach/templates/033_foreach.tpl",
+      "git_blob": "c2ade6d5d1aa732f323bea5a7fde2d9cb26f0eba",
+      "sha256": "9801f71149af7b71eb1317f78ba8f67dbb3c715e9002dc58eb581e4596650abc",
+      "destination": "TemplateSource/TagTests/Foreach/templates/033_foreach.tpl",
+      "family": "loops",
+      "rationale": "Positive foreach loop and metadata/control-flow structure.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/Foreach/CompileForeachTest.php",
+        "test_source_git_blob": "7370de5b787c9999061ddd4f2f0b4ae106dd2507",
+        "test_source_sha256": "7fe2ebd95f451a38126cb53b82e77d809281813d1d47877e49e1c1978b5b69da",
+        "test_method": "testForeachContinue_33"
+      },
+      "exclusion_flags": [
+        "assigned_loop_values",
+        "iteration_runtime_semantics"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/Foreach/templates/034_foreach.tpl",
+      "git_blob": "ad256a962c4b796309d72574df38c16ffd9ac8b5",
+      "sha256": "311f1cb3a882486bf841fa80234e39b0dc38ea608ad0aad367da18cab5b14091",
+      "destination": "TemplateSource/TagTests/Foreach/templates/034_foreach.tpl",
+      "family": "loops",
+      "rationale": "Positive foreach loop and metadata/control-flow structure.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/Foreach/CompileForeachTest.php",
+        "test_source_git_blob": "7370de5b787c9999061ddd4f2f0b4ae106dd2507",
+        "test_source_sha256": "7fe2ebd95f451a38126cb53b82e77d809281813d1d47877e49e1c1978b5b69da",
+        "test_method": "testForeachContinue_34"
+      },
+      "exclusion_flags": [
+        "assigned_loop_values",
+        "iteration_runtime_semantics"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/Foreach/templates/035_foreach.tpl",
+      "git_blob": "dd61dd280f6fd20243f5e72549dbf57b81719e35",
+      "sha256": "4110cf04ac8a2288de9fb5bccff67dedff0eedff1b992cdbf6dda3095774c239",
+      "destination": "TemplateSource/TagTests/Foreach/templates/035_foreach.tpl",
+      "family": "loops",
+      "rationale": "Positive foreach loop and metadata/control-flow structure.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/Foreach/CompileForeachTest.php",
+        "test_source_git_blob": "7370de5b787c9999061ddd4f2f0b4ae106dd2507",
+        "test_source_sha256": "7fe2ebd95f451a38126cb53b82e77d809281813d1d47877e49e1c1978b5b69da",
+        "test_method": "testForeachContinue_35"
+      },
+      "exclusion_flags": [
+        "assigned_loop_values",
+        "iteration_runtime_semantics"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/Section/templates/001_section.tpl",
+      "git_blob": "50729b425edd158bc7e3c2d22ad9b5f858046ab8",
+      "sha256": "3a5ae37ce9499c7fa58af9cec16c0059d410136f17e2d51f9c2553f23e950d29",
+      "destination": "TemplateSource/TagTests/Section/templates/001_section.tpl",
+      "family": "section",
+      "rationale": "Positive section fixture 001; source syntax only.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/Section/CompileSectionTest.php",
+        "test_source_git_blob": "1ace1817706f040861e9281b9905304abc17c876",
+        "test_source_sha256": "5f565f0ecb7654ecc56860ab1b001ff3632045b96deb496412177d57fd3be7dc",
+        "test_method": "testSection_001"
+      },
+      "exclusion_flags": [
+        "assigned_loop_values",
+        "iteration_runtime_semantics"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/Section/templates/002_section.tpl",
+      "git_blob": "be7d45590787b6ae911ee09b16cf40abf7521847",
+      "sha256": "b041dd43339f29820c87e761cbfe61c7476604be44e4860aa07624d96893c398",
+      "destination": "TemplateSource/TagTests/Section/templates/002_section.tpl",
+      "family": "section",
+      "rationale": "Positive section fixture 002; source syntax only.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/Section/CompileSectionTest.php",
+        "test_source_git_blob": "1ace1817706f040861e9281b9905304abc17c876",
+        "test_source_sha256": "5f565f0ecb7654ecc56860ab1b001ff3632045b96deb496412177d57fd3be7dc",
+        "test_method": "testSection_002"
+      },
+      "exclusion_flags": [
+        "assigned_loop_values",
+        "iteration_runtime_semantics"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/Section/templates/003_section.tpl",
+      "git_blob": "3dc172eaaf57245478b4806bf28565e47d0c7e61",
+      "sha256": "0ecc6db4e472e6866fdf2d649cd6530d4b9cb9e6c66400bb9dc14b0b307719d8",
+      "destination": "TemplateSource/TagTests/Section/templates/003_section.tpl",
+      "family": "section",
+      "rationale": "Positive section fixture 003; source syntax only.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/Section/CompileSectionTest.php",
+        "test_source_git_blob": "1ace1817706f040861e9281b9905304abc17c876",
+        "test_source_sha256": "5f565f0ecb7654ecc56860ab1b001ff3632045b96deb496412177d57fd3be7dc",
+        "test_method": "testSection_003"
+      },
+      "exclusion_flags": [
+        "assigned_loop_values",
+        "iteration_runtime_semantics"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/Section/templates/004_section.tpl",
+      "git_blob": "4a49fc9e11e92c27af554a6c63289da51247349b",
+      "sha256": "1f48a3b3d7d6ff337b3ef9c2200ce5e3bf645ade6fdcde4af2ef8aad76a00e4b",
+      "destination": "TemplateSource/TagTests/Section/templates/004_section.tpl",
+      "family": "section",
+      "rationale": "Positive section fixture 004; source syntax only.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/Section/CompileSectionTest.php",
+        "test_source_git_blob": "1ace1817706f040861e9281b9905304abc17c876",
+        "test_source_sha256": "5f565f0ecb7654ecc56860ab1b001ff3632045b96deb496412177d57fd3be7dc",
+        "test_method": "testSection_004"
+      },
+      "exclusion_flags": [
+        "assigned_loop_values",
+        "iteration_runtime_semantics"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/Section/templates/006_section.tpl",
+      "git_blob": "edcd6c2eecc3b930825b630cd138f2baf30a8f44",
+      "sha256": "4c41eb79c64230f6c2d7578a212ab3bf111bab11ccd30c85c3f5bfa7a2c55bbb",
+      "destination": "TemplateSource/TagTests/Section/templates/006_section.tpl",
+      "family": "section",
+      "rationale": "Positive section fixture 006; source syntax only.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/Section/CompileSectionTest.php",
+        "test_source_git_blob": "1ace1817706f040861e9281b9905304abc17c876",
+        "test_source_sha256": "5f565f0ecb7654ecc56860ab1b001ff3632045b96deb496412177d57fd3be7dc",
+        "test_method": "testSection_006"
+      },
+      "exclusion_flags": [
+        "assigned_loop_values",
+        "iteration_runtime_semantics"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/Section/templates/007_section.tpl",
+      "git_blob": "6c5f9a9921890d90b55b6070be3bd1aa36a8e210",
+      "sha256": "5f191701ccebd7dc132cb7e73a9cd464ccc874ef2883ac625bb9c44dbb8f2eca",
+      "destination": "TemplateSource/TagTests/Section/templates/007_section.tpl",
+      "family": "section",
+      "rationale": "Positive section fixture 007; source syntax only.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/Section/CompileSectionTest.php",
+        "test_source_git_blob": "1ace1817706f040861e9281b9905304abc17c876",
+        "test_source_sha256": "5f565f0ecb7654ecc56860ab1b001ff3632045b96deb496412177d57fd3be7dc",
+        "test_method": "testSection_007"
+      },
+      "exclusion_flags": [
+        "assigned_loop_values",
+        "iteration_runtime_semantics"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/Capture/templates/009_capture.tpl",
+      "git_blob": "00c7fecf71b8d0a0b7561eabe64c2d264b9f42ac",
+      "sha256": "5671f846846bda6f9f50d22b9e368830d83f35ae3d95467fe62a91fcc4980f56",
+      "destination": "TemplateSource/TagTests/Capture/templates/009_capture.tpl",
+      "family": "capture",
+      "rationale": "Positive capture and include composition.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/Capture/CompileCaptureTest.php",
+        "test_source_git_blob": "ecdded102e6831e9dfa173fd24b0be2ba4a83447",
+        "test_source_sha256": "e3c0d3ccc3d59d8dbcd2bcfbc54295b8d8d122e5fdaf843e18787ef844864c18",
+        "test_method": "testCapture9"
+      },
+      "exclusion_flags": [
+        "included_template_graph",
+        "capture_runtime_values"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/Capture/templates/009_capture_include.tpl",
+      "git_blob": "b37f029a4c8e89c2f64cf6f1f400f019ced42bb0",
+      "sha256": "d6db82aa8fa926333a28629939db488594f9437274cf5ba919a62649781c74ab",
+      "destination": "TemplateSource/TagTests/Capture/templates/009_capture_include.tpl",
+      "family": "capture",
+      "rationale": "Included positive capture fixture consumed by testCapture9.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/Capture/CompileCaptureTest.php",
+        "test_source_git_blob": "ecdded102e6831e9dfa173fd24b0be2ba4a83447",
+        "test_source_sha256": "e3c0d3ccc3d59d8dbcd2bcfbc54295b8d8d122e5fdaf843e18787ef844864c18",
+        "test_method": "testCapture9"
+      },
+      "exclusion_flags": [
+        "included_template_graph",
+        "capture_runtime_values"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/Capture/templates/010_capture.tpl",
+      "git_blob": "56bc97cf110ed4ce24d4b7ab1aea00cfe7b37235",
+      "sha256": "bab637c64d9330b2d0e715241cb02aa9ff4fa30c33365b114b3d1289ab25badf",
+      "destination": "TemplateSource/TagTests/Capture/templates/010_capture.tpl",
+      "family": "capture",
+      "rationale": "Positive capture names and output fixture.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/Capture/CompileCaptureTest.php",
+        "test_source_git_blob": "ecdded102e6831e9dfa173fd24b0be2ba4a83447",
+        "test_source_sha256": "e3c0d3ccc3d59d8dbcd2bcfbc54295b8d8d122e5fdaf843e18787ef844864c18",
+        "test_method": "testCapture10"
+      },
+      "exclusion_flags": [
+        "capture_runtime_values"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/Include/templates/test_include_standard.tpl",
+      "git_blob": "9837d5965783d66da8a3b1e99cacfd1bafc30864",
+      "sha256": "091fca703c2bf05bbb8eeb9656b91ab2c1a09a2aaee7a4264199e96bfe9c0587",
+      "destination": "TemplateSource/TagTests/Include/templates/test_include_standard.tpl",
+      "family": "include",
+      "rationale": "Positive standard include form.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/Include/CompileIncludeTest.php",
+        "test_source_git_blob": "00b67bdf0f04b92c33f8b2dd2d3d47cd97927c19",
+        "test_source_sha256": "4292e918fb53bf164b1613e4cdced424adb60ef018048d58e48d643ee3fe16be",
+        "test_method": "testIncludeStandard_001",
+        "data_provider": "includeProvider",
+        "provider_case_ids": [
+          "0",
+          "1"
+        ]
+      },
+      "exclusion_flags": [
+        "included_template_graph",
+        "cache_merge_matrix"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/Include/templates/helloworld.tpl",
+      "git_blob": "95d09f2b10159347eece71399a7e2e907ea3df4f",
+      "sha256": "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9",
+      "destination": "TemplateSource/TagTests/Include/templates/helloworld.tpl",
+      "family": "include",
+      "rationale": "Included plain-text template consumed by positive standard-include test.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/Include/CompileIncludeTest.php",
+        "test_source_git_blob": "00b67bdf0f04b92c33f8b2dd2d3d47cd97927c19",
+        "test_source_sha256": "4292e918fb53bf164b1613e4cdced424adb60ef018048d58e48d643ee3fe16be",
+        "test_method": "testIncludeStandard_001",
+        "data_provider": "includeProvider",
+        "provider_case_ids": [
+          "0",
+          "1"
+        ]
+      },
+      "exclusion_flags": [
+        "included_template_graph",
+        "cache_merge_matrix"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/Include/templates/test_include_assign1.tpl",
+      "git_blob": "6021362fe160665d983ba3ccef8a5bad830de360",
+      "sha256": "c9a1b0c569cfd9f1efd29c55e0dd4b327b3dcefe20c1896ac77ca66c8451c4f7",
+      "destination": "TemplateSource/TagTests/Include/templates/test_include_assign1.tpl",
+      "family": "include",
+      "rationale": "Positive include with assign attribute.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/Include/CompileIncludeTest.php",
+        "test_source_git_blob": "00b67bdf0f04b92c33f8b2dd2d3d47cd97927c19",
+        "test_source_sha256": "4292e918fb53bf164b1613e4cdced424adb60ef018048d58e48d643ee3fe16be",
+        "test_method": "testIncludeAssign1",
+        "data_provider": "includeProvider",
+        "provider_case_ids": [
+          "0",
+          "1"
+        ]
+      },
+      "exclusion_flags": [
+        "included_template_graph",
+        "cache_merge_matrix"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/Include/templates/test_include_pass_vars.tpl",
+      "git_blob": "0cf974d1b007250447e9357ed331023e097ea576",
+      "sha256": "395844bdbe742e45ac4ecc848ca345091c1d72f99d3f1e3d4e1c9db89b9c094a",
+      "destination": "TemplateSource/TagTests/Include/templates/test_include_pass_vars.tpl",
+      "family": "include",
+      "rationale": "Positive include with named variable attributes.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/Include/CompileIncludeTest.php",
+        "test_source_git_blob": "00b67bdf0f04b92c33f8b2dd2d3d47cd97927c19",
+        "test_source_sha256": "4292e918fb53bf164b1613e4cdced424adb60ef018048d58e48d643ee3fe16be",
+        "test_method": "testIncludePassVars",
+        "data_provider": "includeProvider",
+        "provider_case_ids": [
+          "0",
+          "1"
+        ]
+      },
+      "exclusion_flags": [
+        "included_template_graph",
+        "cache_merge_matrix"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/Include/templates/test_include_pass_vars2_sub.tpl",
+      "git_blob": "e2b94437035ff865d35e9d10999ed7a6ad73a2a8",
+      "sha256": "83ab9bb5587c2f9b1b74894e22e3e19ac5fc1a20c178d2de3170a8a42bf0f921",
+      "destination": "TemplateSource/TagTests/Include/templates/test_include_pass_vars2_sub.tpl",
+      "family": "include",
+      "rationale": "Included positive target for named variable attributes.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/Include/CompileIncludeTest.php",
+        "test_source_git_blob": "00b67bdf0f04b92c33f8b2dd2d3d47cd97927c19",
+        "test_source_sha256": "4292e918fb53bf164b1613e4cdced424adb60ef018048d58e48d643ee3fe16be",
+        "test_method": "testIncludePassVars",
+        "data_provider": "includeProvider",
+        "provider_case_ids": [
+          "0",
+          "1"
+        ]
+      },
+      "exclusion_flags": [
+        "included_template_graph",
+        "cache_merge_matrix"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/Include/templates/test_include_assign2.tpl",
+      "git_blob": "aee9b8ade0769fdd98e0abbeebf1d742630a118d",
+      "sha256": "d13a539928b86264a9474fba1656300b171d048ef9bd9a9b5b74ddd6ad6e2c99",
+      "destination": "TemplateSource/TagTests/Include/templates/test_include_assign2.tpl",
+      "family": "assignment_output",
+      "rationale": "Positive assignment followed by include assignment and output.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/Include/CompileIncludeTest.php",
+        "test_source_git_blob": "00b67bdf0f04b92c33f8b2dd2d3d47cd97927c19",
+        "test_source_sha256": "4292e918fb53bf164b1613e4cdced424adb60ef018048d58e48d643ee3fe16be",
+        "test_method": "testIncludeAssign2",
+        "data_provider": "includeProvider",
+        "provider_case_ids": [
+          "0",
+          "1"
+        ]
+      },
+      "exclusion_flags": [
+        "included_template_graph",
+        "cache_merge_matrix"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/BockExtend/templates/001_parent.tpl",
+      "git_blob": "9905f864f00ef5fe74b3e699ba8a3101f0e966d5",
+      "sha256": "79c55280800ae1d961250aaae4d1f153536053df38c963e1eb34861e1aba5bb6",
+      "destination": "TemplateSource/TagTests/BockExtend/templates/001_parent.tpl",
+      "family": "inheritance",
+      "rationale": "Positive built-in block declaration in a parent template.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/BockExtend/CompileBlockExtendsTest.php",
+        "test_source_git_blob": "a8c896d3224fde5bb438e3c9cda5671f3f68e4ba",
+        "test_source_sha256": "53d69dac8ddb993d366c9b667f597920402cb5182586e85aa1b2fab8f6a5af92",
+        "test_method": "testCompileBlockParent_001"
+      },
+      "exclusion_flags": [
+        "assigned_template_variables",
+        "render_output"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/BockExtend/templates/002_child.tpl",
+      "git_blob": "b17c2973ea19df6446de48a944d5ad37d06e3c8a",
+      "sha256": "320d83cc36b61527d880e0fe4a6b8f69dd7d0a5c5542a758121cebf0eea53f59",
+      "destination": "TemplateSource/TagTests/BockExtend/templates/002_child.tpl",
+      "family": "inheritance",
+      "rationale": "Positive child extends-parent and block override composition.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/BockExtend/CompileBlockExtendsTest.php",
+        "test_source_git_blob": "a8c896d3224fde5bb438e3c9cda5671f3f68e4ba",
+        "test_source_sha256": "53d69dac8ddb993d366c9b667f597920402cb5182586e85aa1b2fab8f6a5af92",
+        "test_method": "testCompileBlockChild_002",
+        "data_provider": "data",
+        "provider_case_ids": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7"
+        ]
+      },
+      "exclusion_flags": [
+        "filter_values",
+        "cache_merge_matrix",
+        "assigned_template_variables"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/BockExtend/templates/002_parent.tpl",
+      "git_blob": "07bb425968d448160daa9a8fa925ecda7b226eb1",
+      "sha256": "d3bb6b3c6a9c8b640911704864e1741fb428098f9b73fcb4b4bb613719082445",
+      "destination": "TemplateSource/TagTests/BockExtend/templates/002_parent.tpl",
+      "family": "inheritance",
+      "rationale": "Parent source consumed by the positive child inheritance test.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/BockExtend/CompileBlockExtendsTest.php",
+        "test_source_git_blob": "a8c896d3224fde5bb438e3c9cda5671f3f68e4ba",
+        "test_source_sha256": "53d69dac8ddb993d366c9b667f597920402cb5182586e85aa1b2fab8f6a5af92",
+        "test_method": "testCompileBlockChild_002",
+        "data_provider": "data",
+        "provider_case_ids": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7"
+        ]
+      },
+      "exclusion_flags": [
+        "filter_values",
+        "cache_merge_matrix",
+        "assigned_template_variables"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/TemplateFunction/templates/test_template_function_001.tpl",
+      "git_blob": "194dde9a2504c89498654fb2f362e4b593b5b342",
+      "sha256": "ba0b0be288081312b11eeed80d3400dd2f9c7a314ba36508080679776f744c9f",
+      "destination": "TemplateSource/TagTests/TemplateFunction/templates/test_template_function_001.tpl",
+      "family": "template_functions",
+      "rationale": "Positive template-defined function and call.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/TemplateFunction/CompileFunctionTest.php",
+        "test_source_git_blob": "0d3cddca7e199543a1f7656d1fd510f07bd07fb0",
+        "test_source_sha256": "481aa39e1465d8d03731f217d19d1ff9f4e9866eb35fc7f85393014638136e10",
+        "test_method": "testSimpleFunction_001",
+        "data_provider": "functionProvider",
+        "provider_case_ids": [
+          "0",
+          "1"
+        ]
+      },
+      "exclusion_flags": [
+        "assigned_template_variables",
+        "cache_render_semantics"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/TemplateFunction/templates/test_template_function_002.tpl",
+      "git_blob": "7b6dbc77ec6d7de861d82197b8a77b0854d7af00",
+      "sha256": "8e30dc82343656336c6436ca335644a2c46e767a9cd80ef7dc57cbd97f3da589",
+      "destination": "TemplateSource/TagTests/TemplateFunction/templates/test_template_function_002.tpl",
+      "family": "template_functions",
+      "rationale": "Positive template-defined function with nocache parameter syntax.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/TemplateFunction/CompileFunctionTest.php",
+        "test_source_git_blob": "0d3cddca7e199543a1f7656d1fd510f07bd07fb0",
+        "test_source_sha256": "481aa39e1465d8d03731f217d19d1ff9f4e9866eb35fc7f85393014638136e10",
+        "test_method": "testSimpleFunctionCached_002",
+        "data_provider": "functionProvider",
+        "provider_case_ids": [
+          "0",
+          "1"
+        ]
+      },
+      "exclusion_flags": [
+        "assigned_template_variables",
+        "cache_render_semantics"
+      ]
+    },
+    {
+      "kind": "positive_fixture",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "tests/UnitTests/TemplateSource/TagTests/TemplateFunction/templates/test_template_function_tag2.tpl",
+      "git_blob": "2464e00aa5a14c081edcc581217463ded5fbaf03",
+      "sha256": "eb0abc6963b1c86bd79e2de91b38a71c56b76568fe5cc230b8c2e260d7e8d186",
+      "destination": "TemplateSource/TagTests/TemplateFunction/templates/test_template_function_tag2.tpl",
+      "family": "template_functions",
+      "rationale": "Positive named calls to a template-defined function.",
+      "provenance": {
+        "test_source_path": "tests/UnitTests/TemplateSource/TagTests/TemplateFunction/CompileFunctionTest.php",
+        "test_source_git_blob": "0d3cddca7e199543a1f7656d1fd510f07bd07fb0",
+        "test_source_sha256": "481aa39e1465d8d03731f217d19d1ff9f4e9866eb35fc7f85393014638136e10",
+        "test_method": "testSimpleFunctionTag2",
+        "data_provider": "functionProvider",
+        "provider_case_ids": [
+          "0",
+          "1"
+        ]
+      },
+      "exclusion_flags": [
+        "assigned_template_variables",
+        "cache_render_semantics"
+      ]
+    },
+    {
+      "kind": "example",
+      "repository": "https://github.com/smarty-php/smarty",
+      "tag": "v5.8.4",
+      "commit": "94a27cbbc7820198d7adc17a2be8d457fb267753",
+      "source_path": "demo/templates/index.tpl",
+      "git_blob": "1a0f431bb1b1a9f2a8b4a1f2ce36a5913b8074ab",
+      "sha256": "c50433e4a658858ccc5a785bbaf25097512587a7afaab77cb4f2c6d4e419ebea",
+      "destination": "demo/templates/index.tpl",
+      "family": "demo",
+      "rationale": "Official Smarty demo syntax example; reported separately and not treated as a compiler-verified PHPUnit fixture.",
+      "provenance": {
+        "demo_script_source_path": "demo/index.php",
+        "demo_script_git_blob": "705478ff332b694d55f8182864371568b691990e",
+        "demo_script_sha256": "7a659dfbc0f2bb4a54f2b294aa9a3af1f58afa3c217305d9e309b82f303fc427"
+      },
+      "exclusion_flags": [
+        "demo_config_and_includes_are_contextual",
+        "assigned_variables_are_contextual",
+        "plugin_or_builtin_handlers_not_verified",
+        "no_positive_phpunit_claim"
+      ]
+    }
+  ],
+  "notes": [
+    "Positive fixture method provenance is the pinned upstream test suite; runtime values, plugin behavior, configuration, cache and output semantics are not parser evidence.",
+    "Smarty literal-tag and several whitespace/value/operator examples are inline PHP string cases, not checked-in .tpl members.",
+    "Task 016 exact composition is not a manifest member."
+  ],
+  "membership_sha256": "5b1606805b86dc1f53d6f676f09d280a773ca6ed11a42ced598b490467c260f5"
+}

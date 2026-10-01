@@ -235,3 +235,27 @@ nodes with explicit binary left/right fields and supported operand nodes. No
 existing expectation changed. The final parser hash is
 `829aa943ed57457b277c998f2e6478d4029e147282c925442e7df5dae08574b6`; remaining
 227 errors continue to represent unresolved corpus gaps.
+
+## Optional upstream Smarty source corpus (Task 024, 2026-10-01)
+
+The tracked manifest at `test/upstream-smarty-v5.8.4/manifest.json` selects 33
+positive `.tpl` fixtures across 11 families from Smarty v5.8.4 commit
+`94a27cbbc7820198d7adc17a2be8d457fb267753`; one official demo template is
+materialized and reported separately. Provenance includes source/test Git
+blobs and SHA-256 hashes. All 33 positive sources passed the local Smarty
+5.8.4 recording compiler, and the selected upstream PHPUnit commands passed
+46 tests with 56 assertions. See Task 024 for the exact commands and evidence.
+
+This auxiliary corpus currently parses as 19 clean / 14 with errors under the
+local grammar. The separately reported demo parses as 0 clean / 1 with errors.
+The report is not combined with or substituted for the fixed 467-file
+application corpus (449 clean / 18 with errors at the same parser snapshot).
+The 19 clean trees were inspected: structured comment, string, foreach, and if
+nodes occur in some files, while other built-in constructs remain preserved
+as generic tags. A clean parse therefore does not claim structural support for
+those constructs. Upstream reports are optional syntax evidence and do not
+establish plugin execution, runtime values, cache behavior, block validation,
+or full grammar coverage. The demo is contextual and is not positive compiler
+evidence. Materialization requires a caller-provided pinned checkout, performs
+no network access, and writes only into ignored directories; CI has no upstream
+checkout dependency. See `test/upstream-smarty-v5.8.4/NOTICE.md` for attribution.
