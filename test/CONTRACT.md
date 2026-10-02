@@ -74,6 +74,32 @@ shape is fixed by test. Evidence: [for loop trees](corpus/for-loops.txt),
 [reference/compiler/recovery/edit checks](for-loops.test.mjs), and
 [Task 026 corpus report and structural review](../docs/tasks/026-for-loops.md).
 
+Classic Smarty `{section}` blocks and their section-name/property index forms
+produce structured `section_block`, `section_header`, branch, close, and index
+nodes. Headers support long named fields and short positional `name, loop`
+forms, plus `start`, `step`, `max`, `show`, `properties`, and bare `nocache`
+options. `$array[sectionName]`, `$array[sectionName.property]`, and
+`$smarty.section.name.property` use distinct tree shapes. All ten documented
+property names and other static property identifiers are retained. The pinned
+recording parser verifies syntax/event order; full-engine checks establish
+header and branch behavior. Runtime iteration, active-section lookup, and
+property values remain outside the syntax tree contract. Evidence:
+[hand-authored trees](corpus/section-blocks.txt),
+[Smarty-reference trees](corpus/smarty-reference.txt),
+[reference/compiler/recovery/edit checks](section-blocks.test.mjs), and
+[Task 030 corpus and implementation evidence](../docs/tasks/030-section-blocks-and-indices.md).
+The minimal source `{$a[key]}` returns no error from both the pinned recorder
+and full-engine compiler, so the former `index-access` test expectation that it
+must fail was incorrect. It is now asserted as a `section_index`; empty append
+`{$a[]}` remains a separate unsupported index form.
+An orphan `{/section}` or `{sectionelse}` produces a top-level `ERROR` followed
+by a separate `$after` output node. A duplicate `{sectionelse}` stays inside
+its `section_block` as an `ERROR`, with the following output as a root sibling.
+For crossed section/if or section/foreach closes, the recovery tree wraps the
+entire malformed region and `$after` in one root `ERROR`; the nested control
+block, its own closer, and the neighboring output remain named descendants.
+This is the observed recovery boundary, and the tests pin it explicitly.
+
 The manually specified trees in `test/corpus/*.txt` are the structural
 contract. Do not regenerate their expectations from parser output to fix a failure.
 The reference tests compare a smaller projection (ordered tag names, argument
@@ -114,7 +140,8 @@ argument; other pairings remain unverified. The 23 current earliest-error
 contexts and syntax boundary are audited in
 [task 020](../docs/tasks/020-double-quoted-interpolation.md); backticks not
 followed immediately by `$` remain string content. Configurable delimiters
-and HTML injection remain outside this contract. Other built-in blocks, word operator aliases, bitwise
+and HTML injection remain outside this contract. Other built-in blocks besides
+`if`, `foreach`, `for`, `section`, and `literal`, word operator aliases, bitwise
 operators, dynamic member access, and dynamic config variables remain current
 gaps to assess and address according to
 common usage and usefulness to parser consumers; the explicit plugin/custom-tag
@@ -307,8 +334,10 @@ Dot/bracket read access produces left-nested `index_expression` with `object` an
 bracket indices preserve supported expressions and permit whitespace. Variable
 and property receivers can acquire repeated indices, then property/method chains.
 Config receivers can acquire repeated indices only. Method results cannot acquire
-indices directly. Binding is above modifiers/operators. Empty append, bare-name
-section, dynamic dot and arbitrary-expression receivers remain excluded.
+indices directly. Binding is above modifiers/operators. Empty append, dynamic
+dot and arbitrary-expression receivers remain excluded. Bare section-name and
+section-name-property bracket forms have dedicated nodes under the `index`
+field; see the section syntax contract above.
 Evidence: [index trees](corpus/index-access.txt) and
 [reference/range/edit checks](index-access.test.mjs).
 

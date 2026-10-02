@@ -12,7 +12,7 @@
 /** @param {string} word */
 const cases = word => [...word].reduce((forms, ch) => forms.flatMap(form => [form + ch, form + ch.toUpperCase()]), /** @type {string[]} */ ([""]));
 const primitiveWords = [...cases("true"), ...cases("false"), ...cases("null")];
-const controlWords = ["if", "else", "elseif", "foreach", "foreachelse", "for", "forelse"];
+const controlWords = ["if", "else", "elseif", "foreach", "foreachelse", "for", "forelse", "section", "sectionelse"];
 const classReservedWords = [...cases("self"), ...cases("parent")];
 
 export default grammar({
@@ -30,10 +30,10 @@ export default grammar({
     property: _ => [],
     class: _ => classReservedWords,
   },
-  conflicts: $ => [[$.elseif_clause], [$.else_clause], [$.foreachelse_clause], [$.forelse_clause]],
+  conflicts: $ => [[$.elseif_clause], [$.else_clause], [$.foreachelse_clause], [$.forelse_clause], [$.sectionelse_clause]],
   rules: {
     source_file: $ => repeat($._node),
-    _node: $ => choice($.text, $.output, $.custom_tag, $.custom_close_tag, $.if_block, $.comment, $.foreach_block, $.for_block, $.literal_block, $.stray_literal_close),
+    _node: $ => choice($.text, $.output, $.custom_tag, $.custom_close_tag, $.if_block, $.comment, $.foreach_block, $.for_block, $.section_block, $.literal_block, $.stray_literal_close),
     literal_block: $ => prec(-20, seq(
       $.literal_tag,
       optional(field("content", $.literal_content)),
@@ -165,6 +165,31 @@ export default grammar({
     forelse_clause: $ => seq($.forelse_tag, repeat($._node)),
     forelse_tag: _ => seq("{", "forelse", "}"),
     for_close_tag: _ => seq("{/", "for", "}"),
+    // Section blocks use the same recursive ownership model as other built-in
+    // blocks. The grammar associates each sectionelse with the innermost
+    // section whose close has not yet been consumed.
+    section_block: $ => seq($.section_tag, repeat($._node), optional($.sectionelse_clause), $.section_close_tag),
+    section_tag: $ => seq("{", "section", token.immediate(/\s+/), $.section_header, "}"),
+    section_header: $ => choice(
+      // Long form supports either order for required fields and keeps option
+      // attributes where they appeared in the source.
+      seq(repeat($._section_option), field("name", $.section_header_name), repeat($._section_option), field("loop", $.section_header_loop), repeat($._section_option)),
+      seq(repeat($._section_option), field("loop", $.section_header_loop), repeat($._section_option), field("name", $.section_header_name), repeat($._section_option)),
+      // Short form is the positional name/loop pair followed by options.
+      prec.dynamic(3, seq(
+        field("name", $.section_header_name),
+        token.immediate(/\s+/),
+        field("loop", $.section_header_loop),
+        repeat($._section_option),
+      )),
+    ),
+    section_header_name: $ => choice(seq("name", "=", field("value", $.identifier)), prec(4, seq(field("value", $.identifier)))),
+    section_header_loop: $ => choice(seq("loop", "=", field("value", $._expression)), field("value", $._expression)),
+    _section_option: $ => choice($.attribute, $.section_option),
+    section_option: _ => "nocache",
+    sectionelse_clause: $ => seq($.sectionelse_tag, repeat($._node)),
+    sectionelse_tag: _ => seq("{", "sectionelse", "}"),
+    section_close_tag: _ => seq("{/", "section", "}"),
     _expression: $ => $._logical_or,
     // Layer comparison operands so an unparenthesized second comparison cannot
     // silently acquire associativity. Aliases preserve the public binary tree.
@@ -201,7 +226,7 @@ export default grammar({
     // Static Smarty IDs are primary values. Keep digit-prefixed ID tokens in
     // the same node family; pure decimals remain numbers and primitives keep
     // their dedicated token types.
-    _primary: $ => choice($._nonliteral_primary, $.boolean, $.null, $.identifier, alias($._modifier_identifier, $.identifier)),
+    _primary: $ => choice($.section_property_expression, $._nonliteral_primary, $.boolean, $.null, $.identifier, alias($._modifier_identifier, $.identifier)),
     _nonliteral_primary: $ => choice(
       $.variable, $.loop_metadata_expression, $.config_variable, $.member_expression, $.method_call_expression, $.function_call_expression, $.index_expression, alias($._config_index, $.index_expression), $.array_literal,
       $.number, $.string, $.interpolated_string, $.parenthesized_expression, $.static_method_call_expression, $.class_constant_expression,
@@ -231,14 +256,21 @@ export default grammar({
     _config_index: $ => prec.left(7, seq(
       field("object", choice($.config_variable, alias($._config_index, $.index_expression))), $._index_suffix,
     )),
+    section_property_expression: $ => prec.dynamic(20, seq(
+      token(/\$smarty\.section\./), field("section", $.identifier), ".", field("property", $.identifier),
+    )),
     _index_suffix: $ => choice(
       seq(token.immediate("."), field("index", choice(
         alias(token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/), $.identifier),
         // Integer-only tokens prevent .1.2 from collapsing into a decimal key.
         alias(token.immediate(/[0-9]+/), $.number),
       ))),
+      prec.dynamic(4, field("index", $.section_index)),
+      prec.dynamic(4, field("index", $.section_property_index)),
       seq("[", field("index", $._index_value), "]"),
     ),
+    section_index: $ => seq("[", field("name", $.identifier), "]"),
+    section_property_index: $ => seq("[", field("section", $.identifier), ".", field("property", $.identifier), "]"),
     // Bare [true]/[false]/[null] are Smarty section names. Only parentheses or
     // an actual compound expression make primitives expression-valued indices.
     _index_value: $ => choice(
@@ -320,6 +352,6 @@ export default grammar({
       field("value", $._modified), "|", field("name", $.identifier),
       repeat(seq(":", field("argument", $._modifier_argument))),
     )),
-    _modifier_argument: $ => choice($.variable, $.loop_metadata_expression, $.config_variable, $.member_expression, $.method_call_expression, $.function_call_expression, $.static_method_call_expression, $.index_expression, alias($._config_index, $.index_expression), $.array_literal, $.number, $.string, $.interpolated_string, $.parenthesized_expression, $.boolean, $.null, $.class_constant_expression, $.identifier, alias($._modifier_identifier, $.identifier)),
+    _modifier_argument: $ => choice($.section_property_expression, $.variable, $.loop_metadata_expression, $.config_variable, $.member_expression, $.method_call_expression, $.function_call_expression, $.static_method_call_expression, $.index_expression, alias($._config_index, $.index_expression), $.array_literal, $.number, $.string, $.interpolated_string, $.parenthesized_expression, $.boolean, $.null, $.class_constant_expression, $.identifier, alias($._modifier_identifier, $.identifier)),
   }
 });

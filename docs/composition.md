@@ -25,6 +25,7 @@ Cartesian suite merely to fill the matrix.
 | Property access (`->name`) | yes [PR-output](#ev-pr-output) | yes [PR-condition](#ev-pr-condition) | ? [U-property-source](#ev-u-property-source) | yes [PR-tag-pos](#ev-pr-tag-pos) | yes [PR-tag-attr](#ev-pr-tag-attr) | ? [U-property-call-arg](#ev-u-property-call-arg) | yes [PR-mod-input](#ev-pr-mod-input) | yes [PR-mod-arg](#ev-pr-mod-arg) | ? [U-property-bracket](#ev-u-property-bracket) | yes [PR-array-key](#ev-pr-array-key) | ? [U-property-array-value](#ev-u-property-array-value) |
 | Method call (`->name(...)`) | yes [MC-output](#ev-mc-output) | yes [MC-condition](#ev-mc-condition) | yes [MC-source](#ev-mc-source) | yes [MC-tag-pos](#ev-mc-tag-pos) | yes [MC-tag-attr](#ev-mc-tag-attr) | yes [MC-call-arg](#ev-mc-call-arg) | yes [MC-mod-input](#ev-mc-mod-input) | yes [MC-mod-arg](#ev-mc-mod-arg) | ? [U-method-bracket](#ev-u-method-bracket) | ? [U-method-array-key](#ev-u-method-array-key) | ? [U-method-array-value](#ev-u-method-array-value) |
 | Index access (`.name`, `[expr]`) | yes [IX-output](#ev-ix-output) | yes [IX-condition](#ev-ix-condition) | ? [U-index-source](#ev-u-index-source) | yes [IX-tag-pos](#ev-ix-tag-pos) | yes [IX-tag-attr](#ev-ix-tag-attr) | ? [U-index-call-arg](#ev-u-index-call-arg) | yes [IX-mod-input](#ev-ix-mod-input) | yes [IX-mod-arg](#ev-ix-mod-arg) | ? [U-index-bracket](#ev-u-index-bracket) | ? [U-index-array-key](#ev-u-index-array-key) | ? [U-index-array-value](#ev-u-index-array-value) |
+| Section-name/property indices and `$smarty.section.name.property` | yes [S-output](#ev-s-output) | yes [S-condition](#ev-s-condition) | ? [U-section-source](#ev-u-section-source) | ? [U-section-tag-pos](#ev-u-section-tag-pos) | yes [S-tag-attr](#ev-s-tag-attr) | ? [U-section-call-arg](#ev-u-section-call-arg) | yes [S-mod-input](#ev-s-mod-input) | yes [S-mod-arg](#ev-s-mod-arg) | ? [U-section-bracket](#ev-u-section-bracket) | ? [U-section-array-key](#ev-u-section-array-key) | ? [U-section-array-value](#ev-u-section-array-value) |
 | Loop metadata (`$item@name`) | yes [LM-output](#ev-lm-output) | yes [LM-condition](#ev-lm-condition) | ? [U-metadata-source](#ev-u-metadata-source) | ? [U-metadata-tag-pos](#ev-u-metadata-tag-pos) | yes [LM-tag-attr](#ev-lm-tag-attr) | yes [LM-call-arg](#ev-lm-call-arg) | yes [LM-mod-input](#ev-lm-mod-input) | yes [LM-mod-arg](#ev-lm-mod-arg) | ? [U-metadata-bracket](#ev-u-metadata-bracket) | ? [U-metadata-array-key](#ev-u-metadata-array-key) | ? [U-metadata-array-value](#ev-u-metadata-array-value) |
 | Function call (`name(...)`) | yes [FC-output](#ev-fc-output) | yes [FC-condition](#ev-fc-condition) | ? [U-function-source](#ev-u-function-source) | yes [FC-tag-pos](#ev-fc-tag-pos) | yes [FC-tag-attr](#ev-fc-tag-attr) | yes [FC-call-arg](#ev-fc-call-arg) | yes [FC-mod-input](#ev-fc-mod-input) | yes [FC-mod-arg](#ev-fc-mod-arg) | ? [U-function-bracket](#ev-u-function-bracket) | ? [U-function-array-key](#ev-u-function-array-key) | ? [U-function-array-value](#ev-u-function-array-value) |
 | Array literal | ? [U-array-output](#ev-u-array-output) | yes [AR-condition](#ev-ar-condition) | ? [U-array-source](#ev-u-array-source) | yes [AR-tag-pos](#ev-ar-tag-pos) | yes [AR-tag-attr](#ev-ar-tag-attr) | yes [AR-call-arg](#ev-ar-call-arg) | ? [U-array-mod-input](#ev-u-array-mod-input) | yes [AR-mod-arg](#ev-ar-mod-arg) | yes [AR-bracket](#ev-ar-bracket) | ? [U-array-array-key](#ev-u-array-array-key) | yes [AR-array-value](#ev-ar-array-value) |
@@ -196,6 +197,20 @@ implementation limitations are recorded in
 | <a id="ev-ba-tag-attr"></a>BA-tag-attr | Generic-tag attribute: `{widget value=($a & $b)}` | **yes:** hand tree exposes the parenthesized bitwise expression in the attribute value; pinned recording parser accepts the tag and named argument (full compiler lacks an application `widget` plugin). [fixture](../test/corpus/bitwise-and.txt); [checks](../test/bitwise-and.test.mjs); [Task 021](tasks/021-bitwise-and.md) |
 | <a id="ev-ba-mod-arg"></a>BA-mod-arg | Parenthesized modifier argument: `{$x|default:($a & $b)}` | **yes:** hand tree exposes the modifier argument and the controlled full engine compiles it; the recorder accepts `default` with one argument. [fixture](../test/corpus/bitwise-and.txt); [checks](../test/bitwise-and.test.mjs); [Task 021](tasks/021-bitwise-and.md) |
 
+## Task 030 section-index composition audit
+
+Task 030 verifies the five `yes` cells below with explicit trees and pinned
+Smarty syntax observations. Other section-index pairings remain unknown until
+they have their own minimized probes; section block nesting does not prove them.
+
+| Cell | Minimized composition | Current result and evidence |
+| --- | --- | --- |
+| <a id="ev-s-output"></a>S-output | Output: `{$smarty.section.rows.index}` and `{$items[rows]}` | **yes:** special properties and section-name bracket indices retain dedicated tree nodes. [reference trees](../test/corpus/smarty-reference.txt); [checks](../test/section-blocks.test.mjs) |
+| <a id="ev-s-condition"></a>S-condition | Condition: `{if $smarty.section.rows.first && $items[rows.index]}...{/if}` | **yes:** the condition preserves `section_property_expression` and `section_property_index`. [composition tree](../test/corpus/section-blocks.txt); [checks](../test/section-blocks.test.mjs) |
+| <a id="ev-s-tag-attr"></a>S-tag-attr | Custom-tag attribute: `{widget value=$items[rows]}` | **yes:** the attribute value contains `index_expression` and `section_index`. [composition tree](../test/corpus/section-blocks.txt); [checks](../test/section-blocks.test.mjs) |
+| <a id="ev-s-mod-input"></a>S-mod-input | Modifier input: `{$items[rows]|default:0}` | **yes:** the modifier value preserves `section_index`. [composition tree](../test/corpus/section-blocks.txt); [checks](../test/section-blocks.test.mjs) |
+| <a id="ev-s-mod-arg"></a>S-mod-arg | Modifier argument: `{$items[rows]|default:$smarty.section.rows.iteration}` | **yes:** the modifier argument remains `section_property_expression`. [composition tree](../test/corpus/section-blocks.txt); [checks](../test/section-blocks.test.mjs) |
+
 ## Task 015 evidence index
 
 Keys in the matrix link to the evidence groups below. Each `yes` group names a
@@ -229,11 +244,15 @@ tree.
 <a id="ev-u-variable-array-key"></a><a id="ev-u-primitive-source"></a><a id="ev-u-primitive-tag-pos"></a><a id="ev-u-parenthesized-condition"></a><a id="ev-u-parenthesized-source"></a><a id="ev-u-parenthesized-tag-pos"></a><a id="ev-u-parenthesized-tag-attr"></a><a id="ev-u-parenthesized-array-value"></a><a id="ev-u-operator-source"></a><a id="ev-u-operator-array-value"></a><a id="ev-u-modifier-condition"></a><a id="ev-u-modifier-source"></a><a id="ev-u-modifier-tag-pos"></a><a id="ev-u-modifier-call-arg"></a><a id="ev-u-modifier-mod-arg"></a><a id="ev-u-modifier-bracket"></a><a id="ev-u-modifier-array-key"></a><a id="ev-u-modifier-array-value"></a><a id="ev-u-property-source"></a><a id="ev-u-property-call-arg"></a><a id="ev-u-property-bracket"></a><a id="ev-u-property-array-value"></a><a id="ev-u-method-bracket"></a><a id="ev-u-method-array-key"></a><a id="ev-u-method-array-value"></a><a id="ev-u-index-source"></a><a id="ev-u-index-call-arg"></a><a id="ev-u-index-bracket"></a><a id="ev-u-index-array-key"></a><a id="ev-u-index-array-value"></a><a id="ev-u-metadata-source"></a><a id="ev-u-metadata-tag-pos"></a><a id="ev-u-metadata-bracket"></a><a id="ev-u-metadata-array-key"></a><a id="ev-u-metadata-array-value"></a><a id="ev-u-function-source"></a><a id="ev-u-function-bracket"></a><a id="ev-u-function-array-key"></a><a id="ev-u-function-array-value"></a><a id="ev-u-array-output"></a><a id="ev-u-array-source"></a><a id="ev-u-array-mod-input"></a><a id="ev-u-array-array-key"></a><a id="ev-u-constant-source"></a>
 
 <a id="ev-u-is-condition"></a><a id="ev-u-is-source"></a><a id="ev-u-is-tag-pos"></a><a id="ev-u-is-call-arg"></a><a id="ev-u-is-mod-input"></a><a id="ev-u-is-bracket"></a><a id="ev-u-is-array-key"></a><a id="ev-u-is-array-value"></a><a id="ev-u-bitwise"></a>
+<a id="ev-u-section-source"></a><a id="ev-u-section-tag-pos"></a><a id="ev-u-section-call-arg"></a><a id="ev-u-section-bracket"></a><a id="ev-u-section-array-key"></a><a id="ev-u-section-array-value"></a>
 
 The cells marked `?` are unknown rather than unsupported. For bitwise AND, the
 unverified contexts are foreach sources, custom-tag positional values,
 function/method arguments, modifier inputs, bracket indices, and array keys and
 values; completed Task 021 supports only its listed shared-expression contexts.
+For section-name/property indices, foreach sources, custom-tag positional
+arguments, function/method arguments, nested bracket-index expressions, and
+array keys/values remain unverified.
 Each linked key names the exact form/context pair. Follow-up is to reduce that
 pair to one source, write its expected tree manually, and check pinned Smarty
 behavior before changing its status. The pairs are: variable/config variable–array key;
@@ -267,7 +286,8 @@ and 11/11 mutation checks caught, at the same revision and grammar hash. Logs:
 changed, so no parser or application-corpus delta was expected; no corpus report
 was generated. The Task 015 audit matrix had 83 `yes`, 4 `limited`, 1 `no`, and
 44 unverified expression-composition cells. Task 016 closes its single
-confirmed gap; the current matrix has 84 `yes`, 4 `limited`, no `no`, and 44
-unverified cells. The recording adapter proves syntax/event acceptance only,
+confirmed gap. Task 030 verifies five additional section-index context cells;
+the current matrix has 89 `yes`, 4 `limited`, no `no`, and 50 unverified cells.
+The recording adapter proves syntax/event acceptance only,
 not runtime binding. The separate `MOD-ID-arg` cell is not included in those
 historical totals because Task 017 adds a modifier-only atom/context pairing.

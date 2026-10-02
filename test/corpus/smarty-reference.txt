@@ -81,3 +81,61 @@ smarty-5.8.4-literal-official-js-braces
     content: (literal_content)
     (literal_close_tag))
   (output value: (variable name: (identifier))))
+
+====================
+smarty-5.8.4-section-required-header-else
+====================
+{section name=rows loop=$items}{$items[rows]}{sectionelse}empty{/section}{$after}
+---
+(source_file
+  (section_block
+    (section_tag
+      (section_header
+        name: (section_header_name value: (identifier))
+        loop: (section_header_loop value: (variable name: (identifier)))))
+    (output value: (index_expression
+      object: (variable name: (identifier))
+      index: (section_index name: (identifier))))
+    (sectionelse_clause (sectionelse_tag) (text))
+    (section_close_tag))
+  (output value: (variable name: (identifier))))
+
+====================
+smarty-5.8.4-section-property-index
+====================
+{$records[rows.index]}
+---
+(source_file
+  (output value: (index_expression
+    object: (variable name: (identifier))
+    index: (section_property_index
+      section: (identifier)
+      property: (identifier)))))
+
+====================
+smarty-5.8.4-section-property-expression
+====================
+{$smarty.section.rows.index}
+---
+(source_file
+  (output value: (section_property_expression
+    section: (identifier)
+    property: (identifier))))
+
+====================
+smarty-5.8.4-section-short-header-options
+====================
+{section rows $items start=1 step=2}{$items[rows]}{/section}
+---
+(source_file
+  (section_block
+    (section_tag
+      (section_header
+        name: (section_header_name value: (identifier))
+        loop: (section_header_loop value: (variable name: (identifier)))
+        (attribute name: (identifier) value: (number))
+        (attribute name: (identifier) value: (number))))
+    (output value: (index_expression
+      object: (variable name: (identifier))
+      index: (section_index name: (identifier))))
+    (section_close_tag)))

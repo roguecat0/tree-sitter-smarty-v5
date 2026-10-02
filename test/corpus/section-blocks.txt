@@ -1,0 +1,79 @@
+==================
+section header preserves reordered fields and all documented options
+==================
+{section loop=$items properties=$props name=rows start=1 step=2 max=3 show=true nocache}{$smarty.section.rows.index}{/section}
+---
+(source_file
+  (section_block
+    (section_tag
+      (section_header
+        loop: (section_header_loop value: (variable name: (identifier)))
+        (attribute name: (identifier) value: (variable name: (identifier)))
+        name: (section_header_name value: (identifier))
+        (attribute name: (identifier) value: (number))
+        (attribute name: (identifier) value: (number))
+        (attribute name: (identifier) value: (number))
+        (attribute name: (identifier) value: (boolean))
+        (section_option)))
+    (output value: (section_property_expression
+      section: (identifier)
+      property: (identifier)))
+    (section_close_tag)))
+
+==================
+section empty body and empty sectionelse
+==================
+{section name=rows loop=$items}{sectionelse}{/section}
+---
+(source_file
+  (section_block
+    (section_tag
+      (section_header
+        name: (section_header_name value: (identifier))
+        loop: (section_header_loop value: (variable name: (identifier)))))
+    (sectionelse_clause (sectionelse_tag))
+    (section_close_tag)))
+
+==================
+section bare short name-loop header
+==================
+{section rows $items}{/section}
+---
+(source_file
+  (section_block
+    (section_tag
+      (section_header
+        name: (section_header_name value: (identifier))
+        loop: (section_header_loop value: (variable name: (identifier)))))
+    (section_close_tag)))
+
+==================
+section indices compose through condition, generic attribute and modifier argument
+==================
+{section name=rows loop=$items}{if $smarty.section.rows.first && $items[rows.index]}{widget value=$items[rows]}{$items[rows]|default:$smarty.section.rows.iteration}{/if}{/section}
+---
+(source_file
+  (section_block
+    (section_tag
+      (section_header
+        name: (section_header_name value: (identifier))
+        loop: (section_header_loop value: (variable name: (identifier)))))
+    (if_block
+      (if_tag condition: (binary_expression
+        left: (section_property_expression section: (identifier) property: (identifier))
+        right: (index_expression
+          object: (variable name: (identifier))
+          index: (section_property_index section: (identifier) property: (identifier)))))
+      (custom_tag name: (identifier)
+        (attribute name: (identifier)
+          value: (index_expression
+            object: (variable name: (identifier))
+            index: (section_index name: (identifier)))))
+      (output value: (modifier_expression
+        value: (index_expression
+          object: (variable name: (identifier))
+          index: (section_index name: (identifier)))
+        name: (identifier)
+        argument: (section_property_expression section: (identifier) property: (identifier))))
+      (if_close_tag))
+    (section_close_tag)))

@@ -82,6 +82,18 @@ export function observations(node) {
     case 'forelse_tag': case 'for_close_tag':
       events.push({kind: 'tag', name: node.type === 'forelse_tag' ? 'forelse' : 'forclose', arguments: []});
       break;
+    case 'section_tag': {
+      const header = node.namedChildren.find(child => child.type === 'section_header');
+      const arguments_ = header.namedChildren
+        .filter(child => child.type === 'attribute' || child.type === 'section_option' || child.type === 'section_header_name' || child.type === 'section_header_loop')
+        .sort((left, right) => left.startIndex - right.startIndex)
+        .map(child => ({name: child.type === 'attribute' ? child.childForFieldName('name').text : child.type === 'section_header_name' && child.text.startsWith('name=') ? 'name' : child.type === 'section_header_loop' && child.text.startsWith('loop=') ? 'loop' : null}));
+      events.push({kind: 'tag', name: 'section', arguments: arguments_});
+      break;
+    }
+    case 'sectionelse_tag': case 'section_close_tag':
+      events.push({kind: 'tag', name: node.type === 'sectionelse_tag' ? 'sectionelse' : 'sectionclose', arguments: []});
+      break;
     case 'modifier_expression':
       events.push({ kind: 'modifier', name, arguments: node.childrenForFieldName('argument').length });
       break;

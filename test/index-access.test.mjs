@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { fixtures, observations, parser, reference, snapshot } from './helpers.mjs';
+import { fixtures, fullEngine, observations, parser, reference, snapshot } from './helpers.mjs';
 for (const {name,source} of fixtures('index-access.txt')) test(`Index reference: ${name}`, () => {
   const root=parser().parse(source).rootNode;
   assert.equal(root.hasError,false,root.toString());
@@ -32,10 +32,19 @@ test('Index malformed syntax and receiver boundaries', () => {
     assert.ok(reference(source).error,source);
     assert.equal(parser().parse(source).rootNode.hasError,true,source);
   }
-  for (const source of ['{$a[]}', '{$a[key]}']) {
-    assert.equal(reference(source).error,null,source);
-    assert.equal(parser().parse(source).rootNode.hasError,true,source);
-  }
+  assert.equal(reference('{$a[]}').error,null);
+  assert.equal(parser().parse('{$a[]}').rootNode.hasError,true, 'Empty append indices remain outside this task.');
+  // Smarty defines a bare ID in brackets as a section-name index; the former
+  // rejection expectation was incorrect and is covered structurally by Task 030.
+  const sectionName = parser().parse('{$a[key]}').rootNode;
+  assert.equal(reference('{$a[key]}').error,null);
+  assert.equal(fullEngine('{$a[key]}',{mode:'compile'}).error,null);
+  assert.equal(sectionName.hasError,false,sectionName.toString());
+  const sectionIndex = sectionName.descendantsOfType('section_index')[0];
+  const sectionNameField = sectionIndex.childForFieldName('name');
+  assert.equal(sectionNameField.text,'key');
+  assert.deepEqual([sectionIndex.startIndex,sectionIndex.endIndex],[3,8]);
+  assert.deepEqual([sectionNameField.startIndex,sectionNameField.endIndex],[4,7]);
   for (const source of ['{$a.$key}', '{$a.{$key}}', '{($a)[0]}', "{'x'[0]}", '{$a[0]=1}'])
     assert.equal(parser().parse(source).rootNode.hasError,true,source);
 });
