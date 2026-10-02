@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { fixtures, fullEngine, parser, reference, snapshot } from './helpers.mjs';
 
-const examples = fixtures('smarty-reference.txt');
+const examples = fixtures('smarty-reference.txt').filter(({ name }) => name.startsWith('auto-literal-'));
 assert.equal(examples.length, 7);
 
 for (const { name, source } of examples) {

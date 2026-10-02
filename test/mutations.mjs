@@ -24,8 +24,11 @@ const mutations = [
     from: 'field("source", $._expression)',
     to: 'field("value", $._expression)' },
   { name: 'nested for block is no longer composable', fixture: 'nested loop ownership',
-    from: '$.if_block, $.comment, $.foreach_block, $.for_block)',
-    to: '$.if_block, $.comment, $.foreach_block)' },
+    from: '$.if_block, $.comment, $.foreach_block, $.for_block, $.literal_block, $.stray_literal_close)',
+    to: '$.if_block, $.comment, $.foreach_block, $.literal_block, $.stray_literal_close)' },
+  { name: 'literal blocks are no longer source siblings', fixture: 'literal-css-braces-and-quotes',
+    from: '$.literal_block, $.stray_literal_close)',
+    to: '$.stray_literal_close)' },
   { name: 'C-style header falls back to the range tree', fixture: 'C-style multiple initializers and increment',
     from: 'for_tag: $ => seq("{", "for", choice($.range_for_header, $.c_style_for_header), "}"),',
     to: 'for_tag: $ => seq("{", "for", $.range_for_header, "}"),' },
@@ -47,8 +50,8 @@ const mutations = [
     from: 'member_expression: $ => prec.left(5, seq(\n      field("object", choice($.variable, $.member_expression, $.method_call_expression, $.index_expression))',
     to: 'member_expression: $ => prec.left(5, seq(\n      field("value", choice($.variable, $.member_expression, $.method_call_expression, $.index_expression))' },
   { name: 'comment swallowed as text', fixture: 'Comment hides tags and quotes',
-    from: '$.if_block, $.comment, $.foreach_block, $.for_block)',
-    to: '$.if_block, alias($.comment, $.text), $.foreach_block, $.for_block)' },
+    from: '$.if_block, $.comment, $.foreach_block, $.for_block, $.literal_block, $.stray_literal_close)',
+    to: '$.if_block, alias($.comment, $.text), $.foreach_block, $.for_block, $.literal_block, $.stray_literal_close)' },
   { name: 'custom tag swallowed as text', fixture: 'Custom tag arguments',
     from: 'choice($.text, $.output, $.custom_tag,',
     to: 'choice($.text, $.output, alias($.custom_tag, $.text),' },
@@ -77,7 +80,7 @@ try {
   execFileSync('tree-sitter', ['generate'], options);
   execFileSync('tree-sitter', ['test', '--show-fields', '--include', mutations[0].fixture], options);
   for (const mutation of mutations) {
-    assert.equal(original.split(mutation.from).length, 2, 'Mutation must match exactly once');
+    assert.equal(original.split(mutation.from).length, 2, `Mutation anchor must match exactly once: ${mutation.name}`);
     let modified = original.replace(mutation.from, mutation.to);
     if (mutation.alsoFrom) {
       assert.equal(original.split(mutation.alsoFrom).length, 2, 'Second mutation anchor must match once');

@@ -85,10 +85,25 @@ text preserves a left brace followed immediately by whitespace, the empty `{}`
 pair, and raw right braces. A left brace immediately followed by non-whitespace
 starts the existing tag/output grammar; whitespace before that tag's closing
 brace does not deactivate it. Text and active constructs retain separate named
-nodes and source ranges. This boundary rule does not cover `{literal}` regions,
-custom literal sequences, alternate delimiters, or `auto_literal=false`.
+nodes and source ranges. `{literal}` regions have a separate contract in
+[Task 029](../docs/tasks/029-literal-blocks.md). Custom literal sequences,
+alternate delimiters, and `auto_literal=false` remain outside this boundary
+rule.
 Evidence: [manual Smarty-reference trees](corpus/smarty-reference.txt) and
 [full-engine/reference/edit/recovery checks](default-auto-literal.test.mjs).
+
+With default delimiters, `{literal}` starts a raw region. Its opener name is
+case-insensitive and may have whitespace before `}`; the closer is
+case-insensitive and must be exactly `{/literal}` with no spacing inside the
+marker. The `literal_block` contains its delimiter nodes and optional
+`literal_content`, which preserves every body byte, including Smarty-looking
+constructs and nested literal marker spellings. Empty bodies omit content.
+The outer matching closer ends the raw region; following Smarty constructs
+resume as siblings. A standalone `{/literal}` is a `stray_literal_close`, not
+an ordinary custom closing tag. Alternate delimiters and `auto_literal=false`
+remain unsupported. Evidence: [literal trees](corpus/literal-blocks.txt),
+[Smarty-reference trees](corpus/smarty-reference.txt), and
+[reference/full-engine/range/recovery/edit checks](literal-blocks.test.mjs).
 
 Double-quoted strings support direct, braced, and immediate-backtick-dollar
 interpolation, and preserve dollars not followed by a Smarty ID as literal
@@ -98,9 +113,8 @@ reviewed composition contexts are output, generic-tag attribute, and modifier
 argument; other pairings remain unverified. The 23 current earliest-error
 contexts and syntax boundary are audited in
 [task 020](../docs/tasks/020-double-quoted-interpolation.md); backticks not
-followed immediately by `$` remain string content,
-literal blocks, configurable delimiters,
-or HTML injection. Other built-in blocks, word operator aliases, bitwise
+followed immediately by `$` remain string content. Configurable delimiters
+and HTML injection remain outside this contract. Other built-in blocks, word operator aliases, bitwise
 operators, dynamic member access, and dynamic config variables remain current
 gaps to assess and address according to
 common usage and usefulness to parser consumers; the explicit plugin/custom-tag

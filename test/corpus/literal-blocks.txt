@@ -1,0 +1,62 @@
+==================
+literal-empty
+==================
+{literal}{/literal}
+---
+(source_file
+  (literal_block
+    (literal_tag)
+    (literal_close_tag)))
+
+==================
+literal-css-braces-and-quotes
+==================
+{literal}div {line-height:150%; content: "{$x}";}{/literal}
+---
+(source_file
+  (literal_block
+    (literal_tag)
+    content: (literal_content)
+    (literal_close_tag)))
+
+==================
+literal-apparent-syntax-and-false-closes
+==================
+{literal}{$x}{* comment *}{if true}{/if}{/literalty}{ /literal}{/literal}
+---
+(source_file
+  (literal_block
+    (literal_tag)
+    content: (literal_content)
+    (literal_close_tag)))
+
+==================
+literal-opener-whitespace-and-case
+==================
+{LiTeRaL   }raw {/lItErAl}
+---
+(source_file
+  (literal_block
+    (literal_tag)
+    content: (literal_content)
+    (literal_close_tag)))
+
+==================
+literal-composition-if-foreach
+==================
+{if $enabled}{foreach $items as $item}{literal}<b>{$item}</b>{/literal}{$item}{/foreach}{/if}
+---
+(source_file
+  (if_block
+    (if_tag condition: (variable name: (identifier)))
+    (foreach_block
+      (foreach_tag
+        source: (variable name: (identifier))
+        item: (variable name: (identifier)))
+      (literal_block
+        (literal_tag)
+        content: (literal_content)
+        (literal_close_tag))
+      (output value: (variable name: (identifier)))
+      (foreach_close_tag))
+    (if_close_tag)))

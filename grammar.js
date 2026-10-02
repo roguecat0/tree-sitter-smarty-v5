@@ -20,6 +20,7 @@ export default grammar({
   externals: $ => [
     $.text, $._output_attribute_error_marker,
     $.string_fragment, $._backtick_interpolation_start,
+    $._literal_opener, $.literal_content, $.literal_close_tag,
   ],
   extras: _ => [/\s/],
   word: $ => $.identifier,
@@ -32,7 +33,14 @@ export default grammar({
   conflicts: $ => [[$.elseif_clause], [$.else_clause], [$.foreachelse_clause], [$.forelse_clause]],
   rules: {
     source_file: $ => repeat($._node),
-    _node: $ => choice($.text, $.output, $.custom_tag, $.custom_close_tag, $.if_block, $.comment, $.foreach_block, $.for_block),
+    _node: $ => choice($.text, $.output, $.custom_tag, $.custom_close_tag, $.if_block, $.comment, $.foreach_block, $.for_block, $.literal_block, $.stray_literal_close),
+    literal_block: $ => prec(-20, seq(
+      $.literal_tag,
+      optional(field("content", $.literal_content)),
+      $.literal_close_tag,
+    )),
+    literal_tag: $ => seq("{", $._literal_opener),
+    stray_literal_close: $ => seq("{/", token.immediate(prec(10, choice(...cases("literal")))), token.immediate("}")),
     // A single token hides all template syntax and stops at the first *}.
     // Star runs cannot consume a closing brace; the following newline is text.
     comment: _ => token(seq("{*", /([^*]|\*+[^*}])*/, /\*+/, "}")),

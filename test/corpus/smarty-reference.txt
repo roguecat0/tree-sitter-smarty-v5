@@ -46,3 +46,38 @@ auto-literal-html-script-composition
 <script>const x = { foo: 1 };</script>{if true }Y{/if}<script>if (x) { go(); }</script>
 ---
 (source_file (text) (if_block (if_tag condition: (boolean)) (text) (if_close_tag)) (text))
+
+==================
+smarty-5.8.4-literal-opaque-output
+==================
+{literal}<b>{$name}</b>{/literal}{$after}
+---
+(source_file
+  (literal_block
+    (literal_tag)
+    content: (literal_content)
+    (literal_close_tag))
+  (output value: (variable name: (identifier))))
+
+==================
+smarty-5.8.4-literal-nested-markers
+==================
+{literal}a{literal}b{/literal}c{/literal}
+---
+(source_file
+  (literal_block
+    (literal_tag)
+    content: (literal_content)
+    (literal_close_tag)))
+
+==================
+smarty-5.8.4-literal-official-js-braces
+==================
+{literal}function myBar {alert('Bar!');}{/literal}{$after}
+---
+(source_file
+  (literal_block
+    (literal_tag)
+    content: (literal_content)
+    (literal_close_tag))
+  (output value: (variable name: (identifier))))

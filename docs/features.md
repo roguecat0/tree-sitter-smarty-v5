@@ -48,8 +48,8 @@ all Smarty variants are covered. `Partial` means only the described forms work.
 | Comparison/boolean/unary operators | Partial: symbolic comparisons, `&&`/`\|\|`, prefix `! + -`, exact `is div by` predicate, and binary bitwise `&` as a shared-expression operator; other Smarty math operators `**`, `^`, `<<`, `>>`, word aliases, and other `is ...` predicates remain unsupported | [005](tasks/005-condition-operators.md); [013](tasks/013-divisibility-predicate.md); [bitwise trees/checks](../test/corpus/bitwise-and.txt); [021 complete](tasks/021-bitwise-and.md) |
 | Foreach blocks | Partial: modern `as` headers with optional key and legacy named/positional headers preserve their fields and source order; modern headers also retain trailing `name`, `key`, `properties`, and redundant `from`/`item` attributes after synthesized binding fields. Bare `nocache` is a `foreach_option`; valued `nocache` is an `attribute` in modern and legacy headers, with `true/false/1/0` accepted quoted or unquoted and whitespace around `=` preserved. Empty legacy lists remain parser syntax, while required attributes, option values, positional value types, and runtime loop/cache behavior follow separate compiler/runtime boundaries. Modern and legacy loops structurally own `foreachelse`. The designer prose denying modern named attributes conflicts with the pinned parser/compiler observation; see [028](tasks/028-foreach-header-options.md). Static item metadata suffixes parse as expressions, including direct modifier arguments; runtime binding, iteration and metadata evaluation remain outside the tree contract | [modern trees/checks](../test/corpus/foreach.txt); [legacy trees/checks](../test/corpus/legacy-foreach.txt); [Task 028 trees/checks](../test/corpus/foreach-header-options.txt); [reference/compiler/recovery/edit checks](../test/legacy-foreach.test.mjs); [Task 028 checks](../test/foreach-header-options.test.mjs); [006](tasks/006-foreach-blocks.md); [012](tasks/012-loop-metadata.md); [016 trees and checks](tasks/016-loop-metadata-modifier-argument.md); [027 evidence](tasks/027-legacy-foreach.md); [028 evidence](tasks/028-foreach-header-options.md) |
 | For loops | Partial: standard range and C-style headers, indexed targets, range `step`/`max`, `nocache`, syntactic trailing options, `{forelse}`, and nested `{for}`/`foreach`/`if` ownership. Malformed C-style recovery may absorb its own closer inside `ERROR`; full runtime loop semantics remain outside the tree contract | [hand-authored trees](../test/corpus/for-loops.txt); [reference/compiler/recovery/edit checks](../test/for-loops.test.mjs); [026 evidence](tasks/026-for-loops.md) |
-| Other built-in blocks | Unimplemented structurally; some names parse as generic tags | `{while}`, inheritance, capture, switch, literal blocks, and other built-in forms remain gaps; classify each from the pinned parser before task creation |
-| Literal blocks/auto-literal | Partial: default `{`/`}` boundaries follow `auto_literal=true`, including whitespace after `{`, `{}`, and raw right braces; `{literal}` regions and non-default delimiter/configuration behavior remain gaps | [014 trees and checks](tasks/014-default-auto-literal-boundary.md) |
+| Other built-in blocks | Unimplemented structurally; some names parse as generic tags | `{while}`, inheritance, capture, switch, and other built-in forms remain gaps; classify each from the pinned parser before task creation |
+| Literal blocks/auto-literal | Partial: default `{`/`}` boundaries follow `auto_literal=true`, including whitespace after `{`, `{}`, and raw right braces; default `{literal}` regions preserve opaque body bytes; alternate delimiters and `auto_literal=false` remain separate gaps | [014 trees and checks](tasks/014-default-auto-literal-boundary.md); [029 literal trees, reference and implementation evidence](tasks/029-literal-blocks.md) |
 | Configurable delimiters | Unimplemented | Design decision needed |
 | HTML injections/queries | Unimplemented | Separate editor integration milestone |
 | Generic custom-block nesting | Deferred by design | Keep custom tags independent |
@@ -79,8 +79,8 @@ corpus failures still need to drive further inventory and task updates.
 Task 011 passes its implementation gate for ordinary standalone calls; its
 independent review is pending. The remaining namespace/dynamic/result-chain and
 trailing output-attribute gaps stay visible in the feature rows. Interpolation,
-bitwise/word operators, literal blocks, and other unimplemented inventory rows
-still need briefs or scope decisions.
+bitwise/word operators, and other unimplemented inventory rows still need briefs
+or scope decisions.
 
 ## Config variables evidence (2026-09-22)
 
@@ -203,8 +203,8 @@ conditions/arguments (`is_valid_id(...)`, `date(...)`) are covered by the
 ordinary-call subset in [011](tasks/011-standalone-function-calls.md); remaining
 call gaps are named in that task. The corpus-confirmed `is div by` predicate is
 described in [013](tasks/013-divisibility-predicate.md). Bitwise expressions,
-literal blocks, other built-in blocks, and other word predicates/operators still
-need separate source classification and minimized Smarty observations.
+other built-in blocks, and other word predicates/operators still need separate
+source classification and minimized Smarty observations.
 
 ## Default brace boundary evidence (2026-10-01)
 
@@ -214,9 +214,23 @@ identical source hashes across 467 application templates, the corpus report
 improved from **142 clean / 325 failing** to **186 clean / 281 failing**, with
 no regressions. All 44 newly clean trees were inspected; each contains
 structured Smarty nodes rather than only text. Default `{`/`}` auto-literal
-behavior is now supported within the stated contract; `{literal}` blocks and
-the remaining 281 corpus failures still need later work. See the task brief for
-the full new-file list and saved report locations.
+behavior is now supported within the stated contract. The remaining 281 corpus
+failures still need later work. See the task brief for the full new-file list
+and saved report locations.
+
+## Literal block evidence (2026-10-02)
+
+Task [029](tasks/029-literal-blocks.md) adds default-delimiter `{literal}`
+regions with a case-insensitive opener/closer, exact raw body bytes, nested
+marker preservation, empty bodies, and composition inside supported blocks.
+Smarty-looking tags, outputs, comments, and CSS braces inside the region remain
+one `literal_content` node. The application corpus stays at 456 clean / 11
+failing files, but both CSS affected templates lose their earlier literal-body
+parse error (three errors each become two). Their later `neq` and recovery
+errors remain; there are no newly clean files or regressions. The separate
+upstream core and demo reports are unchanged. `npm test` passes 252 Tree-sitter
+corpus parses, 354 Node checks, and all 18 mutation checks. See Task 029 for
+separate report hashes, source hashes, and the structurally inspected trees.
 
 ## Divisibility predicate evidence (2026-10-01)
 
