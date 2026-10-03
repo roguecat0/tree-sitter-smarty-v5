@@ -4629,6 +4629,30 @@
             {
               "type": "IMMEDIATE_TOKEN",
               "content": {
+                "type": "PATTERN",
+                "value": "\\.\\{"
+              }
+            },
+            {
+              "type": "FIELD",
+              "name": "index",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_expression"
+              }
+            },
+            {
+              "type": "STRING",
+              "value": "}"
+            }
+          ]
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "IMMEDIATE_TOKEN",
+              "content": {
                 "type": "STRING",
                 "value": "."
               }

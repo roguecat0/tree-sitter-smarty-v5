@@ -1,0 +1,103 @@
+==================
+Dynamic variable index
+==================
+{$map.{$key}}
+---
+(source_file
+  (output value: (index_expression
+    object: (variable name: (identifier))
+    index: (variable name: (identifier)))))
+
+==================
+Mixed case and complete arithmetic expression
+==================
+{$map.{$key + 1 * 2}}
+---
+(source_file
+  (output value: (index_expression
+    object: (variable name: (identifier))
+    index: (binary_expression
+      left: (variable name: (identifier))
+      right: (binary_expression
+        left: (number)
+        right: (number))))))
+
+==================
+Method and modifier indices compose with later access
+==================
+{$map.{$printer->get_id()}}{$map.{$key|escape}}{$map.{$key}.label[2]}
+---
+(source_file
+  (output value: (index_expression
+    object: (variable name: (identifier))
+    index: (method_call_expression
+      object: (variable name: (identifier))
+      method: (identifier))))
+  (output value: (index_expression
+    object: (variable name: (identifier))
+    index: (modifier_expression value: (variable name: (identifier)) name: (identifier))))
+  (output value: (index_expression
+    object: (index_expression
+      object: (index_expression
+        object: (variable name: (identifier))
+        index: (variable name: (identifier)))
+      index: (identifier))
+    index: (number))))
+
+==================
+Dynamic indices in generic tag and call arguments
+==================
+{widget value=$map.{$printer->get_id()} other=$map.{$key}}{helper($map.{$key})}
+---
+(source_file
+  (custom_tag name: (identifier)
+    (attribute name: (identifier) value: (index_expression
+      object: (variable name: (identifier))
+      index: (method_call_expression object: (variable name: (identifier)) method: (identifier))))
+    (attribute name: (identifier) value: (index_expression
+      object: (variable name: (identifier))
+      index: (variable name: (identifier)))))
+  (output value: (function_call_expression
+    name: (identifier)
+    argument: (index_expression object: (variable name: (identifier)) index: (variable name: (identifier))))))
+
+==================
+Minimized application attribute
+==================
+{html_options selected=$labels.{$printer->get_id()}}
+---
+(source_file
+  (custom_tag name: (identifier)
+    (attribute name: (identifier) value: (index_expression
+      object: (variable name: (identifier))
+      index: (method_call_expression object: (variable name: (identifier)) method: (identifier))))))
+
+==================
+Static dot, numeric dot, and bracket boundaries
+==================
+{$map.label}{$map.12}{$map[$key]}
+---
+(source_file
+  (output value: (index_expression object: (variable name: (identifier)) index: (identifier)))
+  (output value: (index_expression object: (variable name: (identifier)) index: (number)))
+  (output value: (index_expression object: (variable name: (identifier)) index: (variable name: (identifier)))))
+
+==================
+Missing outer brace retains following output
+==================
+{$map.{$key}{$after}
+---
+(source_file
+  (output value: (index_expression object: (variable name: (identifier)) index: (variable name: (identifier))) (MISSING "}"))
+  (output value: (variable name: (identifier))))
+
+==================
+Whitespace after dot is not dynamic dot access
+==================
+{$map. {$key}}{$after}
+---
+(source_file
+  (ERROR (variable name: (identifier)))
+  (output value: (variable name: (identifier)))
+  (text)
+  (output value: (variable name: (identifier))))

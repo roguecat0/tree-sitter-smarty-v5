@@ -45,7 +45,9 @@ test('Index malformed syntax and receiver boundaries', () => {
   assert.equal(sectionNameField.text,'key');
   assert.deepEqual([sectionIndex.startIndex,sectionIndex.endIndex],[3,8]);
   assert.deepEqual([sectionNameField.startIndex,sectionNameField.endIndex],[4,7]);
-  for (const source of ['{$a.$key}', '{$a.{$key}}', '{($a)[0]}', "{'x'[0]}"])
+  // Task 035 supersedes the former dynamic-dot rejection: Smarty 5.8.4 accepts
+  // `{$map.{$key}}`, and its dedicated fixture now pins that structure.
+  for (const source of ['{$a.$key}', '{($a)[0]}', "{'x'[0]}"])
     assert.equal(parser().parse(source).rootNode.hasError,true,source);
   const tightAssignment = '{$a[0]=1}';
   const assignmentTree = parser().parse(tightAssignment).rootNode;

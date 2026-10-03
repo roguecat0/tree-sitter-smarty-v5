@@ -323,6 +323,7 @@ export default grammar({
       token(/\$smarty\.section\./), field("section", $.identifier), ".", field("property", $.identifier),
     )),
     _index_suffix: $ => choice(
+      seq(token.immediate(/\.\{/), field("index", $._expression), "}"),
       seq(token.immediate("."), field("index", choice(
         alias(token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/), $.identifier),
         // Integer-only tokens prevent .1.2 from collapsing into a decimal key.

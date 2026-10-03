@@ -29,9 +29,14 @@ parenthesized expressions and arithmetic. This task covered read access only;
 shorthand assignments were unimplemented then, not rejected by Smarty. Task 033
 now supports assignment targets with direct variables and nonempty indices using
 the existing index-expression subset. Empty append indices, bare identifier
-section indices, dynamic dot keys, braced dot expressions, array literals,
+section indices, array literals,
 section/foreach metadata semantics and dynamic config names remain outside this
 read-access task.
+
+The original task excluded dynamic dot expressions because they were not yet
+implemented. Task 035 later confirmed the standard `.{$expr}` production against
+Smarty 5.8.4 and added its structural support; this historical boundary is
+superseded by [Task 035](035-dynamic-dot-index.md).
 
 On 2026-09-22, raw lexical searches over all 467 local `.tpl` files found dot
 access hints in 187 files and variable-bracket hints in 35. These overlap and

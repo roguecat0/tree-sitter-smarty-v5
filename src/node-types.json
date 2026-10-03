@@ -2355,6 +2355,10 @@
             "named": true
           },
           {
+            "type": "boolean",
+            "named": true
+          },
+          {
             "type": "class_constant_expression",
             "named": true
           },
@@ -2395,6 +2399,10 @@
             "named": true
           },
           {
+            "type": "null",
+            "named": true
+          },
+          {
             "type": "number",
             "named": true
           },
@@ -2404,6 +2412,10 @@
           },
           {
             "type": "section_index",
+            "named": true
+          },
+          {
+            "type": "section_property_expression",
             "named": true
           },
           {

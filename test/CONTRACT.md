@@ -40,6 +40,12 @@ booleans, nulls, variables, strings, and class constants retain their existing
 node types. Bare IDs are also primary expressions in the tested output,
 condition, function/method argument, and array-element value contexts. See
 [018 trees and checks](../docs/tasks/018-generic-tag-identifier-values.md).
+In a generic-tag attribute, the grammar accepts a direct expression value such
+as `selected=$labels.{$key}`. Smarty also accepts the braced attribute form
+`selected={$labels.{$key}}`, but that surrounding `{...}` is not currently
+supported in attribute values. The application witness
+`view_labels/cable_label.tpl:35` uses the braced form; record it for a separate
+Task 037 after Task 035 review rather than widening the dynamic-index change.
 The attribute-name field preserves simple ASCII identifiers and existing
 primitive aliases. It also supports `tag_attribute_name` leaves for hyphenated
 names, digit-prefixed names, and nonempty segments separated by single colons
@@ -385,15 +391,21 @@ effects. See the [028 trees](corpus/foreach-header-options.txt),
 
 Dot/bracket read access produces left-nested `index_expression` with `object` and
 `index` fields. Dot keys are adjacent ASCII identifiers or unsigned integers;
-bracket indices preserve supported expressions and permit whitespace. Variable
-and property receivers can acquire repeated indices, then property/method chains.
+dynamic dot indices use the adjacent `.{$expr}` form and preserve the complete
+expression beneath `index`; bracket indices preserve supported expressions and
+permit whitespace. Variable and property receivers can acquire repeated indices,
+then property/method chains.
 Config receivers can acquire repeated indices only. Method results cannot acquire
-indices directly. Binding is above modifiers/operators. Empty append, dynamic
-dot and arbitrary-expression receivers remain excluded. Bare section-name and
+indices directly. Binding is above modifiers/operators. Empty append and
+arbitrary-expression receivers remain excluded. Bare section-name and
 section-name-property bracket forms have dedicated nodes under the `index`
-field; see the section syntax contract above.
+field; see the section syntax contract above. Dynamic dot indices are checked in
+outputs, generic-tag attributes, and function arguments; other composition cells
+remain unverified. Smarty requires no whitespace between the dot and `{`.
 Evidence: [index trees](corpus/index-access.txt) and
-[reference/range/edit checks](index-access.test.mjs).
+[reference/range/edit checks](index-access.test.mjs); [dynamic-dot trees and
+reference/recovery/edit checks](corpus/dynamic-dot-index.txt) and
+[Task 035 checks](dynamic-dot-index.test.mjs).
 
 Case-insensitive `true`/`false` and `null` produce named leaf `boolean` and `null`
 nodes, retaining their original text/ranges. They are primary expressions and
