@@ -310,6 +310,18 @@ Pinned reference and full-engine observations for `{in_array(foo, $list)}` are
 recorded in Task 022; the recorder projection does not expose argument values.
 See the [Task 022 trees and checks](../docs/tasks/022-static-identifier-expressions.md)
 and its composition evidence.
+
+The pinned Smarty 5.8.4 lexer/parser and recording compiler accept adjacent
+modifier spellings `|@name` and `|@@name`; both report the same modifier name
+without the prefix characters. The parser preserves that name and the existing
+`modifier_expression` tree shape for both forms in outputs, and for `|@name` in
+generic-tag named attribute values. It rejects whitespace between the pipe and
+the prefix, reports the malformed region, and retains a later output. Ordinary
+`|name` behavior is unchanged. Acceptance of prefixed forms in other existing
+`modifier_expression` contexts remains unverified. Hand-authored trees and
+reference, range, recovery, and edit checks are in [Task 036](../docs/tasks/036-modifier-at-prefix.md).
+The recorder establishes syntax and modifier event/name only, not registration
+or execution.
 The exact Smarty predicate `is div by` is also a `binary_expression` with a
 named `div_by_operator`; it is available anywhere the shared full-expression
 rule is used, including outputs, conditions, and parenthesized modifier

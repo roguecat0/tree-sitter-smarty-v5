@@ -5948,8 +5948,24 @@
             }
           },
           {
-            "type": "STRING",
-            "value": "|"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": 2,
+                  "content": {
+                    "type": "PATTERN",
+                    "value": "\\|@{1,2}"
+                  }
+                }
+              },
+              {
+                "type": "STRING",
+                "value": "|"
+              }
+            ]
           },
           {
             "type": "FIELD",

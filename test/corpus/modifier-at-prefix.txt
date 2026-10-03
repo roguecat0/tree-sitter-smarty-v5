@@ -1,0 +1,41 @@
+==================
+Single @ modifier prefix
+==================
+{$x|@ucfirst}
+---
+(source_file (output value: (modifier_expression value: (variable name: (identifier)) name: (identifier))))
+
+==================
+Double @@ modifier prefix
+==================
+{$x|@@ucfirst}
+---
+(source_file (output value: (modifier_expression value: (variable name: (identifier)) name: (identifier))))
+
+==================
+Prefixed modifier chain with arguments
+==================
+{$x|@default:label|escape:'html'}
+---
+(source_file (output value: (modifier_expression value: (modifier_expression value: (variable name: (identifier)) name: (identifier) argument: (identifier)) name: (identifier) argument: (string))))
+
+==================
+Parenthesized compound input with prefixed modifier chain
+==================
+{($x + $y)|@default:label|escape:'html'}
+---
+(source_file (output value: (modifier_expression value: (modifier_expression value: (parenthesized_expression (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier)))) name: (identifier) argument: (identifier)) name: (identifier) argument: (string))))
+
+==================
+Prefixed modifier in generic-tag named attribute
+==================
+{widget value=$x|@escape:'html'}
+---
+(source_file (custom_tag name: (identifier) (attribute name: (identifier) value: (modifier_expression value: (variable name: (identifier)) name: (identifier) argument: (string)))))
+
+==================
+Ordinary modifier remains unchanged
+==================
+{$x|ucfirst}
+---
+(source_file (output value: (modifier_expression value: (variable name: (identifier)) name: (identifier))))

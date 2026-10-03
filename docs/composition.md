@@ -35,6 +35,26 @@ Cartesian suite merely to fill the matrix.
 | Static class method call (`Class::method(...)`) | ? [U-assignment-rhs](#ev-u-assignment-rhs) | yes [SM-output](#ev-sm-output) | yes [SM-condition](#ev-sm-condition) | yes [SM-source](#ev-sm-source) | yes [SM-tag-pos](#ev-sm-tag-pos) | yes [SM-tag-attr](#ev-sm-tag-attr) | yes [SM-call-arg](#ev-sm-call-arg) | yes [SM-mod-input](#ev-sm-mod-input) | yes [SM-mod-arg](#ev-sm-mod-arg) | yes [SM-bracket](#ev-sm-bracket) | yes [SM-array-key](#ev-sm-array-key) | yes [SM-array-value](#ev-sm-array-value) |
 | Bare identifier (modifier, generic-tag, primary-expression, and array-key positions) | ? [U-assignment-rhs](#ev-u-assignment-rhs) | yes [ID-output](#ev-id-output) | yes [ID-condition](#ev-id-condition) | ? | yes [GT-ID-pos](#ev-gt-id-pos) | yes [GT-ID-attr](#ev-gt-id-attr) | yes [ID-call-arg](#ev-id-call-arg) | ? | yes [MOD-ID-arg](#ev-mod-id-arg) | ? | yes — bare ID keys already have a hand-authored tree in [array literals](../test/corpus/array-literals.txt#L12) | yes [ID-array-value](#ev-id-array-value) |
 
+## Task 036 modifier-prefix composition evidence
+
+The existing `Modifier expression` row describes unprefixed expressions; its
+evidence does not establish the optional-prefix spellings. Task 036 adds
+`|@name` and the independently compiler-confirmed adjacent form `|@@name`.
+This table records the exact tested contexts and the prefixed forms that remain
+unverified.
+
+| Prefix form/context | Task 036 disposition | Required or remaining boundary |
+| --- | --- | --- |
+| `|@name` and `|@@name` as output value | yes — [trees](../test/corpus/modifier-at-prefix.txt), [range/reference checks](../test/modifier-at-prefix.test.mjs) | Both modifier-name ranges and recorder events are checked |
+| `|@name` as generic-tag named attribute value | yes — [tree](../test/corpus/modifier-at-prefix.txt), [composition/reference check](../test/modifier-at-prefix.test.mjs) | Attribute owns the full modifier value; recorder checks modifier then tag events and argument counts |
+| `|@@name` as generic-tag named attribute value | Unverified | Must not be inferred from the output form |
+| Prefixes in assignment RHS, conditions, foreach sources, generic-tag positional arguments, function/method arguments, `for` bounds/conditions/initializers/updates, section loop values, modifier inputs, bracket-index expressions, and array values | Unverified | Existing `modifier_expression` reachability does not establish prefixed-form acceptance in these contexts |
+| Prefixes in parenthesized modifier arguments and array keys | Unverified | Parentheses can contain a full modifier expression; this form is not part of Task 036's required contexts |
+
+The chain-composition fixture also checks a prefixed modifier as the input to a
+following unprefixed modifier. It verifies the tree interaction only; the
+modifier-input context above remains unverified for general prefixed forms.
+
 ## Generic-tag attribute-name composition
 
 Attribute spelling is a tag-structure concern rather than an expression row in

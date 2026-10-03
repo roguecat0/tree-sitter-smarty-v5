@@ -416,7 +416,7 @@ export default grammar({
         prec.left(precedence, seq(field("left", $._arithmetic), field("operator", choice(...operators)), field("right", $._arithmetic)))),
     ),
     modifier_expression: $ => prec.left(4, seq(
-      field("value", $._modified), "|", field("name", $.identifier),
+      field("value", $._modified), choice(token(prec(2, /\|@{1,2}/)), "|"), field("name", $.identifier),
       repeat(seq(":", field("argument", $._modifier_argument))),
     )),
     _modifier_argument: $ => choice($.section_property_expression, $.variable, $.loop_metadata_expression, $.config_variable, $.member_expression, $.method_call_expression, $.function_call_expression, $.static_method_call_expression, $.index_expression, alias($._config_index, $.index_expression), $.array_literal, $.number, $.string, $.interpolated_string, $.parenthesized_expression, $.boolean, $.null, $.class_constant_expression, $.identifier, alias($._modifier_identifier, $.identifier)),
