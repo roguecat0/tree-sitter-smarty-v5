@@ -34,7 +34,7 @@ export default grammar({
   conflicts: $ => [[$.elseif_clause], [$.else_clause], [$.foreachelse_clause], [$.forelse_clause], [$.sectionelse_clause]],
   rules: {
     source_file: $ => repeat($._node),
-    _node: $ => choice($.text, $.output, $.custom_tag, $.custom_close_tag, $.if_block, $.comment, $.foreach_block, $.for_block, $.section_block, $.literal_block, $.stray_literal_close),
+    _node: $ => choice($.text, $.output, $.assignment_tag, $.assignment_recovery, $.custom_tag, $.custom_close_tag, $.if_block, $.comment, $.foreach_block, $.for_block, $.section_block, $.literal_block, $.stray_literal_close),
     literal_block: $ => prec(-20, seq(
       $.literal_tag,
       optional(field("content", $.literal_content)),
@@ -45,6 +45,27 @@ export default grammar({
     // A single token hides all template syntax and stops at the first *}.
     // Star runs cannot consume a closing brace; the following newline is text.
     comment: _ => token(seq("{*", /([^*]|\*+[^*}])*/, /\*+/, "}")),
+    // Smarty's `{ $target = value }` shorthand compiles to the built-in assign
+    // tag. Keep its target distinct from the full expression on the right;
+    // assignment itself is not an expression operator and emits no output.
+    assignment_tag: $ => prec.dynamic(20, seq(
+      "{", field("target", choice($.variable, $.index_expression)), "=",
+      field("value", $._expression),
+      repeat(alias($._assignment_nocache_option, $.attribute)), "}",
+    )),
+    _assignment_nocache_option: $ => seq(
+      field("name", alias("nocache", $.identifier)), optional(seq("=", field("value", $._tag_attribute_value))),
+    ),
+    // Keep malformed shorthand tags local and navigable. These recovery paths
+    // deliberately end at the assignment's own brace; the hidden marker forces
+    // Tree-sitter to retain a real parse error while leaving surrounding nodes
+    // such as comments, later output, and block closers outside the error span.
+    assignment_recovery: $ => choice(
+      prec(100, seq("{", $.variable, "=", "}", $._output_attribute_error_marker)),
+      prec(100, seq("{", $.variable, $.variable, "}", $._output_attribute_error_marker)),
+      prec(100, seq("{", seq($.variable, "[", "=", $._expression), "}", $._output_attribute_error_marker)),
+      prec(100, seq("{", seq($.member_expression, "=", $._expression), "}", $._output_attribute_error_marker)),
+    ),
     output: $ => choice(
       // A no-source external marker forces a parse error after this explicit
       // recovery node without making any input spelling valid.

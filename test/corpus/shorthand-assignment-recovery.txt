@@ -1,0 +1,62 @@
+==========
+Missing assignment RHS retains block siblings
+==========
+{if $ok}{$name =}{* keep *}{$later}{/if}
+---
+(source_file
+  (if_block
+    (if_tag condition: (variable name: (identifier)))
+    (assignment_recovery
+      (variable name: (identifier))
+      (MISSING _output_attribute_error_marker))
+    (comment)
+    (output value: (variable name: (identifier)))
+    (if_close_tag)))
+
+==========
+Extra shorthand value retains block siblings
+==========
+{if $ok}{$name $value}{* keep *}{$later}{/if}
+---
+(source_file
+  (if_block
+    (if_tag condition: (variable name: (identifier)))
+    (assignment_recovery
+      (variable name: (identifier))
+      (variable name: (identifier))
+      (MISSING _output_attribute_error_marker))
+    (comment)
+    (output value: (variable name: (identifier)))
+    (if_close_tag)))
+
+==========
+Malformed bracket target retains block siblings
+==========
+{if $ok}{$names[ = $value}{* keep *}{$later}{/if}
+---
+(source_file
+  (if_block
+    (if_tag condition: (variable name: (identifier)))
+    (assignment_recovery
+      (variable name: (identifier))
+      (variable name: (identifier))
+      (MISSING _output_attribute_error_marker))
+    (comment)
+    (output value: (variable name: (identifier)))
+    (if_close_tag)))
+
+==========
+Unsupported member target retains block siblings
+==========
+{if $ok}{$user->name = $value}{* keep *}{$later}{/if}
+---
+(source_file
+  (if_block
+    (if_tag condition: (variable name: (identifier)))
+    (assignment_recovery
+      (member_expression object: (variable name: (identifier)) member: (identifier))
+      (variable name: (identifier))
+      (MISSING _output_attribute_error_marker))
+    (comment)
+    (output value: (variable name: (identifier)))
+    (if_close_tag)))

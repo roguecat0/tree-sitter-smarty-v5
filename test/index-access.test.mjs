@@ -45,8 +45,16 @@ test('Index malformed syntax and receiver boundaries', () => {
   assert.equal(sectionNameField.text,'key');
   assert.deepEqual([sectionIndex.startIndex,sectionIndex.endIndex],[3,8]);
   assert.deepEqual([sectionNameField.startIndex,sectionNameField.endIndex],[4,7]);
-  for (const source of ['{$a.$key}', '{$a.{$key}}', '{($a)[0]}', "{'x'[0]}", '{$a[0]=1}'])
+  for (const source of ['{$a.$key}', '{$a.{$key}}', '{($a)[0]}', "{'x'[0]}"])
     assert.equal(parser().parse(source).rootNode.hasError,true,source);
+  const tightAssignment = '{$a[0]=1}';
+  const assignmentTree = parser().parse(tightAssignment).rootNode;
+  assert.equal(reference(tightAssignment).error,null);
+  assert.equal(fullEngine(tightAssignment,{mode:'compile'}).error,null);
+  assert.equal(assignmentTree.hasError,false,assignmentTree.toString());
+  assert.equal(assignmentTree.firstNamedChild.type,'assignment_tag');
+  assert.equal(assignmentTree.firstNamedChild.childForFieldName('target').text,'$a[0]');
+  assert.equal(assignmentTree.firstNamedChild.childForFieldName('value').text,'1');
 });
 test('Index incremental broken bracket and dot-to-expression transition', () => {
   for (const [initial,before,after] of [['{$before}{$a->f($rows[0])}{$after}',']',''],['{$before}{$rows.name}{$after}','.name','[$key + 1]']]) {

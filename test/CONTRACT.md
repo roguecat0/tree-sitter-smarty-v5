@@ -65,6 +65,21 @@ by the Task 023 fixture.
 `custom_close_tag` has a `name`. These nodes do not assert block pairing or
 plugin availability.
 
+Smarty shorthand assignment tags such as `{$name = $value}` and indexed
+targets such as `{$rows[$index] = $value}` produce `assignment_tag` with
+explicit `target` and `value` fields. Targets preserve supported variable or
+nonempty index-expression trees; RHS expressions preserve their existing
+structure. The only supported trailing assignment option is `nocache`, either
+bare or with a value; it remains a direct `attribute` child. Arbitrary
+attributes are rejected because the pinned compiler rejects them. Assignment
+itself has no `output` node; following output remains separate. Empty append
+and bare identifier section-index targets remain
+explicit syntax gaps. Malformed assignment recovery uses a navigable
+`assignment_recovery` node with the hidden missing-error marker; it must retain
+the surrounding comment, later output and block closer as siblings. A grammar
+alias named `ERROR` is ordinary syntax in Tree-sitter and is not a substitute
+for a real error state. See [Task 033](../docs/tasks/033-shorthand-assignment-tags.md).
+
 Known `if` blocks are nested: `if_tag`, body nodes, optional `elseif_clause`
 nodes, optional `else_clause`, and `if_close_tag`. Conditions have a `condition`
 field. Branch clauses contain their opening tag and body nodes. Generic tags

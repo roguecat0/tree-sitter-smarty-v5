@@ -106,6 +106,14 @@ export function observations(node) {
     case 'output':
       events.push({ kind: 'output' });
       break;
+    case 'assignment_tag':
+      events.push({kind: 'tag', name: 'assign', arguments: [
+        {name: 'value'}, {name: 'var'},
+        ...node.namedChildren.filter(child => child.type === 'attribute').map(child => ({
+          name: child.childForFieldName('value') ? child.childForFieldName('name').text : null,
+        })),
+      ]});
+      break;
   }
   return events;
 }

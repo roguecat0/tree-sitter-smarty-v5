@@ -1,0 +1,42 @@
+==========
+Application witnesses, simple assignments and following output
+==========
+{$type = 'ok'}{$more = true}{$name = $value}{$count = 42}{$enabled = false}{$total = ($a + $b)}{$sum = $a + $b}{$a[0]=1}{$name}
+---
+(source_file
+  (assignment_tag target: (variable name: (identifier)) value: (string))
+  (assignment_tag target: (variable name: (identifier)) value: (boolean))
+  (assignment_tag target: (variable name: (identifier)) value: (variable name: (identifier)))
+  (assignment_tag target: (variable name: (identifier)) value: (number))
+  (assignment_tag target: (variable name: (identifier)) value: (boolean))
+  (assignment_tag target: (variable name: (identifier)) value: (parenthesized_expression (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier)))))
+  (assignment_tag target: (variable name: (identifier)) value: (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier))))
+  (assignment_tag target: (index_expression object: (variable name: (identifier)) index: (number)) value: (number))
+  (output value: (variable name: (identifier))))
+
+==========
+Supported indexed targets with arrays calls modifiers and nocache options
+==========
+{$names[$index] = $source|escape}{$names[0] = ['title' => $title]}{$label = strtoupper($name)}{$cached = $name|escape nocache}{$cached = $name|escape nocache=true}
+---
+(source_file
+  (assignment_tag target: (index_expression object: (variable name: (identifier)) index: (variable name: (identifier))) value: (modifier_expression value: (variable name: (identifier)) name: (identifier)))
+  (assignment_tag target: (index_expression object: (variable name: (identifier)) index: (number)) value: (array_literal (array_element key: (string) value: (variable name: (identifier)))))
+  (assignment_tag target: (variable name: (identifier)) value: (function_call_expression name: (identifier) argument: (variable name: (identifier))))
+  (assignment_tag target: (variable name: (identifier)) value: (modifier_expression value: (variable name: (identifier)) name: (identifier)) (attribute name: (identifier)))
+  (assignment_tag target: (variable name: (identifier)) value: (modifier_expression value: (variable name: (identifier)) name: (identifier)) (attribute name: (identifier) value: (boolean))))
+
+==========
+Assignment composition with blocks comments and comparisons
+==========
+{if $ok}{$inside = $value}{* keep *}{$a == $b}{/if}{widget $a}{$last}
+---
+(source_file
+  (if_block
+    (if_tag condition: (variable name: (identifier)))
+    (assignment_tag target: (variable name: (identifier)) value: (variable name: (identifier)))
+    (comment)
+    (output value: (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier))))
+    (if_close_tag))
+  (custom_tag name: (identifier) argument: (variable name: (identifier)))
+  (output value: (variable name: (identifier))))

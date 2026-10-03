@@ -25,9 +25,13 @@ literals and arbitrary expression results are not receivers in this task.
 
 Dot keys are adjacent static ASCII identifiers or unsigned integer tokens.
 Bracket indices use the supported expression subset, including strings, variables,
-parenthesized expressions and arithmetic. Exclude bare identifier section indices,
-empty append indices, dynamic dot keys, braced dot expressions, assignments,
-array literals, section/foreach metadata semantics and dynamic config names.
+parenthesized expressions and arithmetic. This task covered read access only;
+shorthand assignments were unimplemented then, not rejected by Smarty. Task 033
+now supports assignment targets with direct variables and nonempty indices using
+the existing index-expression subset. Empty append indices, bare identifier
+section indices, dynamic dot keys, braced dot expressions, array literals,
+section/foreach metadata semantics and dynamic config names remain outside this
+read-access task.
 
 On 2026-09-22, raw lexical searches over all 467 local `.tpl` files found dot
 access hints in 187 files and variable-bracket hints in 35. These overlap and
@@ -72,11 +76,16 @@ Dot punctuation and its key must stay adjacent to the preceding receiver.
 Bracket whitespace is allowed. Inspect `arrayindex`, `indexdef`, `varindexed`,
 `configvariable`, `objectelement` and `method` in the vendored parser.
 
-The recorder accepts `$rows[ ]` and `$rows[key]`; these are intentionally excluded
-append/section forms, not malformed Smarty. Never claim both parsers reject them.
-Its projection does not expose index structure or values. Explicit trees and
-field/range assertions are the structural authority; ordinary reference event
-comparisons establish surrounding syntax only.
+The recorder accepts `$rows[ ]` and `$rows[key]`; these are intentionally
+excluded append/section forms, not malformed Smarty. In particular, Smarty also
+accepts them as shorthand-assignment targets (`{$rows[] = $value}` and
+`{$rows[key] = $value}`), as verified while creating [Task 033](033-shorthand-assignment-tags.md).
+They remain required project syntax gaps, not rejected forms; a future task must
+model them structurally in index reads and assignment targets. Never claim
+Smarty rejects them. The recorder projection does not expose index structure
+or values. Explicit trees and field/range assertions are the structural
+authority; ordinary reference event comparisons establish surrounding syntax
+only.
 
 ## Acceptance work
 
@@ -121,3 +130,10 @@ comparisons establish surrounding syntax only.
   `$user->name[0]`; positive exact trees now cover both. Existing expected trees
   remain unchanged. Append, section/bare-name, dynamic-dot and direct method-result
   indexing remain excluded, as do config-to-object chains.
+
+- The initial read-access scope listed assignments as excluded because their
+  syntax was not implemented. This was not a Smarty rejection: the pinned
+  recorder and full compiler both accept `{$a[0]=1}` as an `assign` event with
+  `value` and `var` arguments. Task 033 adds the structural assignment tree for
+  this compact spelling and for nonempty expression indices. Empty append and
+  bare identifier section-index targets remain future structural gaps.
