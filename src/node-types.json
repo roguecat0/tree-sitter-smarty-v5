@@ -594,7 +594,7 @@
       },
       "condition": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "array_literal",
@@ -4068,6 +4068,10 @@
           {
             "type": "-",
             "named": false
+          },
+          {
+            "type": "word_operator",
+            "named": true
           }
         ]
       }
@@ -4584,6 +4588,10 @@
   {
     "type": "true",
     "named": false
+  },
+  {
+    "type": "word_operator",
+    "named": true
   },
   {
     "type": "{",

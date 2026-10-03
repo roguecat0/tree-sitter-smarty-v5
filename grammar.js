@@ -57,6 +57,7 @@ export default grammar({
     // interpretation when the ID occupies the entire brace body.
     _tag_name: $ => prec(1, choice(
       reserved("tag", $.identifier),
+      $._not_identifier,
       alias(choice(...classReservedWords), $.identifier),
       // The pinned Smarty ID token may start with digits; preserve that token
       // as a tag name at brace-root level instead of reclassifying it as output.
@@ -69,7 +70,7 @@ export default grammar({
     // Support common hyphenated, single-colon, and digit-prefixed ATTR names
     // locally in this field; ordinary names keep their existing node shape.
     _attribute_name: $ => choice(
-      $.identifier, alias($.boolean, $.identifier), alias($.null, $.identifier), $.tag_attribute_name,
+      $.identifier, $._not_identifier, alias($.boolean, $.identifier), alias($.null, $.identifier), $.tag_attribute_name,
       // These words are reserved in tag roots or class receivers, but Smarty
       // accepts them as ordinary names in the generic attribute slot.
       alias(choice(...controlWords, ...classReservedWords), $.identifier),
@@ -83,8 +84,8 @@ export default grammar({
     // Smarty's tag value productions accept a direct ID in these two tag-only
     // positions. Keep it out of _expression so a bare name does not become a
     // general value in outputs, conditions, or other expression contexts.
-    _tag_argument_value: $ => choice(prec(1, $._expression), prec(-1, $.identifier), prec(-1, alias($._modifier_identifier, $.identifier))),
-    _tag_attribute_value: $ => choice(prec(1, $._expression), prec(-1, $.identifier), prec(-1, alias($._modifier_identifier, $.identifier))),
+    _tag_argument_value: $ => choice(prec(1, $._expression), prec(-1, $.identifier), prec(-1, $._not_identifier), prec(-1, alias($._modifier_identifier, $.identifier))),
+    _tag_attribute_value: $ => choice(prec(1, $._expression), prec(-1, $.identifier), prec(-1, $._not_identifier), prec(-1, alias($._modifier_identifier, $.identifier))),
     if_block: $ => seq(
       $.if_tag, repeat($._node), repeat($.elseif_clause), optional($.else_clause), $.if_close_tag,
     ),
@@ -145,11 +146,23 @@ export default grammar({
       )),
       optional(field("argument", alias("step", $.identifier))),
     ),
-    c_style_for_header: $ => seq(
-      field("initializer", $.for_initializer), repeat(seq(",", field("initializer", $.for_initializer))),
-      ";", field("condition", $._expression), ";", field("update", $.for_update),
-      repeat(choice($.attribute, $.for_option, field("argument", $._for_bare_argument))),
-      optional(field("argument", alias("step", $.identifier))),
+    c_style_for_header: $ => choice(
+      seq(
+        field("initializer", $.for_initializer), repeat(seq(",", field("initializer", $.for_initializer))),
+        ";", field("condition", $._expression), ";", field("update", $.for_update),
+        repeat(choice($.attribute, $.for_option, field("argument", $._for_bare_argument))),
+        optional(field("argument", alias("step", $.identifier))),
+      ),
+      // Keep the loop boundary navigable when the C-style condition is omitted.
+      // The impossible marker forces a real parse error after consuming the
+      // malformed header, allowing for_block to retain its body and closer.
+      prec(-1, seq(
+        field("initializer", $.for_initializer), repeat(seq(",", field("initializer", $.for_initializer))),
+        ";", ";", field("update", $.for_update),
+        repeat(choice($.attribute, $.for_option, field("argument", $._for_bare_argument))),
+        optional(field("argument", alias("step", $.identifier))),
+        $._output_attribute_error_marker,
+      )),
     ),
     for_initializer: $ => seq(field("target", $._for_target), "=", field("value", $._expression)),
     for_update: $ => seq(
@@ -214,7 +227,7 @@ export default grammar({
     )),
     div_by_operator: _ => token(/is\s+div\s+by/),
     _unary: $ => choice($._modified, $.unary_expression),
-    unary_expression: $ => choice($._not_expression, $._sign_expression),
+    unary_expression: $ => choice($._not_expression, $._sign_expression, $._word_not_expression),
     _not_expression: $ => prec(3, seq(field("operator", "!"), field("argument", $._unary))),
     // Adjacent sign pairs belong to Smarty's INCDEC token, not nested unary
     // signs. A repeated prefix sign therefore needs an explicit whitespace gap.
@@ -222,6 +235,10 @@ export default grammar({
       field("argument", choice($._modified, alias($._not_expression, $.unary_expression))),
       seq(token.immediate(/\s+/), field("argument", $.unary_expression)),
     ))),
+    _word_not_expression: $ => prec(3, seq(
+      field("operator", alias(token(/[nN][oO][tT]/), $.word_operator)),
+      token.immediate(/[\t \r\n\v\f]+/), field("argument", $._unary),
+    )),
     _modified: $ => choice($._primary, $.modifier_expression),
     // Static Smarty IDs are primary values. Keep digit-prefixed ID tokens in
     // the same node family; pure decimals remain numbers and primitives keep
@@ -305,10 +322,11 @@ export default grammar({
     // Calls on a static unqualified identifier are expressions, including the
     // tag-shaped `{name(args)}` form which Smarty compiles as function output.
     function_call_expression: $ => prec.left(8, seq(
-      field("name", $.identifier), "(",
+      field("name", choice($.identifier, $._not_identifier)), "(",
       optional(seq(field("argument", $._expression), repeat(seq(",", field("argument", $._expression))))), ")",
     )),
     identifier: _ => /[a-zA-Z_][a-zA-Z0-9_]*/,
+    _not_identifier: $ => alias(token(/[nN][oO][tT]/), $.identifier),
     _modifier_identifier: _ => token(/[0-9]+[a-zA-Z_][a-zA-Z0-9_]*/),
     // Control/primitive words are contextual class names, but self/parent are
     // explicitly rejected by Smarty. Both sides of :: require adjacency.

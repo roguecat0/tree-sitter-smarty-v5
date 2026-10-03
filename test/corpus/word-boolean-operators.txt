@@ -1,0 +1,90 @@
+==================
+Prefix not over a variable
+==================
+{if not $a}Y{/if}
+---
+(source_file (if_block (if_tag condition: (unary_expression operator: (word_operator) argument: (variable name: (identifier)))) (text) (if_close_tag)))
+
+==================
+Prefix not over a call
+==================
+{if not isset($type)}Y{/if}
+---
+(source_file (if_block (if_tag condition: (unary_expression operator: (word_operator) argument: (function_call_expression name: (identifier) argument: (variable name: (identifier))))) (text) (if_close_tag)))
+
+==================
+Prefix not over a parenthesized expression
+==================
+{if not ($a && $b)}Y{/if}
+---
+(source_file (if_block (if_tag condition: (unary_expression operator: (word_operator) argument: (parenthesized_expression (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier)))))) (text) (if_close_tag)))
+
+==================
+Prefix not over symbolic unary
+==================
+{if not !$a}Y{/if}
+---
+(source_file (if_block (if_tag condition: (unary_expression operator: (word_operator) argument: (unary_expression argument: (variable name: (identifier))))) (text) (if_close_tag)))
+
+==================
+Prefix not binds before existing symbolic and
+==================
+{if not $a && $b}Y{/if}
+---
+(source_file (if_block (if_tag condition: (binary_expression left: (unary_expression operator: (word_operator) argument: (variable name: (identifier))) right: (variable name: (identifier)))) (text) (if_close_tag)))
+
+==================
+Prefix not as generic tag argument
+==================
+{widget not $a}
+---
+(source_file (custom_tag name: (identifier) argument: (unary_expression operator: (word_operator) argument: (variable name: (identifier)))))
+
+==================
+Prefix not as generic tag attribute value
+==================
+{widget value=not $a}
+---
+(source_file (custom_tag name: (identifier) (attribute name: (identifier) value: (unary_expression operator: (word_operator) argument: (variable name: (identifier))))))
+
+==================
+Prefix not in output
+==================
+{not $a}
+---
+(source_file (output value: (unary_expression operator: (word_operator) argument: (variable name: (identifier)))))
+
+==================
+Prefix not in function argument
+==================
+{check(not $a)}
+---
+(source_file (output value: (function_call_expression name: (identifier) argument: (unary_expression operator: (word_operator) argument: (variable name: (identifier))))))
+
+==================
+Prefix not in method argument
+==================
+{if $object->check(not $a)}Y{/if}
+---
+(source_file (if_block (if_tag condition: (method_call_expression object: (variable name: (identifier)) method: (identifier) argument: (unary_expression operator: (word_operator) argument: (variable name: (identifier))))) (text) (if_close_tag)))
+
+==================
+Prefix not in array value
+==================
+{check([not $a])}
+---
+(source_file (output value: (function_call_expression name: (identifier) argument: (array_literal (array_element value: (unary_expression operator: (word_operator) argument: (variable name: (identifier))))))))
+
+==================
+Prefix not in parenthesized modifier argument
+==================
+{$value|default:(not $a)}
+---
+(source_file (output value: (modifier_expression value: (variable name: (identifier)) name: (identifier) argument: (parenthesized_expression (unary_expression operator: (word_operator) argument: (variable name: (identifier)))))))
+
+==================
+Prefix not in nested condition and elseif
+==================
+{if not $a && $b}{if not $c || $d}Y{/if}{elseif not $e && $f}Z{/if}
+---
+(source_file (if_block (if_tag condition: (binary_expression left: (unary_expression operator: (word_operator) argument: (variable name: (identifier))) right: (variable name: (identifier)))) (if_block (if_tag condition: (binary_expression left: (unary_expression operator: (word_operator) argument: (variable name: (identifier))) right: (variable name: (identifier)))) (text) (if_close_tag)) (elseif_clause (elseif_tag condition: (binary_expression left: (unary_expression operator: (word_operator) argument: (variable name: (identifier))) right: (variable name: (identifier)))) (text)) (if_close_tag)))

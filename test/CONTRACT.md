@@ -14,6 +14,16 @@ parentheses, left-associative arithmetic, and modifier applications. Multiplicat
 division, and remainder bind tighter than addition and subtraction. Modifier
 applications bind tighter than arithmetic in this subset.
 
+Whitespace-delimited, case-insensitive prefix `not` is a shared expression
+operator. It produces `unary_expression` with a `word_operator` in `operator`
+and its complete operand in `argument`, at the same binding level as symbolic
+prefix `!`. The word requires whitespace before its operand. A bare `not` in a
+generic tag name, positional value, attribute name/value, or function-call name
+retains the existing `identifier` classification; `not($value)` remains a
+function call. Binary `and`, `or`, and `xor` remain separate queued syntax.
+Evidence: [031 trees and checks](../test/corpus/word-boolean-operators.txt) and
+[reference/full-engine/edit checks](../test/word-boolean-operators.test.mjs).
+
 Custom tag names preserve the Smarty `ID` token, including digit-prefixed
 `123foo`, except for recognized control keywords. `custom_tag` has a `name`,
 positional `argument` fields, and `attribute` children with `name` and `value`
@@ -70,7 +80,11 @@ branches, missing closers, and crossed loop ownership. For the tested malformed
 C-style header with an omitted update, Tree-sitter currently puts the loop's
 own closer in a top-level `ERROR`, while retaining a neighboring valid
 `if_close_tag` and following output as separate siblings. This exact recovery
-shape is fixed by test. Evidence: [for loop trees](corpus/for-loops.txt),
+shape is fixed by test. When its condition is omitted as in `{for $i=0; ; $i++}`,
+the parser keeps a `for_block`, its `for_close_tag`, and later siblings while
+marking the `c_style_for_header` erroneous with a missing internal recovery
+marker. This preserves editor navigation through the malformed block. Evidence:
+[for loop trees](corpus/for-loops.txt),
 [reference/compiler/recovery/edit checks](for-loops.test.mjs), and
 [Task 026 corpus report and structural review](../docs/tasks/026-for-loops.md).
 
