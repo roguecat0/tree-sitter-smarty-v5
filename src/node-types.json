@@ -476,6 +476,10 @@
             "named": true
           },
           {
+            "type": "word_operator",
+            "named": true
+          },
+          {
             "type": "||",
             "named": false
           }

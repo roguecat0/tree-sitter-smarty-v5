@@ -21,6 +21,7 @@ export default grammar({
     $.text, $._output_attribute_error_marker,
     $.string_fragment, $._backtick_interpolation_start,
     $._literal_opener, $.literal_content, $.literal_close_tag,
+    $._word_and_operator, $._word_or_operator, $._word_xor_operator,
   ],
   extras: _ => [/\s/],
   word: $ => $.identifier,
@@ -204,12 +205,27 @@ export default grammar({
     sectionelse_tag: _ => seq("{", "sectionelse", "}"),
     section_close_tag: _ => seq("{/", "section", "}"),
     _expression: $ => $._logical_or,
+    // PHP binds word `xor` below `or`; `and`/`or` share the corresponding
+    // symbolic logical levels. Smarty's lexer requires surrounding whitespace
+    // for SLOGOP; the operator node retains only the source spelling.
+    _logical_or: $ => choice($._logical_and, alias($._or_expression, $.binary_expression), alias($._word_or_expression, $.binary_expression), alias($._xor_expression, $.binary_expression)),
+    _xor_expression: $ => prec.left(-6, seq(
+      field("left", $._logical_or), field("operator", alias($._word_xor_operator, $.word_operator)),
+      field("right", $._logical_or),
+    )),
     // Layer comparison operands so an unparenthesized second comparison cannot
     // silently acquire associativity. Aliases preserve the public binary tree.
-    _logical_or: $ => choice($._logical_and, alias($._or_expression, $.binary_expression)),
     _or_expression: $ => prec.left(-5, seq(field("left", $._logical_or), field("operator", "||"), field("right", $._logical_and))),
-    _logical_and: $ => choice($._bitwise_and, alias($._and_expression, $.binary_expression)),
+    _word_or_expression: $ => prec.left(-5, seq(
+      field("left", $._logical_or), field("operator", alias($._word_or_operator, $.word_operator)),
+      field("right", $._logical_and),
+    )),
+    _logical_and: $ => choice($._bitwise_and, alias($._and_expression, $.binary_expression), alias($._word_and_expression, $.binary_expression)),
     _and_expression: $ => prec.left(-4, seq(field("left", $._logical_and), field("operator", "&&"), field("right", $._bitwise_and))),
+    _word_and_expression: $ => prec.left(-4, seq(
+      field("left", $._logical_and), field("operator", alias($._word_and_operator, $.word_operator)),
+      field("right", $._bitwise_and),
+    )),
     _bitwise_and: $ => choice($._equality, alias($._bitwise_and_expression, $.binary_expression)),
     _bitwise_and_expression: $ => prec.left(-3, seq(field("left", $._bitwise_and), field("operator", "&"), field("right", $._equality))),
     _equality: $ => choice($._relational, alias($._equality_expression, $.binary_expression)),
@@ -292,7 +308,9 @@ export default grammar({
     // an actual compound expression make primitives expression-valued indices.
     _index_value: $ => choice(
       $._nonliteral_primary, $.unary_expression, $.modifier_expression, $.binary_expression,
-      alias($._or_expression, $.binary_expression), alias($._and_expression, $.binary_expression),
+      alias($._xor_expression, $.binary_expression), alias($._or_expression, $.binary_expression),
+      alias($._word_or_expression, $.binary_expression), alias($._and_expression, $.binary_expression),
+      alias($._word_and_expression, $.binary_expression),
       alias($._equality_expression, $.binary_expression), alias($._relational_expression, $.binary_expression),
     ),
     // Restrict receivers to variables and static property/call/index chains.

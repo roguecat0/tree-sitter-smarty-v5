@@ -1,8 +1,8 @@
 # 032 — Word binary boolean operators
 
-**Status:** brief accepted; queued for implementation after Task 031. Its
-scope, Smarty precedence probes, tree contract, and recovery cases received
-independent task-creation review. Both tasks use the shared expression ladder.
+**Status:** complete; independent implementation review accepted on
+2026-10-03. The scope, Smarty precedence probes, tree contract, and recovery
+cases also received independent task-creation review.
 **Type:** standard Smarty 5 binary expression syntax.
 **Depends on:** [005 symbolic condition operators](005-condition-operators.md),
 [011 standalone function calls](011-standalone-function-calls.md),
@@ -105,16 +105,71 @@ levels and parentheses. At minimum verify:
 
 Never run arbitrary application templates through the full engine. A PHP
 adapter failure such as `spawnSync php EPERM` is an environment failure, not an
-acceptance exception. The task remains blocked until a supported execution
-route runs the required recorder checks, controlled full-engine probes, and
-`npm test`; do not skip or claim the independent checks.
+acceptance exception. Completion requires a supported execution route for the
+recorder checks, controlled full-engine probes, and `npm test`; do not skip or
+claim the independent checks.
 
 Run `npm test`, save hash-matched reports for application, upstream Smarty
 core, and upstream demo roots separately outside `build/`, inspect newly clean
 application trees, and report remaining errors/regressions. The full acceptance
 gate and independent implementation review are required before marking complete.
 
-## Handoff decision
+## Implementation evidence (2026-10-03)
+
+The implementation adds case-insensitive binary `and`, `or`, and `xor` to the
+shared expression ladder. Each produces `binary_expression` with `left`, an
+exact-range `operator: (word_operator)`, and `right`. `and` shares the `&&`
+level, `or` shares `||`, and `xor` binds below `or`. Parentheses and left
+association are retained. A stateless external scanner recognizes the three
+whitespace-delimited words; it skips the required leading gap for token-range
+purposes and marks the token end after the letters, then checks trailing
+whitespace. Existing scanner serialization state is unchanged.
+
+Hand-authored fixtures cover each alias, left association at each level,
+`and`/`or` and `or`/`xor` precedence, `and`/`xor` composition, mixed symbolic
+and word operators, parentheses, output and condition trees, generic-tag
+positional/attribute values, calls, array values, and parenthesized modifier
+arguments. Node assertions check the exact operator spelling/ranges alongside
+the `and`/`or` and `xor`/`or` outer and inner tree fields, and exercise word
+operator composition in an `elseif` condition. They preserve bare
+variables, calls, tag identifiers, strings, comments, CRLF spacing, and invalid
+right adjacency. A controlled Smarty 5.8.4 full-engine set returns `TFTT` for
+the four precedence probes above. Missing operands retain independent comments,
+outputs and the block closer; changing `and` to `&&` and back, and deleting and
+repairing the operand, match fresh full snapshots.
+
+`npm test` passes: 288/288 Tree-sitter cases, 408/408 Node/reference/edit checks,
+and all 18 deliberate mutations were caught. `check:grammar` passes. The
+operator scanner adds no serialized state. During implementation, direct
+internal word-token alternatives changed three legacy recovery trees; the
+external scanner route preserves them. The final parser hash is
+`0f6fca2dfda6739cbfc6fbb417b6fdc961b23d9e395240c3c0d085df6b432ec0`, matching
+the `grammarSha256` in all three after reports below.
+
+The Task 031 before reports use parser hash
+`cfd11f02eca81aaafb63046f812091a98fa77e10b98e1a0840b24171a0824454`. Before
+and after reports have identical file hashes within every corpus root:
+
+| Corpus root | Clean before → after | Remaining errors | Report |
+| --- | ---: | ---: | --- |
+| Application (467 files) | 456 → 457 | 10 | `/tmp/smarty-task032-after-application.json` |
+| Smarty upstream core (33 files) | 29 → 29 | 4 | `/tmp/smarty-task032-after-upstream-core.json` |
+| Smarty upstream demo (1 file) | 0 → 0 | 1 | `/tmp/smarty-task032-after-upstream-example.json` |
+
+There were no clean-to-error regressions. The newly clean application template
+`view_ajax/group_browse_dialog.tpl` was structurally inspected: it contains
+seven `binary_expression` nodes, including an explicit `or` operator node at
+the expected source range; no syntax was swallowed as text. Remaining corpus
+errors are unchanged or unresolved and continue to represent project gaps.
+
+The malformed `{$aand $b}` negative case was removed after the pinned recorder
+accepted it through Smarty's expression-plus-positional-argument route; `$aand`
+is retained as one variable in output. The required malformed-right-spacing
+cases (`{$a and$b}`, `{$a or$b}`, `{$a xor$b}`) remain rejected by both parser
+and recorder. No existing expected trees were changed. Independent
+implementation review accepted the completed task on 2026-10-03 after checking
+precedence trees, `elseif` composition, ranges, scanner behavior, the full
+acceptance gate, corpus reports, and the newly clean template structure.
 
 This task owns `and`, `or`, and `xor` only. Task 031 owns unary `not` only;
 the tasks are sequential because both extend the same expression ladder and

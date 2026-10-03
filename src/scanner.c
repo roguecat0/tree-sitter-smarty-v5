@@ -9,6 +9,9 @@ enum TokenType {
   LITERAL_OPENER,
   LITERAL_CONTENT,
   LITERAL_CLOSE_TAG,
+  WORD_AND_OPERATOR,
+  WORD_OR_OPERATOR,
+  WORD_XOR_OPERATOR,
 };
 
 typedef struct {
@@ -26,6 +29,51 @@ static bool is_ascii_identifier_start(int32_t c) {
 
 static int32_t ascii_lower(int32_t c) {
   return c >= 'A' && c <= 'Z' ? c + ('a' - 'A') : c;
+}
+
+static bool is_smarty_whitespace(int32_t c) {
+  return c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\v' || c == '\f';
+}
+
+// Smarty emits a SLOGOP only when one of these words has whitespace on both
+// sides. Skip the leading gap so the public token range contains only letters,
+// then mark the exact operator end and verify the trailing boundary.
+static bool scan_word_operator(TSLexer *lexer, const bool *valid_symbols) {
+  if (!is_smarty_whitespace(lexer->lookahead)) return false;
+  while (is_smarty_whitespace(lexer->lookahead)) lexer->advance(lexer, true);
+
+  const char *word = NULL;
+  enum TokenType symbol;
+  switch (ascii_lower(lexer->lookahead)) {
+    case 'a':
+      if (valid_symbols[WORD_AND_OPERATOR]) {
+        word = "and";
+        symbol = WORD_AND_OPERATOR;
+      }
+      break;
+    case 'o':
+      if (valid_symbols[WORD_OR_OPERATOR]) {
+        word = "or";
+        symbol = WORD_OR_OPERATOR;
+      }
+      break;
+    case 'x':
+      if (valid_symbols[WORD_XOR_OPERATOR]) {
+        word = "xor";
+        symbol = WORD_XOR_OPERATOR;
+      }
+      break;
+  }
+  if (word == NULL) return false;
+
+  for (const char *p = word; *p; p++) {
+    if (ascii_lower(lexer->lookahead) != *p) return false;
+    lexer->advance(lexer, false);
+  }
+  lexer->mark_end(lexer);
+  if (!is_smarty_whitespace(lexer->lookahead)) return false;
+  lexer->result_symbol = symbol;
+  return true;
 }
 
 // Called after the opening `{` (and optional `/`) has been consumed. A
@@ -256,6 +304,8 @@ void tree_sitter_smarty2_external_scanner_deserialize(void *payload, const char 
 
 bool tree_sitter_smarty2_external_scanner_scan(void *payload, TSLexer *lexer, const bool *valid_symbols) {
   ScannerState *state = (ScannerState *)payload;
+  if (!state->in_literal && (valid_symbols[WORD_AND_OPERATOR] || valid_symbols[WORD_OR_OPERATOR] || valid_symbols[WORD_XOR_OPERATOR]) &&
+      scan_word_operator(lexer, valid_symbols)) return true;
   if (valid_symbols[LITERAL_OPENER] && scan_literal_opener(lexer, state)) return true;
   if (valid_symbols[LITERAL_CONTENT] && state->in_literal && scan_literal_content(lexer, state)) return true;
   if (valid_symbols[LITERAL_CLOSE_TAG] && (state->in_literal || state->expect_literal_close))

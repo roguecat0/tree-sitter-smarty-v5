@@ -20,9 +20,15 @@ and its complete operand in `argument`, at the same binding level as symbolic
 prefix `!`. The word requires whitespace before its operand. A bare `not` in a
 generic tag name, positional value, attribute name/value, or function-call name
 retains the existing `identifier` classification; `not($value)` remains a
-function call. Binary `and`, `or`, and `xor` remain separate queued syntax.
-Evidence: [031 trees and checks](../test/corpus/word-boolean-operators.txt) and
-[reference/full-engine/edit checks](../test/word-boolean-operators.test.mjs).
+function call. Case-insensitive binary `and`, `or`, and `xor` are shared
+expression operators with `binary_expression(left, operator: word_operator,
+right)` shape. Their word nodes preserve the exact letters and source range;
+Smarty requires whitespace on both sides. `and` binds at the existing `&&`
+level, `or` at `||`, and `xor` below `or`. Bare identifier, call, string, and
+comment uses keep their existing classifications. Evidence: [031 trees and
+checks](../test/corpus/word-boolean-operators.txt), [032 trees and
+checks](../test/corpus/word-binary-boolean-operators.txt), and
+[reference/full-engine/edit checks](../test/word-binary-boolean-operators.test.mjs).
 
 Custom tag names preserve the Smarty `ID` token, including digit-prefixed
 `123foo`, except for recognized control keywords. `custom_tag` has a `name`,
@@ -155,9 +161,9 @@ contexts and syntax boundary are audited in
 [task 020](../docs/tasks/020-double-quoted-interpolation.md); backticks not
 followed immediately by `$` remain string content. Configurable delimiters
 and HTML injection remain outside this contract. Other built-in blocks besides
-`if`, `foreach`, `for`, `section`, and `literal`, word operator aliases, bitwise
-operators, dynamic member access, and dynamic config variables remain current
-gaps to assess and address according to
+`if`, `foreach`, `for`, `section`, and `literal`, word comparison/arithmetic
+aliases and other `is ...` predicates, additional bitwise/math operators,
+dynamic member access, and dynamic config variables remain current gaps to assess and address according to
 common usage and usefulness to parser consumers; the explicit plugin/custom-tag
 boundary is the exception. Recovery on unfinished and malformed input is part
 of the parser's goal, especially for interactive editor use, and should be
@@ -246,6 +252,11 @@ equality comparisons, `&&`, `||`. Arithmetic/booleans associate left, prefixes
 right. Relational and equality levels each forbid unparenthesized repeated
 comparisons; parentheses can make grouping explicit. Adjacent prefix sign pairs
 are excluded INCDEC syntax; spaced signs such as `+ +$a` are nested unary nodes.
+Binary word aliases share these logical levels: `and` with `&&`, `or` with `||`,
+and `xor` below `or`. The word tokens are case-insensitive, require whitespace
+on each side, and preserve exact operator spelling/ranges in `word_operator`.
+See [Task 032 trees and checks](../test/corpus/word-binary-boolean-operators.txt)
+and its [reference, precedence, recovery, and edit checks](../test/word-binary-boolean-operators.test.mjs).
 Modifier arguments retain the current narrow subset; parenthesize full
 expressions. A direct static Smarty `ID` after a modifier colon is an
 `identifier` argument, including IDs with a digit prefix such as `123foo`;

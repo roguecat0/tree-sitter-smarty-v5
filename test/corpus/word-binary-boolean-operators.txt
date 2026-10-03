@@ -1,0 +1,104 @@
+==================
+Binary and alias
+==================
+{if $a and $b}Y{/if}
+---
+(source_file (if_block (if_tag condition: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier)))) (text) (if_close_tag)))
+
+==================
+Binary or alias
+==================
+{$a or $b}
+---
+(source_file (output value: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier)))))
+
+==================
+Binary xor alias
+==================
+{$a xor $b}
+---
+(source_file (output value: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier)))))
+
+==================
+Same-level and associates left
+==================
+{$a and $b AND $c}
+---
+(source_file (output value: (binary_expression left: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier))) operator: (word_operator) right: (variable name: (identifier)))))
+
+==================
+Same-level or associates left
+==================
+{$a or $b OR $c}
+---
+(source_file (output value: (binary_expression left: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier))) operator: (word_operator) right: (variable name: (identifier)))))
+
+==================
+Same-level xor associates left
+==================
+{$a xor $b XoR $c}
+---
+(source_file (output value: (binary_expression left: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier))) operator: (word_operator) right: (variable name: (identifier)))))
+
+==================
+And binds more tightly than or
+==================
+{$a and $b or $c}
+---
+(source_file (output value: (binary_expression left: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier))) operator: (word_operator) right: (variable name: (identifier)))))
+
+==================
+Or binds more tightly than xor
+==================
+{$a xor $b or $c}
+---
+(source_file (output value: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier))))))
+
+==================
+And binds more tightly than xor
+==================
+{$a and $b xor $c}
+---
+(source_file (output value: (binary_expression left: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier))) operator: (word_operator) right: (variable name: (identifier)))))
+
+==================
+Mixed symbolic and word operators
+==================
+{$a && $b and $c || $d or $e}
+---
+(source_file (output value: (binary_expression left: (binary_expression left: (binary_expression left: (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier))) operator: (word_operator) right: (variable name: (identifier))) right: (variable name: (identifier))) operator: (word_operator) right: (variable name: (identifier)))))
+
+==================
+Parentheses override word precedence
+==================
+{$a xor ($b or $c)}
+---
+(source_file (output value: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (parenthesized_expression (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier)))))))
+
+==================
+Call and array value composition
+==================
+{check($a and $b, [$c xor $d])}
+---
+(source_file (output value: (function_call_expression name: (identifier) argument: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier))) argument: (array_literal (array_element value: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier))))))))
+
+==================
+Word alias in generic tag attribute
+==================
+{widget value=$a or $b}
+---
+(source_file (custom_tag name: (identifier) (attribute name: (identifier) value: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier))))))
+
+==================
+Word alias in generic tag positional value
+==================
+{widget $a xor $b}
+---
+(source_file (custom_tag name: (identifier) argument: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier)))))
+
+==================
+Word alias in parenthesized modifier argument
+==================
+{$value|default:($a xor $b)}
+---
+(source_file (output value: (modifier_expression value: (variable name: (identifier)) name: (identifier) argument: (parenthesized_expression (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier)))))))
