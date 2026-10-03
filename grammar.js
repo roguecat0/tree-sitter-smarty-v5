@@ -22,6 +22,7 @@ export default grammar({
     $.string_fragment, $._backtick_interpolation_start,
     $._literal_opener, $.literal_content, $.literal_close_tag,
     $._word_and_operator, $._word_or_operator, $._word_xor_operator,
+    $._word_equality_operator, $._word_relational_operator,
   ],
   extras: _ => [/\s/],
   word: $ => $.identifier,
@@ -249,10 +250,18 @@ export default grammar({
     )),
     _bitwise_and: $ => choice($._equality, alias($._bitwise_and_expression, $.binary_expression)),
     _bitwise_and_expression: $ => prec.left(-3, seq(field("left", $._bitwise_and), field("operator", "&"), field("right", $._equality))),
-    _equality: $ => choice($._relational, alias($._equality_expression, $.binary_expression)),
-    _equality_expression: $ => prec(-2, seq(field("left", $._relational), field("operator", choice("==", "!=", "===", "!==")), field("right", $._relational))),
-    _relational: $ => choice($._arithmetic, alias($._relational_expression, $.binary_expression)),
+    _equality: $ => choice($._relational, alias($._equality_expression, $.binary_expression), alias($._word_equality_expression, $.binary_expression)),
+    _equality_expression: $ => prec(-2, seq(
+      field("left", $._relational), field("operator", choice("==", "!=", "===", "!==")), field("right", $._relational),
+    )),
+    _word_equality_expression: $ => prec(-2, seq(
+      field("left", $._relational), field("operator", alias($._word_equality_operator, $.word_operator)), field("right", $._relational),
+    )),
+    _relational: $ => choice($._arithmetic, alias($._relational_expression, $.binary_expression), alias($._word_relational_expression, $.binary_expression)),
     _relational_expression: $ => prec(-1, seq(field("left", $._arithmetic), field("operator", choice("<", "<=", ">", ">=")), field("right", $._arithmetic))),
+    _word_relational_expression: $ => prec(-1, seq(
+      field("left", $._arithmetic), field("operator", alias($._word_relational_operator, $.word_operator)), field("right", $._arithmetic),
+    )),
     _arithmetic: $ => choice($._unary, $.binary_expression, alias($._div_by_expression, $.binary_expression)),
     // Match Smarty's expr ::= expr tlop value: the left is a full arithmetic
     // expression, while the RHS stops at one value. The low precedence lets

@@ -1,0 +1,27 @@
+==================
+Equality aliases
+==================
+{$left eq $right}{$left NE $right}{$left nEq $right}
+---
+(source_file (output value: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier)))) (output value: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier)))) (output value: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier)))))
+
+==================
+Relational aliases
+==================
+{$left gt $right}{$left Ge $right}{$left GTE $right}{$left lt $right}{$left LE $right}{$left lte $right}
+---
+(source_file (output value: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier)))) (output value: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier)))) (output value: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier)))) (output value: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier)))) (output value: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier)))) (output value: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier)))))
+
+==================
+Comparison precedence and boolean composition
+==================
+{if 1 eq 2 gt 1 and $enabled}Y{/if}
+---
+(source_file (if_block (if_tag condition: (binary_expression left: (binary_expression left: (number) operator: (word_operator) right: (binary_expression left: (number) operator: (word_operator) right: (number))) operator: (word_operator) right: (variable name: (identifier)))) (text) (if_close_tag)))
+
+==================
+Comparisons in shared expression contexts
+==================
+{$a eq $b}{if $a ne $b}A{elseif $a gt $b}B{/if}{widget $a lt $b value=$a gte $b}{f($a lte $b, [$a neq $b])}{$value|default:($a ge $b)}
+---
+(source_file (output value: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier)))) (if_block (if_tag condition: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier)))) (text) (elseif_clause (elseif_tag condition: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier)))) (text)) (if_close_tag)) (custom_tag name: (identifier) argument: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier))) (attribute name: (identifier) value: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier))))) (output value: (function_call_expression name: (identifier) argument: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier))) argument: (array_literal (array_element value: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier))))))) (output value: (modifier_expression value: (variable name: (identifier)) name: (identifier) argument: (parenthesized_expression (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier)))))))

@@ -3686,6 +3686,15 @@
           },
           "named": true,
           "value": "binary_expression"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_word_equality_expression"
+          },
+          "named": true,
+          "value": "binary_expression"
         }
       ]
     },
@@ -3739,6 +3748,44 @@
         ]
       }
     },
+    "_word_equality_expression": {
+      "type": "PREC",
+      "value": -2,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "FIELD",
+            "name": "left",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_relational"
+            }
+          },
+          {
+            "type": "FIELD",
+            "name": "operator",
+            "content": {
+              "type": "ALIAS",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_word_equality_operator"
+              },
+              "named": true,
+              "value": "word_operator"
+            }
+          },
+          {
+            "type": "FIELD",
+            "name": "right",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_relational"
+            }
+          }
+        ]
+      }
+    },
     "_relational": {
       "type": "CHOICE",
       "members": [
@@ -3751,6 +3798,15 @@
           "content": {
             "type": "SYMBOL",
             "name": "_relational_expression"
+          },
+          "named": true,
+          "value": "binary_expression"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_word_relational_expression"
           },
           "named": true,
           "value": "binary_expression"
@@ -3794,6 +3850,44 @@
                   "value": ">="
                 }
               ]
+            }
+          },
+          {
+            "type": "FIELD",
+            "name": "right",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_arithmetic"
+            }
+          }
+        ]
+      }
+    },
+    "_word_relational_expression": {
+      "type": "PREC",
+      "value": -1,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "FIELD",
+            "name": "left",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_arithmetic"
+            }
+          },
+          {
+            "type": "FIELD",
+            "name": "operator",
+            "content": {
+              "type": "ALIAS",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_word_relational_operator"
+              },
+              "named": true,
+              "value": "word_operator"
             }
           },
           {
@@ -6024,6 +6118,14 @@
     {
       "type": "SYMBOL",
       "name": "_word_xor_operator"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_word_equality_operator"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_word_relational_operator"
     }
   ],
   "inline": [],

@@ -176,8 +176,8 @@ contexts and syntax boundary are audited in
 [task 020](../docs/tasks/020-double-quoted-interpolation.md); backticks not
 followed immediately by `$` remain string content. Configurable delimiters
 and HTML injection remain outside this contract. Other built-in blocks besides
-`if`, `foreach`, `for`, `section`, and `literal`, word comparison/arithmetic
-aliases and other `is ...` predicates, additional bitwise/math operators,
+`if`, `foreach`, `for`, `section`, and `literal`, word arithmetic alias `mod`,
+other `is ...` predicates, additional bitwise/math operators,
 dynamic member access, and dynamic config variables remain current gaps to assess and address according to
 common usage and usefulness to parser consumers; the explicit plugin/custom-tag
 boundary is the exception. Recovery on unfinished and malformed input is part
@@ -272,6 +272,20 @@ and `xor` below `or`. The word tokens are case-insensitive, require whitespace
 on each side, and preserve exact operator spelling/ranges in `word_operator`.
 See [Task 032 trees and checks](../test/corpus/word-binary-boolean-operators.txt)
 and its [reference, precedence, recovery, and edit checks](../test/word-binary-boolean-operators.test.mjs).
+Case-insensitive comparison aliases `eq`, `ne`, `neq`, `gt`, `ge`, `gte`, `lt`,
+`le`, and `lte` also produce `binary_expression` with `left`,
+`operator: (word_operator)`, and `right`. Equality aliases share symbolic
+equality precedence; relational aliases share symbolic relational precedence.
+Relational comparisons bind more tightly than equality, and repeated
+same-level comparisons require parentheses. Smarty requires whitespace on both
+sides; the exact-case word token excludes those gaps. Without the two-sided gap,
+Smarty can compile a different expression, so no operator node is emitted and
+the form is not automatically an error. In malformed `{if $left neq }`, the
+observed recovery tree retains `condition: (variable ...)` plus a sibling
+`(ERROR (word_operator))` inside `if_tag`; no missing right operand is
+represented. The error must not swallow later comments, output, unknown-tag
+arguments, or the block closer. See [Task 034 trees, checks, and corpus
+evidence](../docs/tasks/034-word-comparison-operators.md).
 Modifier arguments retain the current narrow subset; parenthesize full
 expressions. A direct static Smarty `ID` after a modifier colon is an
 `identifier` argument, including IDs with a digit prefix such as `123foo`;

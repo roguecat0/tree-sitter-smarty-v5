@@ -20,6 +20,7 @@ Cartesian suite merely to fill the matrix.
 | Interpolated string (double-quoted) | ? [U-assignment-rhs](#ev-u-assignment-rhs) | yes [IS-output](#ev-is-output) | ? [U-is-condition](#ev-u-is-condition) | ? [U-is-source](#ev-u-is-source) | ? [U-is-tag-pos](#ev-u-is-tag-pos) | yes [IS-tag-attr](#ev-is-tag-attr) | ? [U-is-call-arg](#ev-u-is-call-arg) | ? [U-is-mod-input](#ev-u-is-mod-input) | yes [IS-mod-arg](#ev-is-mod-arg) | ? [U-is-bracket](#ev-u-is-bracket) | ? [U-is-array-key](#ev-u-is-array-key) | ? [U-is-array-value](#ev-u-is-array-value) |
 | Parenthesized expression | yes [ARHS-parenthesized](#ev-assignment-rhs) | yes [PA-output](#ev-pa-output) | ? [U-parenthesized-condition](#ev-u-parenthesized-condition) | ? [U-parenthesized-source](#ev-u-parenthesized-source) | ? [U-parenthesized-tag-pos](#ev-u-parenthesized-tag-pos) | ? [U-parenthesized-tag-attr](#ev-u-parenthesized-tag-attr) | yes [PA-call-arg](#ev-pa-call-arg) | yes [PA-mod-input](#ev-pa-mod-input) | yes [PA-mod-arg](#ev-pa-mod-arg) | yes [PA-bracket](#ev-pa-bracket) | yes [PA-array-key](#ev-pa-array-key) | ? [U-parenthesized-array-value](#ev-u-parenthesized-array-value) |
 | Unary / arithmetic / comparison / boolean expression | limited [ARHS-operators](#ev-assignment-rhs) | yes [OP-output](#ev-op-output) | yes [OP-condition](#ev-op-condition) | ? [U-operator-source](#ev-u-operator-source) | yes [OP-tag-pos](#ev-op-tag-pos) | yes [OP-tag-attr](#ev-op-tag-attr) | yes [OP-call-arg](#ev-op-call-arg) | limited [OP-mod-input](#ev-op-mod-input) | limited [OP-mod-arg](#ev-op-mod-arg) | limited [OP-bracket](#ev-op-bracket) | limited [OP-array-key](#ev-op-array-key) | ? [U-operator-array-value](#ev-u-operator-array-value) |
+| Word comparison aliases (`eq`, `ne`, `neq`, `gt`, `ge`, `gte`, `lt`, `le`, `lte`) | ? [U-word-comparison](#ev-u-word-comparison) | yes [WC-output](#ev-wc-output) | yes [WC-condition](#ev-wc-condition) | ? [U-word-comparison](#ev-u-word-comparison) | yes [WC-tag-pos](#ev-wc-tag-pos) | yes [WC-tag-attr](#ev-wc-tag-attr) | yes [WC-call-arg](#ev-wc-call-arg) | ? [U-word-comparison](#ev-u-word-comparison) | yes [WC-mod-arg](#ev-wc-mod-arg) | ? [U-word-comparison](#ev-u-word-comparison) | ? [U-word-comparison](#ev-u-word-comparison) | yes [WC-array-value](#ev-wc-array-value) |
 | Bitwise AND (`&`) | ? [U-assignment-rhs](#ev-u-assignment-rhs) | yes [BA-output](#ev-ba-output) | yes [BA-condition](#ev-ba-condition) | ? [U-bitwise](#ev-u-bitwise) | ? [U-bitwise](#ev-u-bitwise) | yes [BA-tag-attr](#ev-ba-tag-attr) | ? [U-bitwise](#ev-u-bitwise) | ? [U-bitwise](#ev-u-bitwise) | yes [BA-mod-arg](#ev-ba-mod-arg) | ? [U-bitwise](#ev-u-bitwise) | ? [U-bitwise](#ev-u-bitwise) | ? [U-bitwise](#ev-u-bitwise) |
 | Modifier expression | yes [ARHS-modifier](#ev-assignment-rhs) | yes [M-output](#ev-m-output) | ? [U-modifier-condition](#ev-u-modifier-condition) | ? [U-modifier-source](#ev-u-modifier-source) | ? [U-modifier-tag-pos](#ev-u-modifier-tag-pos) | yes [M-tag-attr](#ev-m-tag-attr) | ? [U-modifier-call-arg](#ev-u-modifier-call-arg) | yes [M-mod-input](#ev-m-mod-input) | ? [U-modifier-mod-arg](#ev-u-modifier-mod-arg) | ? [U-modifier-bracket](#ev-u-modifier-bracket) | ? [U-modifier-array-key](#ev-u-modifier-array-key) | ? [U-modifier-array-value](#ev-u-modifier-array-value) |
 | Property access (`->name`) | ? [U-assignment-rhs](#ev-u-assignment-rhs) | yes [PR-output](#ev-pr-output) | yes [PR-condition](#ev-pr-condition) | ? [U-property-source](#ev-u-property-source) | yes [PR-tag-pos](#ev-pr-tag-pos) | yes [PR-tag-attr](#ev-pr-tag-attr) | ? [U-property-call-arg](#ev-u-property-call-arg) | yes [PR-mod-input](#ev-pr-mod-input) | yes [PR-mod-arg](#ev-pr-mod-arg) | ? [U-property-bracket](#ev-u-property-bracket) | yes [PR-array-key](#ev-pr-array-key) | ? [U-property-array-value](#ev-u-property-array-value) |
@@ -211,6 +212,22 @@ they have their own minimized probes; section block nesting does not prove them.
 | <a id="ev-s-mod-input"></a>S-mod-input | Modifier input: `{$items[rows]|default:0}` | **yes:** the modifier value preserves `section_index`. [composition tree](../test/corpus/section-blocks.txt); [checks](../test/section-blocks.test.mjs) |
 | <a id="ev-s-mod-arg"></a>S-mod-arg | Modifier argument: `{$items[rows]|default:$smarty.section.rows.iteration}` | **yes:** the modifier argument remains `section_property_expression`. [composition tree](../test/corpus/section-blocks.txt); [checks](../test/section-blocks.test.mjs) |
 
+## Task 034 word-comparison composition audit
+
+Task 034 supports the listed cells with hand-authored trees and fixture-driven
+checks. The grouped function/method cell is marked yes from the function-call
+argument case; direct method-argument composition remains unverified.
+
+| Cell | Minimized composition | Current result and evidence |
+| --- | --- | --- |
+| <a id="ev-wc-output"></a>WC-output | Output: `{$a eq $b}` | **yes:** `binary_expression` retains variable operands and a letter-only `word_operator`. [trees](../test/corpus/word-comparison-operators.txt); [checks](../test/word-comparison-operators.test.mjs) |
+| <a id="ev-wc-condition"></a>WC-condition | `if` and `elseif` comparison conditions | **yes:** both condition fields retain the full binary expression. [trees](../test/corpus/word-comparison-operators.txt); [checks](../test/word-comparison-operators.test.mjs) |
+| <a id="ev-wc-tag-pos"></a>WC-tag-pos | `{widget $a lt $b ...}` | **yes:** the unknown tag keeps the comparison under a positional `argument`. [trees](../test/corpus/word-comparison-operators.txt); [checks](../test/word-comparison-operators.test.mjs) |
+| <a id="ev-wc-tag-attr"></a>WC-tag-attr | `{widget ... value=$a gte $b}` | **yes:** the attribute `value` contains the full comparison tree. [trees](../test/corpus/word-comparison-operators.txt); [checks](../test/word-comparison-operators.test.mjs) |
+| <a id="ev-wc-call-arg"></a>WC-call-arg | `{f($a lte $b, [...])}` | **yes:** the call retains its comparison argument; method-call arguments remain unverified. [trees](../test/corpus/word-comparison-operators.txt); [checks](../test/word-comparison-operators.test.mjs) |
+| <a id="ev-wc-array-value"></a>WC-array-value | `f(..., [$a neq $b])` | **yes:** the array element `value` contains the comparison tree. [trees](../test/corpus/word-comparison-operators.txt); [checks](../test/word-comparison-operators.test.mjs) |
+| <a id="ev-wc-mod-arg"></a>WC-mod-arg | `{$value|default:($a ge $b)}` | **yes:** a parenthesized modifier argument retains the complete comparison tree. [trees](../test/corpus/word-comparison-operators.txt); [checks](../test/word-comparison-operators.test.mjs) |
+
 ## Task 015 evidence index
 
 Keys in the matrix link to the evidence groups below. Each `yes` group names a
@@ -244,6 +261,7 @@ tree.
 <a id="ev-u-variable-array-key"></a><a id="ev-u-primitive-source"></a><a id="ev-u-primitive-tag-pos"></a><a id="ev-u-parenthesized-condition"></a><a id="ev-u-parenthesized-source"></a><a id="ev-u-parenthesized-tag-pos"></a><a id="ev-u-parenthesized-tag-attr"></a><a id="ev-u-parenthesized-array-value"></a><a id="ev-u-operator-source"></a><a id="ev-u-operator-array-value"></a><a id="ev-u-modifier-condition"></a><a id="ev-u-modifier-source"></a><a id="ev-u-modifier-tag-pos"></a><a id="ev-u-modifier-call-arg"></a><a id="ev-u-modifier-mod-arg"></a><a id="ev-u-modifier-bracket"></a><a id="ev-u-modifier-array-key"></a><a id="ev-u-modifier-array-value"></a><a id="ev-u-property-source"></a><a id="ev-u-property-call-arg"></a><a id="ev-u-property-bracket"></a><a id="ev-u-property-array-value"></a><a id="ev-u-method-bracket"></a><a id="ev-u-method-array-key"></a><a id="ev-u-method-array-value"></a><a id="ev-u-index-source"></a><a id="ev-u-index-call-arg"></a><a id="ev-u-index-bracket"></a><a id="ev-u-index-array-key"></a><a id="ev-u-index-array-value"></a><a id="ev-u-metadata-source"></a><a id="ev-u-metadata-tag-pos"></a><a id="ev-u-metadata-bracket"></a><a id="ev-u-metadata-array-key"></a><a id="ev-u-metadata-array-value"></a><a id="ev-u-function-source"></a><a id="ev-u-function-bracket"></a><a id="ev-u-function-array-key"></a><a id="ev-u-function-array-value"></a><a id="ev-u-array-output"></a><a id="ev-u-array-source"></a><a id="ev-u-array-mod-input"></a><a id="ev-u-array-array-key"></a><a id="ev-u-constant-source"></a>
 
 <a id="ev-u-is-condition"></a><a id="ev-u-is-source"></a><a id="ev-u-is-tag-pos"></a><a id="ev-u-is-call-arg"></a><a id="ev-u-is-mod-input"></a><a id="ev-u-is-bracket"></a><a id="ev-u-is-array-key"></a><a id="ev-u-is-array-value"></a><a id="ev-u-bitwise"></a>
+<a id="ev-u-word-comparison"></a>
 <a id="ev-u-section-source"></a><a id="ev-u-section-tag-pos"></a><a id="ev-u-section-call-arg"></a><a id="ev-u-section-bracket"></a><a id="ev-u-section-array-key"></a><a id="ev-u-section-array-value"></a>
 <a id="ev-u-assignment-rhs"></a>
 
@@ -264,6 +282,11 @@ values; completed Task 021 supports only its listed shared-expression contexts.
 For section-name/property indices, foreach sources, custom-tag positional
 arguments, function/method arguments, nested bracket-index expressions, and
 array keys/values remain unverified.
+For word comparisons, Task 034 now verifies outputs, conditions, custom-tag
+positional/attribute values, function arguments, array values, and parenthesized
+modifier arguments. Assignment RHS, foreach sources, modifier inputs, bracket
+indices, array keys, and direct method arguments remain unverified. See the
+[Task 034 composition audit](#task-034-word-comparison-composition-audit).
 Each linked key names the exact form/context pair. Follow-up is to reduce that
 pair to one source, write its expected tree manually, and check pinned Smarty
 behavior before changing its status. The pairs are: variable/config variable–array key;

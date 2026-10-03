@@ -46,7 +46,7 @@ all Smarty variants are covered. `Partial` means only the described forms work.
 | Static class constants | Partial: adjacent static `Class::NAME` expressions | [009](tasks/009-class-constants.md) |
 | Static class method calls | Partial: unqualified `Class::method(...)` calls with ordinary arguments are primary expressions across the audited contexts; control-word and primitive class names are retained as identifiers, while `self`/`parent`, method-result chains, namespace-qualified and dynamic receivers remain excluded | [trees and composition checks](../test/corpus/static-class-method-calls.txt); [019](tasks/019-static-class-method-calls.md) |
 | Array literals | Partial: `[...]` and `array(...)`, keyed/list values, nesting and trailing commas | [010](tasks/010-array-literals.md) |
-| Comparison/boolean/unary operators | Partial: symbolic comparisons, `&&`/`\|\|`, case-insensitive word aliases `and`/`or`/`xor` with exact `word_operator` ranges and Smarty precedence, prefix `! + -` and word `not`, exact `is div by` predicate, and binary bitwise `&` as a shared-expression operator; word comparison/arithmetic aliases, other Smarty math operators `**`, `^`, `<<`, `>>`, and other `is ...` predicates remain unsupported | [005](tasks/005-condition-operators.md); [013](tasks/013-divisibility-predicate.md); [bitwise trees/checks](../test/corpus/bitwise-and.txt); [021 complete](tasks/021-bitwise-and.md); [031 prefix `not` implementation evidence](tasks/031-word-boolean-operators.md); [032 trees and checks](../test/corpus/word-binary-boolean-operators.txt), [implementation evidence](tasks/032-word-binary-boolean-operators.md) |
+| Comparison/boolean/unary operators | Partial: symbolic comparisons, `&&`/`\|\|`, case-insensitive word aliases `and`/`or`/`xor` and comparison aliases `eq`/`ne`/`neq`/`gt`/`ge`/`gte`/`lt`/`le`/`lte`, with exact `word_operator` ranges, required two-sided whitespace, and Smarty precedence; prefix `! + -` and word `not`; exact `is div by`; and binary bitwise `&` as a shared-expression operator. Word arithmetic alias `mod`, other Smarty math operators `**`, `^`, `<<`, `>>`, and other `is ...` predicates remain standard syntax gaps | [005](tasks/005-condition-operators.md); [013](tasks/013-divisibility-predicate.md); [bitwise trees/checks](../test/corpus/bitwise-and.txt); [021 complete](tasks/021-bitwise-and.md); [031 prefix `not` implementation evidence](tasks/031-word-boolean-operators.md); [032 trees/checks](../test/corpus/word-binary-boolean-operators.txt), [implementation evidence](tasks/032-word-binary-boolean-operators.md); [034 trees/checks and corpus evidence](tasks/034-word-comparison-operators.md) |
 | Foreach blocks | Partial: modern `as` headers with optional key and legacy named/positional headers preserve their fields and source order; modern headers also retain trailing `name`, `key`, `properties`, and redundant `from`/`item` attributes after synthesized binding fields. Bare `nocache` is a `foreach_option`; valued `nocache` is an `attribute` in modern and legacy headers, with `true/false/1/0` accepted quoted or unquoted and whitespace around `=` preserved. Empty legacy lists remain parser syntax, while required attributes, option values, positional value types, and runtime loop/cache behavior follow separate compiler/runtime boundaries. Modern and legacy loops structurally own `foreachelse`. The designer prose denying modern named attributes conflicts with the pinned parser/compiler observation; see [028](tasks/028-foreach-header-options.md). Static item metadata suffixes parse as expressions, including direct modifier arguments; runtime binding, iteration and metadata evaluation remain outside the tree contract | [modern trees/checks](../test/corpus/foreach.txt); [legacy trees/checks](../test/corpus/legacy-foreach.txt); [Task 028 trees/checks](../test/corpus/foreach-header-options.txt); [reference/compiler/recovery/edit checks](../test/legacy-foreach.test.mjs); [Task 028 checks](../test/foreach-header-options.test.mjs); [006](tasks/006-foreach-blocks.md); [012](tasks/012-loop-metadata.md); [016 trees and checks](tasks/016-loop-metadata-modifier-argument.md); [027 evidence](tasks/027-legacy-foreach.md); [028 evidence](tasks/028-foreach-header-options.md) |
 | For loops | Partial: standard range and C-style headers, indexed targets, range `step`/`max`, `nocache`, syntactic trailing options, `{forelse}`, and nested `{for}`/`foreach`/`if` ownership. An omitted C-style condition produces an error marker while retaining the loop, closer, and later siblings; an omitted update still has the separately tested top-level `ERROR` recovery shape. Full runtime loop semantics remain outside the tree contract | [hand-authored trees](../test/corpus/for-loops.txt); [reference/compiler/recovery/edit checks](../test/for-loops.test.mjs); [026 evidence](tasks/026-for-loops.md); [031 omitted-condition recovery evidence](tasks/031-word-boolean-operators.md#completed-implementation-and-evidence) |
 | Other built-in blocks | Partial: `{section}` blocks own nested bodies, `{sectionelse}`, and their matching close; long and short headers retain required fields and standard options; `[sectionName]`, `[sectionName.property]`, and `$smarty.section.name.property` remain explicit. Runtime iteration and values remain outside syntax trees; other built-in block families are still unimplemented structurally | [section trees](../test/corpus/section-blocks.txt), [Smarty-reference trees](../test/corpus/smarty-reference.txt), [reference/compiler/recovery/edit checks](../test/section-blocks.test.mjs), and [030 separate corpus evidence](tasks/030-section-blocks-and-indices.md); `{while}`, inheritance, capture, switch, and other built-in forms remain queued gaps |
@@ -280,3 +280,30 @@ or full grammar coverage. The demo is contextual and is not positive compiler
 evidence. Materialization requires a caller-provided pinned checkout, performs
 no network access, and writes only into ignored directories; CI has no upstream
 checkout dependency. See `test/upstream-smarty-v5.8.4/NOTICE.md` for attribution.
+
+## Word comparison operator evidence (Task 034, 2026-10-03)
+
+Task [034](tasks/034-word-comparison-operators.md) supports Smarty's nine
+case-insensitive comparison aliases at the existing symbolic equality and
+relational precedence levels. Exact token spelling/ranges and two-sided
+whitespace are tested, along with expression-context composition, full-engine
+operator mappings and precedence, malformed recovery, and incremental edits.
+`npm test` passes 299 corpus trees, 427 Node checks, and all 18 mutation checks.
+
+The reports are hash-matched to parser SHA-256
+`1eb5a5ddf5dc7750fc8bf7a250f27fc695c34432baecd49bec08c3bcb119677d` and remain
+separate: application **459 → 461 clean / 8 → 6 failing**, upstream core
+**31 → 31 clean / 2 → 2 failing**, and upstream demo **0 → 0 clean / 1 → 1
+failing**. Application source hashes match the baseline; the two newly clean
+files, `view_stats/action_chart.tpl` and `view_stats/stats.tpl`, were inspected
+and contain explicit `neq` comparison trees with operands and `if` closers.
+There were no regressions in any root. Separate JSON reports are saved at
+`/tmp/smarty-task034-final-application.json`,
+`/tmp/smarty-task034-final-upstream-core.json`, and
+`/tmp/smarty-task034-final-upstream-example.json`.
+
+The malformed comparison contract records the observed error sibling under
+`if_tag`; no missing RHS node is represented. Word arithmetic `mod`, other
+math operators, and other `is ...` predicates remain syntax gaps. Independent
+implementation review is pending; this task does not establish project
+completion.

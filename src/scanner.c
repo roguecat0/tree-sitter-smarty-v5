@@ -12,6 +12,8 @@ enum TokenType {
   WORD_AND_OPERATOR,
   WORD_OR_OPERATOR,
   WORD_XOR_OPERATOR,
+  WORD_EQUALITY_OPERATOR,
+  WORD_RELATIONAL_OPERATOR,
 };
 
 typedef struct {
@@ -39,9 +41,6 @@ static bool is_smarty_whitespace(int32_t c) {
 // sides. Skip the leading gap so the public token range contains only letters,
 // then mark the exact operator end and verify the trailing boundary.
 static bool scan_word_operator(TSLexer *lexer, const bool *valid_symbols) {
-  if (!is_smarty_whitespace(lexer->lookahead)) return false;
-  while (is_smarty_whitespace(lexer->lookahead)) lexer->advance(lexer, true);
-
   const char *word = NULL;
   enum TokenType symbol;
   switch (ascii_lower(lexer->lookahead)) {
@@ -74,6 +73,97 @@ static bool scan_word_operator(TSLexer *lexer, const bool *valid_symbols) {
   if (!is_smarty_whitespace(lexer->lookahead)) return false;
   lexer->result_symbol = symbol;
   return true;
+}
+
+// Word comparisons share Smarty's two-sided SLOGOP whitespace boundary with
+// the boolean words, but equality and relational words remain distinct tokens
+// so grammar precedence matches their symbolic equivalents. mark_end preserves
+// the public operator range as letters only.
+static bool scan_word_comparison_operator(TSLexer *lexer, const bool *valid_symbols) {
+  const int32_t first = ascii_lower(lexer->lookahead);
+  const char *word = NULL;
+  enum TokenType symbol;
+  if ((first == 'e' || first == 'n') && valid_symbols[WORD_EQUALITY_OPERATOR]) {
+    symbol = WORD_EQUALITY_OPERATOR;
+    if (first == 'e') {
+      word = "eq";
+    } else {
+      lexer->advance(lexer, false);
+      if (ascii_lower(lexer->lookahead) != 'e') return false;
+      lexer->advance(lexer, false);
+      if (ascii_lower(lexer->lookahead) == 'q') {
+        lexer->advance(lexer, false);
+        word = "neq";
+      } else {
+        word = "ne";
+      }
+      lexer->mark_end(lexer);
+      if (!is_smarty_whitespace(lexer->lookahead)) return false;
+      lexer->result_symbol = symbol;
+      return true;
+    }
+  } else if ((first == 'g' || first == 'l') && valid_symbols[WORD_RELATIONAL_OPERATOR]) {
+    symbol = WORD_RELATIONAL_OPERATOR;
+    lexer->advance(lexer, false);
+    int32_t second = ascii_lower(lexer->lookahead);
+    if (second == 't' && (first == 'g' || first == 'l')) {
+      lexer->advance(lexer, false);
+      if (ascii_lower(lexer->lookahead) == 'e') lexer->advance(lexer, false);
+      lexer->mark_end(lexer);
+      if (!is_smarty_whitespace(lexer->lookahead)) return false;
+      lexer->result_symbol = symbol;
+      return true;
+    } else if (second == 'e' && first == 'g') {
+      lexer->advance(lexer, false);
+      if (ascii_lower(lexer->lookahead) == 't') {
+        lexer->advance(lexer, false);
+        word = "gte";
+      } else {
+        word = "ge";
+      }
+      lexer->mark_end(lexer);
+      if (!is_smarty_whitespace(lexer->lookahead)) return false;
+      lexer->result_symbol = symbol;
+      return true;
+    } else if (second == 'e' && first == 'l') {
+      lexer->advance(lexer, false);
+      if (ascii_lower(lexer->lookahead) == 't') {
+        lexer->advance(lexer, false);
+        word = "lte";
+      } else {
+        word = "le";
+      }
+      lexer->mark_end(lexer);
+      if (!is_smarty_whitespace(lexer->lookahead)) return false;
+      lexer->result_symbol = symbol;
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return false;
+  }
+
+  for (const char *p = word; *p; p++) {
+    if (ascii_lower(lexer->lookahead) != *p) return false;
+    lexer->advance(lexer, false);
+  }
+  lexer->mark_end(lexer);
+  if (!is_smarty_whitespace(lexer->lookahead)) return false;
+  lexer->result_symbol = symbol;
+  return true;
+}
+
+static bool scan_word_operator_with_gap(TSLexer *lexer, const bool *valid_symbols) {
+  if (!is_smarty_whitespace(lexer->lookahead)) return false;
+  while (is_smarty_whitespace(lexer->lookahead)) lexer->advance(lexer, true);
+  int32_t first = ascii_lower(lexer->lookahead);
+  if ((first == 'e' || first == 'n' || first == 'g' || first == 'l') &&
+      (valid_symbols[WORD_EQUALITY_OPERATOR] || valid_symbols[WORD_RELATIONAL_OPERATOR]))
+    return scan_word_comparison_operator(lexer, valid_symbols);
+  if (first == 'a' || first == 'o' || first == 'x')
+    return scan_word_operator(lexer, valid_symbols);
+  return false;
 }
 
 // Called after the opening `{` (and optional `/`) has been consumed. A
@@ -304,8 +394,9 @@ void tree_sitter_smarty2_external_scanner_deserialize(void *payload, const char 
 
 bool tree_sitter_smarty2_external_scanner_scan(void *payload, TSLexer *lexer, const bool *valid_symbols) {
   ScannerState *state = (ScannerState *)payload;
-  if (!state->in_literal && (valid_symbols[WORD_AND_OPERATOR] || valid_symbols[WORD_OR_OPERATOR] || valid_symbols[WORD_XOR_OPERATOR]) &&
-      scan_word_operator(lexer, valid_symbols)) return true;
+  if (!state->in_literal && (valid_symbols[WORD_AND_OPERATOR] || valid_symbols[WORD_OR_OPERATOR] || valid_symbols[WORD_XOR_OPERATOR] ||
+      valid_symbols[WORD_EQUALITY_OPERATOR] || valid_symbols[WORD_RELATIONAL_OPERATOR]) &&
+      scan_word_operator_with_gap(lexer, valid_symbols)) return true;
   if (valid_symbols[LITERAL_OPENER] && scan_literal_opener(lexer, state)) return true;
   if (valid_symbols[LITERAL_CONTENT] && state->in_literal && scan_literal_content(lexer, state)) return true;
   if (valid_symbols[LITERAL_CLOSE_TAG] && (state->in_literal || state->expect_literal_close))
