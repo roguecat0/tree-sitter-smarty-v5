@@ -1,6 +1,6 @@
 # 037 — Braced expressions in generic-tag attribute values
 
-**Status:** complete; independent implementation review accepted.
+**Status:** complete; implementation and Task 039 recovery expectation correction independently reviewed.
 **Type:** standard Smarty 5 generic-tag attribute syntax.
 **Depends on:** [018 generic-tag identifier values](018-generic-tag-identifier-values.md), [035 dynamic dot indices](035-dynamic-dot-index.md), and [036 modifier prefixes](036-modifier-at-prefix.md).
 
@@ -272,3 +272,22 @@ mutation for the new value field is caught, matched all corpus source identities
 and reports, and inspected the newly clean application tree. The composition
 matrix's braced attribute cell was corrected to `yes` during review and
 rechecked for consistency with the evidence and feature inventory.
+
+## Recovery expectation correction (2026-10-04)
+
+The Task 039 condition-specific expression primary changes scanner recovery at
+the rejected Task 037 probe `{widget value={ $x}}{$after}`. A focused scanner
+trace shows that recovery consumes the opening `{`; the remaining `text` node
+therefore starts at the following whitespace. The previous expected
+`string_fragment` child described a different scanner recovery path, not a
+Smarty syntax distinction. Both the pinned Smarty 5.8.4 recorder and full
+compiler reject this input with `Unexpected " "`, so the correction changes
+only the expected malformed tree and does not broaden accepted syntax.
+
+The revised tree keeps a real root error for `{widget value=` at `[0,14)`,
+then preserves the complete malformed remainder `{ $x}}` as `text` at
+`[14,20)`, followed by the independent, error-free `{$after}` output at
+`[20,28)`. The Node check pins these source slices and ranges, both tag-name
+identifiers, the compiler rejection, and the surviving output. This is an
+evidence-backed contract correction. The independent Task 039 completion
+review accepted the corrected tree, source-backed rationale, and range checks.

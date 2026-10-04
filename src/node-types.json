@@ -601,6 +601,10 @@
             "named": true
           },
           {
+            "type": "output",
+            "named": true
+          },
+          {
             "type": "parenthesized_expression",
             "named": true
           },
@@ -766,6 +770,10 @@
           },
           {
             "type": "number",
+            "named": true
+          },
+          {
+            "type": "output",
             "named": true
           },
           {
@@ -1320,6 +1328,10 @@
           },
           {
             "type": "number",
+            "named": true
+          },
+          {
+            "type": "output",
             "named": true
           },
           {
@@ -2315,6 +2327,10 @@
             "named": true
           },
           {
+            "type": "output",
+            "named": true
+          },
+          {
             "type": "parenthesized_expression",
             "named": true
           },
@@ -2340,6 +2356,16 @@
           }
         ]
       }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "string_fragment",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -4344,6 +4370,10 @@
           },
           {
             "type": "number",
+            "named": true
+          },
+          {
+            "type": "output",
             "named": true
           },
           {

@@ -97,6 +97,36 @@ nodes, optional `else_clause`, and `if_close_tag`. Conditions have a `condition`
 field. Branch clauses contain their opening tag and body nodes. Generic tags
 must not consume malformed built-in control tags.
 
+Within `{if}` and `{elseif}` conditions, a complete braced expression is one
+primary operand represented as `output(value: expression)` inside the owning
+`condition` expression. For example, `{if {$x} > 0}Y{/if}` has a
+`binary_expression` condition whose left operand is `output(value: variable)`;
+the wrapper includes both braces, and its value excludes them. Direct conditions
+remain unwrapped. Existing expression precedence, associativity, operator
+fields, and comparisons around or inside the wrapper are unchanged. Tests cover
+arithmetic inside braces, an outer comparison and boolean expression, modifier
+and method-chain operands, `elseif`, nested blocks, and the application-shaped
+method condition. This support is limited to tested compositions with currently
+supported expressions; the broader if/elseif feature remains partial. See
+[Task 039 trees](corpus/braced-conditions.txt),
+[reference/compiler/recovery/edit checks](braced-conditions.test.mjs), and the
+[Task 039 brief and completion evidence](../docs/tasks/039-braced-expressions-in-conditions.md).
+
+Recovery must reject inner-leading whitespace in the braced operand as a real
+parse error and preserve a distinct error-free trailing output. For a missing
+right operand after a braced left operand, retain the left wrapper in
+`if_tag.condition`, report the operator as a localized error, and keep body,
+the actual `if_close_tag`, and later output separate. When the outer header
+close is missing, preserve the complete condition and a recognizable
+`{/if}` close/recovery node plus trailing output without requiring a specific
+error extent or an `if_block` split. The ambiguous one-close form requires a
+real error, recognizable close recovery, and independent tail output. An
+unclosed block retains its recognizable `if_tag`, condition, and body under
+error or missing-close recovery. For a crossed close with no matching
+`{/if}`, the recovery `ERROR` retains the `if_tag`, complete condition, body,
+crossed-close recovery, and a distinct error-free trailing output descendant;
+it need not synthesize an `if_close_tag` or form a completed `if_block`.
+
 Standard `{for}` blocks are nested as `for_block` nodes with a `for_tag`, direct
 body nodes, optional `forelse_clause`, and `for_close_tag`. `for_tag` retains
 distinct `range_for_header` and `c_style_for_header` structures. Range headers

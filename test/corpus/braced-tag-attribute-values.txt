@@ -101,7 +101,7 @@ Leading inner whitespace is rejected and later output survives
 {widget value={ $x}}{$after}
 ---
 (source_file
-  (ERROR (identifier) (identifier) (string_fragment))
+  (ERROR (identifier) (identifier))
   (text)
   (output value: (variable name: (identifier))))
 

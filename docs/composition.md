@@ -16,7 +16,8 @@ Cartesian suite merely to fill the matrix.
 | Expression form | Assignment RHS | Output value | `if` / `elseif` condition | `foreach` source | Custom-tag positional argument | Custom-tag attribute value | Function / method argument | Modifier input | Modifier argument | Bracket index expression | Array key | Array value |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Braced expression wrapper in generic-tag named attribute (`name={EXPR}`) | — | — | — | — | — | yes [U-braced-tag-attr](#ev-u-braced-tag-attr) | — | — | — | — | — | — |
-| Braced output expression inside bracket index (`$a[{EXPR}]`) | ? | yes [B-index](#ev-b-index) | no [U-braced-condition](#ev-u-braced-condition) | ? | ? | yes [B-index](#ev-b-index) | ? | ? | ? | yes [B-index](#ev-b-index) | ? | ? |
+| Braced expression wrapper in an `if`/`elseif` condition (`{if {EXPR} ...}`) | — | — | yes [U-braced-condition](#ev-u-braced-condition) | — | — | — | — | — | — | — | — | — |
+| Braced output expression inside bracket index (`$a[{EXPR}]`) | ? | yes [B-index](#ev-b-index) | ? | ? | ? | yes [B-index](#ev-b-index) | ? | ? | ? | yes [B-index](#ev-b-index) | ? | ? |
 | Variable / config variable | limited [ARHS-variable](#ev-assignment-rhs) | yes [V-output](#ev-v-output) | yes [V-condition](#ev-v-condition) | yes [V-source](#ev-v-source) | yes [V-tag-pos](#ev-v-tag-pos) | yes [V-tag-attr](#ev-v-tag-attr) | yes [V-call-arg](#ev-v-call-arg) | yes [V-mod-input](#ev-v-mod-input) | yes [V-mod-arg](#ev-v-mod-arg) | yes [V-bracket](#ev-v-bracket) | ? [U-variable-array-key](#ev-u-variable-array-key) | yes [V-array-value](#ev-v-array-value) |
 | Primitive / string / number | yes [ARHS-literals](#ev-assignment-rhs) | yes [P-output](#ev-p-output) | yes [P-condition](#ev-p-condition) | ? [U-primitive-source](#ev-u-primitive-source) | ? [U-primitive-tag-pos](#ev-u-primitive-tag-pos) | yes [P-tag-attr](#ev-p-tag-attr) | yes [P-call-arg](#ev-p-call-arg) | yes [P-mod-input](#ev-p-mod-input) | yes [P-mod-arg](#ev-p-mod-arg) | yes [P-bracket](#ev-p-bracket) | yes [P-array-key](#ev-p-array-key) | yes [P-array-value](#ev-p-array-value) |
 | Interpolated string (double-quoted) | ? [U-assignment-rhs](#ev-u-assignment-rhs) | yes [IS-output](#ev-is-output) | ? [U-is-condition](#ev-u-is-condition) | ? [U-is-source](#ev-u-is-source) | ? [U-is-tag-pos](#ev-u-is-tag-pos) | yes [IS-tag-attr](#ev-is-tag-attr) | ? [U-is-call-arg](#ev-u-is-call-arg) | ? [U-is-mod-input](#ev-u-is-mod-input) | yes [IS-mod-arg](#ev-is-mod-arg) | ? [U-is-bracket](#ev-u-is-bracket) | ? [U-is-array-key](#ev-u-is-array-key) | ? [U-is-array-value](#ev-u-is-array-value) |
@@ -42,11 +43,11 @@ bracket index. Pinned Smarty 5.8.4 and hand-authored trees verify the wrapper in
 output values, generic-tag attribute values, and nested bracket indices;
 arithmetic precedence, method/config composition, modifiers, source ranges,
 recovery boundaries, and incremental edits are checked. Other context pairings
-remain unknown. The separately accepted braced form in an `if`/`elseif`
-condition needs its own condition and block-recovery brief (queued Task 039).
-See [Task 038 implementation evidence](tasks/038-braced-expressions-in-bracket-indices.md).
+remain unknown. Task 039 separately verifies the wrapper as an operand in
+`if`/`elseif` conditions; its cell does not imply support in other contexts.
+See [Task 038 implementation evidence](tasks/038-braced-expressions-in-bracket-indices.md)
+and [Task 039 condition evidence](tasks/039-braced-expressions-in-conditions.md).
 
-<a id="ev-u-braced-condition"></a>
 <a id="ev-b-index"></a>
 
 **B-index:** `{$a[{$x}]}` retains an outer output, `index_expression`, and
@@ -59,6 +60,37 @@ cases have localized `ERROR` trees that preserve following output and, in a
 block, the close tag. See [hand trees](../test/corpus/braced-bracket-indices.txt),
 [reference fixtures](../test/corpus/smarty-reference-braced-bracket-indices.txt),
 and [checks](../test/braced-bracket-indices.test.mjs).
+
+## Task 039 braced expressions in conditions
+
+The Task 038 application report records a braced method expression directly
+inside the `{if}` condition at `view_certificate/actions_list.tpl:41`; the
+second report error at line 54 is downstream recovery from that opening tag.
+The pinned Smarty 5.8.4 recorder and full engine in compile-only mode accept
+`{if {$x}}`, `{if {$x} > 0}`, and braced `elseif` operands. Hand-authored trees
+establish ownership: `if_tag.condition` or `elseif_tag.condition` contains the
+complete existing expression, and each braced operand is a nested
+`output(value: expression)` primary. Direct conditions remain unwrapped;
+operators inside a wrapper and around it retain their existing precedence,
+associativity, and fields. Tests cover arithmetic inside braces, outer
+comparison and boolean composition, a braced modifier and method chain, the
+application-shaped method condition, nested block composition, exact ranges,
+reference/compiler observations, and incremental edits. The recorder's
+output-before-control-tag event order does not establish condition ownership.
+
+Recovery checks reject inner-leading whitespace while preserving an independent
+trailing output; retain a left braced operand and local operator error for a
+missing right-hand side; preserve recognizable close recovery and later output
+when the outer header close is missing; and retain condition/body navigation
+for unclosed or crossed blocks. A crossed close with no matching `{/if}` can
+produce a root `ERROR` containing the recognized `if_tag`, body, crossed-close
+recovery, and a distinct error-free trailing output descendant; a completed
+`if_block` or synthetic `if_close_tag` is not required. This cell confirms only
+the tested braced-operand compositions within conditions, not broader Smarty
+conditional syntax or other braced-wrapper contexts. See the [Task 039 trees](../test/corpus/braced-conditions.txt),
+[checks](../test/braced-conditions.test.mjs), and [brief/completion evidence](tasks/039-braced-expressions-in-conditions.md).
+
+<a id="ev-u-braced-condition"></a>
 
 ## Task 036 modifier-prefix composition evidence
 
@@ -102,7 +134,7 @@ ownership.
 
 | Cell | Current boundary and required evidence |
 | --- | --- |
-| <a id="ev-u-braced-tag-attr"></a>U-braced-tag-attr | **yes:** `{widget value={$x}}` and `{widget value={$x + $y}}` retain `attribute.value: output(value: expression)`; direct `{widget value=$x}` remains unwrapped. Hand trees, reference acceptance, neighboring-attribute/order checks, malformed-recovery/sibling checks, and edits across direct/wrapped/rejected forms pass. [trees](../test/corpus/braced-tag-attribute-values.txt); [reference fixture](../test/corpus/smarty-reference-braced-tag-attribute-values.txt); [Node checks](../test/braced-tag-attribute-values.test.mjs); [candidate evidence](tasks/037-braced-generic-tag-attribute-values.md) |
+| <a id="ev-u-braced-tag-attr"></a>U-braced-tag-attr | **yes:** `{widget value={$x}}` and `{widget value={$x + $y}}` retain `attribute.value: output(value: expression)`; direct `{widget value=$x}` remains unwrapped. Hand trees, reference acceptance, neighboring-attribute/order checks, malformed-recovery/sibling checks, and edits across direct/wrapped/rejected forms pass. [trees](../test/corpus/braced-tag-attribute-values.txt); [reference fixture](../test/corpus/smarty-reference-braced-tag-attribute-values.txt); [Node checks](../test/braced-tag-attribute-values.test.mjs); [completion evidence](tasks/037-braced-generic-tag-attribute-values.md) |
 
 ## Generic-tag attribute-name composition
 

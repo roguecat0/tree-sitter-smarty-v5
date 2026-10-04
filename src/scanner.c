@@ -6,6 +6,7 @@ enum TokenType {
   OUTPUT_ATTRIBUTE_ERROR_MARKER,
   TAG_ATTRIBUTE_OUTPUT_SPACE,
   TAG_ATTRIBUTE_OUTPUT_START,
+  IF_HEADER_CLOSE_RECOVERY,
   STRING_FRAGMENT,
   BACKTICK_INTERPOLATION_START,
   LITERAL_OPENER,
@@ -51,6 +52,17 @@ static bool scan_tag_attribute_output_start(TSLexer *lexer) {
   if (is_smarty_whitespace(lexer->lookahead) || lexer->lookahead == '*') return false;
   lexer->mark_end(lexer);
   lexer->result_symbol = TAG_ATTRIBUTE_OUTPUT_START;
+  return true;
+}
+
+static bool scan_if_header_close_recovery(TSLexer *lexer) {
+  static const char spelling[] = "{/if}";
+  for (size_t i = 0; i < sizeof(spelling) - 1; i++) {
+    if (lexer->lookahead != spelling[i]) return false;
+    lexer->advance(lexer, false);
+  }
+  lexer->mark_end(lexer);
+  lexer->result_symbol = IF_HEADER_CLOSE_RECOVERY;
   return true;
 }
 
@@ -439,6 +451,8 @@ void tree_sitter_smarty2_external_scanner_deserialize(void *payload, const char 
 
 bool tree_sitter_smarty2_external_scanner_scan(void *payload, TSLexer *lexer, const bool *valid_symbols) {
   ScannerState *state = (ScannerState *)payload;
+  if (!state->in_literal && !valid_symbols[TEXT] && !valid_symbols[TAG_ATTRIBUTE_OUTPUT_START] &&
+      valid_symbols[IF_HEADER_CLOSE_RECOVERY] && scan_if_header_close_recovery(lexer)) return true;
   if (!state->in_literal && valid_symbols[TAG_ATTRIBUTE_OUTPUT_SPACE] &&
       scan_tag_attribute_output_space(lexer)) return true;
   if (!state->in_literal && valid_symbols[TAG_ATTRIBUTE_OUTPUT_START] && !valid_symbols[TEXT] &&

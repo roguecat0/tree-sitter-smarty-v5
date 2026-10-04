@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { fixtures, parser, reference, observations, snapshot } from './helpers.mjs';
+import { fixtures, fullEngine, parser, reference, observations, snapshot } from './helpers.mjs';
 
 const treeCases = fixtures('braced-tag-attribute-values.txt');
 const refCases = fixtures('smarty-reference-braced-tag-attribute-values.txt');
@@ -51,12 +51,32 @@ test('Braced generic-tag attribute values have explicit nested output ownership 
 
 test('Rejected leading whitespace in a braced attribute value keeps following output', () => {
   const source = '{widget value={ $x}}{$after}';
-  assert.ok(reference(source).error);
+  const recorded = reference(source);
+  assert.match(recorded.error ?? '', /Unexpected " "/);
+  const compiled = fullEngine(source, {mode: 'compile'});
+  assert.equal(compiled.error.type, 'Smarty\\CompilerException');
+  assert.match(compiled.error.message, /Unexpected " "/);
   const root = parser().parse(source).rootNode;
   assert.equal(root.hasError, true, root.toString());
-  assert.equal(root.lastNamedChild.type, 'output');
-  assert.equal(root.lastNamedChild.text, '{$after}');
-  assert.equal(root.lastNamedChild.hasError, false);
+  const malformed = root.namedChild(0);
+  assert.equal(malformed.type, 'ERROR');
+  assert.equal(malformed.isError, true);
+  assert.deepEqual([malformed.startIndex, malformed.endIndex], [0, 14]);
+  assert.equal(source.slice(malformed.startIndex, malformed.endIndex), '{widget value=');
+  assert.deepEqual(malformed.namedChildren.map(node => node.type), ['identifier', 'identifier']);
+  assert.deepEqual(malformed.namedChildren.map(node => [node.startIndex, node.endIndex, node.text]), [
+    [1, 7, 'widget'], [8, 13, 'value'],
+  ]);
+
+  const remainder = root.namedChild(1);
+  assert.equal(remainder.type, 'text');
+  assert.deepEqual([remainder.startIndex, remainder.endIndex], [14, 20]);
+  assert.equal(source.slice(remainder.startIndex, remainder.endIndex), '{ $x}}');
+  const after = root.namedChild(2);
+  assert.equal(after.type, 'output');
+  assert.deepEqual([after.startIndex, after.endIndex], [20, 28]);
+  assert.equal(source.slice(after.startIndex, after.endIndex), '{$after}');
+  assert.equal(after.hasError, false);
 });
 
 test('Malformed wrapped value and incomplete outer tag retain neighboring output', () => {

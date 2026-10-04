@@ -19,6 +19,7 @@ export default grammar({
   name: "smarty2",
   externals: $ => [
     $.text, $._output_attribute_error_marker, $._tag_attribute_output_space, $._tag_attribute_output_start,
+    $._if_header_close_recovery,
     $.string_fragment, $._backtick_interpolation_start,
     $._literal_opener, $.literal_content, $.literal_close_tag,
     $._word_and_operator, $._word_or_operator, $._word_xor_operator,
@@ -139,9 +140,12 @@ export default grammar({
     if_block: $ => seq(
       $.if_tag, repeat($._node), repeat($.elseif_clause), optional($.else_clause), $.if_close_tag,
     ),
-    if_tag: $ => seq("{", "if", field("condition", $._expression), "}"),
+    if_tag: $ => choice(
+      seq("{", "if", field("condition", $._if_expression), "}"),
+      prec(-100, seq("{", "if", field("condition", $._if_expression), alias($._if_header_close_recovery, $.string_fragment))),
+    ),
     elseif_clause: $ => seq($.elseif_tag, repeat($._node)),
-    elseif_tag: $ => seq("{", "elseif", field("condition", $._expression), "}"),
+    elseif_tag: $ => seq("{", "elseif", field("condition", $._if_expression), "}"),
     else_clause: $ => seq($.else_tag, repeat($._node)),
     else_tag: _ => seq("{", "else", "}"),
     if_close_tag: _ => seq("{/", "if", "}"),
@@ -253,6 +257,71 @@ export default grammar({
     sectionelse_clause: $ => seq($.sectionelse_tag, repeat($._node)),
     sectionelse_tag: _ => seq("{", "sectionelse", "}"),
     section_close_tag: _ => seq("{/", "section", "}"),
+    // Conditions admit a complete braced expression as a primary operand.
+    // Keep this ladder local to if/elseif so the wrapper does not broaden
+    // unrelated expression contexts such as unknown-tag values or outputs.
+    _if_expression: $ => $._if_logical_or,
+    _if_logical_or: $ => choice($._if_logical_and, alias($._if_or_expression, $.binary_expression), alias($._if_word_or_expression, $.binary_expression), alias($._if_xor_expression, $.binary_expression)),
+    _if_xor_expression: $ => prec.left(-6, seq(
+      field("left", $._if_logical_or), field("operator", alias($._word_xor_operator, $.word_operator)),
+      field("right", $._if_logical_or),
+    )),
+    _if_or_expression: $ => prec.left(-5, seq(field("left", $._if_logical_or), field("operator", "||"), field("right", $._if_logical_and))),
+    _if_word_or_expression: $ => prec.left(-5, seq(
+      field("left", $._if_logical_or), field("operator", alias($._word_or_operator, $.word_operator)),
+      field("right", $._if_logical_and),
+    )),
+    _if_logical_and: $ => choice($._if_bitwise_and, alias($._if_and_expression, $.binary_expression), alias($._if_word_and_expression, $.binary_expression)),
+    _if_and_expression: $ => prec.left(-4, seq(field("left", $._if_logical_and), field("operator", "&&"), field("right", $._if_bitwise_and))),
+    _if_word_and_expression: $ => prec.left(-4, seq(
+      field("left", $._if_logical_and), field("operator", alias($._word_and_operator, $.word_operator)),
+      field("right", $._if_bitwise_and),
+    )),
+    _if_bitwise_and: $ => choice($._if_equality, alias($._if_bitwise_and_expression, $.binary_expression)),
+    _if_bitwise_and_expression: $ => prec.left(-3, seq(field("left", $._if_bitwise_and), field("operator", "&"), field("right", $._if_equality))),
+    _if_equality: $ => choice($._if_relational, alias($._if_equality_expression, $.binary_expression), alias($._if_word_equality_expression, $.binary_expression)),
+    _if_equality_expression: $ => prec(-2, seq(
+      field("left", $._if_relational), field("operator", choice("==", "!=", "===", "!==")), field("right", $._if_relational),
+    )),
+    _if_word_equality_expression: $ => prec(-2, seq(
+      field("left", $._if_relational), field("operator", alias($._word_equality_operator, $.word_operator)), field("right", $._if_relational),
+    )),
+    _if_relational: $ => choice($._if_arithmetic, alias($._if_relational_expression, $.binary_expression), alias($._if_word_relational_expression, $.binary_expression)),
+    _if_relational_expression: $ => prec(-1, seq(field("left", $._if_arithmetic), field("operator", choice("<", "<=", ">", ">=")), field("right", $._if_arithmetic))),
+    _if_word_relational_expression: $ => prec(-1, seq(
+      field("left", $._if_arithmetic), field("operator", alias($._word_relational_operator, $.word_operator)), field("right", $._if_arithmetic),
+    )),
+    _if_arithmetic: $ => choice($._if_multiplicative, alias($._if_additive_expression, $.binary_expression), alias($._if_div_by_expression, $.binary_expression)),
+    _if_additive_expression: $ => prec.left(1, seq(field("left", $._if_arithmetic), field("operator", choice("+", "-")), field("right", $._if_multiplicative))),
+    _if_multiplicative: $ => choice($._if_unary, alias($._if_multiplicative_expression, $.binary_expression)),
+    _if_multiplicative_expression: $ => prec.left(2, seq(field("left", $._if_multiplicative), field("operator", choice("*", "/", "%")), field("right", $._if_unary))),
+    _if_div_by_expression: $ => prec.left(0, seq(
+      field("left", $._if_arithmetic), field("operator", $.div_by_operator), token.immediate(/\s+/), field("right", $._if_unary),
+    )),
+    _if_unary: $ => choice($._if_modified, alias($._if_not_expression, $.unary_expression), alias($._if_sign_expression, $.unary_expression), alias($._if_word_not_expression, $.unary_expression)),
+    _if_not_expression: $ => prec(3, seq(field("operator", "!"), field("argument", $._if_unary))),
+    _if_sign_expression: $ => prec(3, seq(field("operator", choice("+", "-")), choice(
+      field("argument", choice($._if_modified, alias($._if_not_expression, $.unary_expression))),
+      seq(token.immediate(/\s+/), field("argument", $._if_unary)),
+    ))),
+    _if_word_not_expression: $ => prec(3, seq(
+      field("operator", alias(token(/[nN][oO][tT]/), $.word_operator)),
+      token.immediate(/[\t \r\n\v\f]+/), field("argument", $._if_unary),
+    )),
+    _if_modified: $ => choice($._if_primary, $.modifier_expression),
+    _if_primary: $ => choice(
+      // Smarty rejects the auto-literal `{ ` spelling. Consume this exact
+      // boundary as a local parse error instead of letting global extras
+      // silently skip the inner space and accept it as an expression wrapper.
+      prec(100, alias($._if_braced_expression_with_inner_space, $.output)),
+      prec.dynamic(10, alias($._if_braced_expression, $.output)),
+      $._primary,
+    ),
+    _if_braced_expression_with_inner_space: $ => seq(
+      "{", token.immediate(/[\t \r\n\v\f]+/), field("value", $._expression), "}",
+      $._output_attribute_error_marker,
+    ),
+    _if_braced_expression: $ => seq("{", field("value", $._expression), "}"),
     _expression: $ => $._logical_or,
     // PHP binds word `xor` below `or`; `and`/`or` share the corresponding
     // symbolic logical levels. Smarty's lexer requires surrounding whitespace

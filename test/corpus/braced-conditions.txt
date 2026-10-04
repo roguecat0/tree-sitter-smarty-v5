@@ -1,0 +1,20 @@
+==================
+Braced full if condition
+==================
+{if {$x}}Y{/if}
+---
+(source_file (if_block (if_tag condition: (output value: (variable name: (identifier)))) (text) (if_close_tag)))
+
+==================
+Braced operand with outer comparison and following output
+==================
+{if {$x} > 0}Y{/if}{$after}
+---
+(source_file (if_block (if_tag condition: (binary_expression left: (output value: (variable name: (identifier))) right: (number))) (text) (if_close_tag)) (output value: (variable name: (identifier))))
+
+==================
+Direct condition remains unwrapped
+==================
+{if $x > 0}Y{/if}
+---
+(source_file (if_block (if_tag condition: (binary_expression left: (variable name: (identifier)) right: (number))) (text) (if_close_tag)))
