@@ -1,0 +1,70 @@
+==================
+smarty-5.8.4-braced-attribute-variable
+==================
+{widget value={$x}}
+---
+(source_file
+  (custom_tag name: (identifier)
+    (attribute name: (identifier) value: (output value: (variable name: (identifier))))))
+
+==================
+smarty-5.8.4-braced-attribute-arithmetic
+==================
+{widget value={$x + $y}}
+---
+(source_file
+  (custom_tag name: (identifier)
+    (attribute name: (identifier) value: (output value: (binary_expression
+      left: (variable name: (identifier)) right: (variable name: (identifier)))))))
+
+==================
+smarty-5.8.4-braced-attribute-string
+==================
+{widget value={"text"}}
+---
+(source_file
+  (custom_tag name: (identifier)
+    (attribute name: (identifier) value: (output value: (string)))))
+
+==================
+smarty-5.8.4-braced-attribute-dynamic-dot
+==================
+{widget selected={$map.{$key}}}
+---
+(source_file
+  (custom_tag name: (identifier)
+    (attribute name: (identifier) value: (output value: (index_expression
+      object: (variable name: (identifier)) index: (variable name: (identifier)))))))
+
+==================
+smarty-5.8.4-braced-attribute-method-index
+==================
+{html_options selected={$label_type_ids.{$printer->get_id()}}}
+---
+(source_file
+  (custom_tag name: (identifier)
+    (attribute name: (identifier) value: (output value: (index_expression
+      object: (variable name: (identifier))
+      index: (method_call_expression object: (variable name: (identifier)) method: (identifier)))))))
+
+==================
+smarty-5.8.4-braced-attribute-neighbor-order
+==================
+{widget before=1 selected={$x + $y} after=$z}
+---
+(source_file
+  (custom_tag name: (identifier)
+    (attribute name: (identifier) value: (number))
+    (attribute name: (identifier) value: (output value: (binary_expression
+      left: (variable name: (identifier)) right: (variable name: (identifier)))))
+    (attribute name: (identifier) value: (variable name: (identifier)))))
+
+==================
+smarty-5.8.4-braced-attribute-spaces
+==================
+{widget value = {$x}}{widget value= {$x}}{widget value={$x }}
+---
+(source_file
+  (custom_tag name: (identifier) (attribute name: (identifier) value: (output value: (variable name: (identifier)))))
+  (custom_tag name: (identifier) (attribute name: (identifier) value: (output value: (variable name: (identifier)))))
+  (custom_tag name: (identifier) (attribute name: (identifier) value: (output value: (variable name: (identifier))))))

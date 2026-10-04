@@ -4,6 +4,8 @@
 enum TokenType {
   TEXT,
   OUTPUT_ATTRIBUTE_ERROR_MARKER,
+  TAG_ATTRIBUTE_OUTPUT_SPACE,
+  TAG_ATTRIBUTE_OUTPUT_START,
   STRING_FRAGMENT,
   BACKTICK_INTERPOLATION_START,
   LITERAL_OPENER,
@@ -35,6 +37,33 @@ static int32_t ascii_lower(int32_t c) {
 
 static bool is_smarty_whitespace(int32_t c) {
   return c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\v' || c == '\f';
+}
+
+// In a generic-tag named attribute, an expression wrapper must not allow the
+// auto-literal `{ ` form. Only the opening brace is consumed, keeping its exact
+// source range and leaving the expression to normal grammar rules.
+static bool scan_tag_attribute_output_start(TSLexer *lexer) {
+  if (lexer->lookahead != '{') return false;
+  lexer->advance(lexer, false);
+  // A comment opener after a missing attribute value belongs to the following
+  // sibling, not to the attempted output wrapper.
+  if (is_smarty_whitespace(lexer->lookahead) || lexer->lookahead == '*') return false;
+  lexer->mark_end(lexer);
+  lexer->result_symbol = TAG_ATTRIBUTE_OUTPUT_START;
+  return true;
+}
+
+static bool scan_tag_attribute_output_space(TSLexer *lexer) {
+  if (!is_smarty_whitespace(lexer->lookahead)) return false;
+  do {
+    lexer->advance(lexer, false);
+  } while (is_smarty_whitespace(lexer->lookahead));
+  lexer->mark_end(lexer);
+  if (lexer->lookahead != '{') return false;
+  lexer->advance(lexer, false);
+  if (is_smarty_whitespace(lexer->lookahead)) return false;
+  lexer->result_symbol = TAG_ATTRIBUTE_OUTPUT_SPACE;
+  return true;
 }
 
 // Smarty emits a SLOGOP only when one of these words has whitespace on both
@@ -394,6 +423,10 @@ void tree_sitter_smarty2_external_scanner_deserialize(void *payload, const char 
 
 bool tree_sitter_smarty2_external_scanner_scan(void *payload, TSLexer *lexer, const bool *valid_symbols) {
   ScannerState *state = (ScannerState *)payload;
+  if (!state->in_literal && valid_symbols[TAG_ATTRIBUTE_OUTPUT_SPACE] &&
+      scan_tag_attribute_output_space(lexer)) return true;
+  if (!state->in_literal && valid_symbols[TAG_ATTRIBUTE_OUTPUT_START] && !valid_symbols[TEXT] &&
+      scan_tag_attribute_output_start(lexer)) return true;
   if (!state->in_literal && (valid_symbols[WORD_AND_OPERATOR] || valid_symbols[WORD_OR_OPERATOR] || valid_symbols[WORD_XOR_OPERATOR] ||
       valid_symbols[WORD_EQUALITY_OPERATOR] || valid_symbols[WORD_RELATIONAL_OPERATOR]) &&
       scan_word_operator_with_gap(lexer, valid_symbols)) return true;

@@ -15,6 +15,7 @@ Cartesian suite merely to fill the matrix.
 
 | Expression form | Assignment RHS | Output value | `if` / `elseif` condition | `foreach` source | Custom-tag positional argument | Custom-tag attribute value | Function / method argument | Modifier input | Modifier argument | Bracket index expression | Array key | Array value |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Braced expression wrapper in generic-tag named attribute (`name={EXPR}`) | — | — | — | — | — | yes [U-braced-tag-attr](#ev-u-braced-tag-attr) | — | — | — | — | — | — |
 | Variable / config variable | limited [ARHS-variable](#ev-assignment-rhs) | yes [V-output](#ev-v-output) | yes [V-condition](#ev-v-condition) | yes [V-source](#ev-v-source) | yes [V-tag-pos](#ev-v-tag-pos) | yes [V-tag-attr](#ev-v-tag-attr) | yes [V-call-arg](#ev-v-call-arg) | yes [V-mod-input](#ev-v-mod-input) | yes [V-mod-arg](#ev-v-mod-arg) | yes [V-bracket](#ev-v-bracket) | ? [U-variable-array-key](#ev-u-variable-array-key) | yes [V-array-value](#ev-v-array-value) |
 | Primitive / string / number | yes [ARHS-literals](#ev-assignment-rhs) | yes [P-output](#ev-p-output) | yes [P-condition](#ev-p-condition) | ? [U-primitive-source](#ev-u-primitive-source) | ? [U-primitive-tag-pos](#ev-u-primitive-tag-pos) | yes [P-tag-attr](#ev-p-tag-attr) | yes [P-call-arg](#ev-p-call-arg) | yes [P-mod-input](#ev-p-mod-input) | yes [P-mod-arg](#ev-p-mod-arg) | yes [P-bracket](#ev-p-bracket) | yes [P-array-key](#ev-p-array-key) | yes [P-array-value](#ev-p-array-value) |
 | Interpolated string (double-quoted) | ? [U-assignment-rhs](#ev-u-assignment-rhs) | yes [IS-output](#ev-is-output) | ? [U-is-condition](#ev-u-is-condition) | ? [U-is-source](#ev-u-is-source) | ? [U-is-tag-pos](#ev-u-is-tag-pos) | yes [IS-tag-attr](#ev-is-tag-attr) | ? [U-is-call-arg](#ev-u-is-call-arg) | ? [U-is-mod-input](#ev-u-is-mod-input) | yes [IS-mod-arg](#ev-is-mod-arg) | ? [U-is-bracket](#ev-u-is-bracket) | ? [U-is-array-key](#ev-u-is-array-key) | ? [U-is-array-value](#ev-u-is-array-value) |
@@ -54,6 +55,30 @@ unverified.
 The chain-composition fixture also checks a prefixed modifier as the input to a
 following unprefixed modifier. It verifies the tree interaction only; the
 modifier-input context above remains unverified for general prefixed forms.
+
+## Task 037 braced generic-tag attribute values
+
+Pinned Smarty 5.8.4 accepts a generic-tag named attribute whose value is an
+expression enclosed in braces, including a plain variable, arithmetic
+expression, string, and dynamic-dot index. The recording adapter reports no
+compiler error and records the attribute name, but emits an `output` event
+before the tag event for this source form. Its event projection does not expose
+the attribute value; tree structure must be checked explicitly. The grammar
+represents this syntax as `attribute.value: output(value: expression)`, including
+the application witness
+`selected={$label_type_ids.{$heatshrink_printer->get_id()}}`. The wrapper is
+supported across the tested expression types, not only dynamic-dot indices.
+The [Task 037 trees](../test/corpus/braced-tag-attribute-values.txt),
+[reference fixture](../test/corpus/smarty-reference-braced-tag-attribute-values.txt),
+[Node checks](../test/braced-tag-attribute-values.test.mjs), and
+[implementation evidence](tasks/037-braced-generic-tag-attribute-values.md)
+establish wrapper shape, ranges, malformed recovery, neighboring values, and
+incremental edits. The recorder's event order still does not establish value
+ownership.
+
+| Cell | Current boundary and required evidence |
+| --- | --- |
+| <a id="ev-u-braced-tag-attr"></a>U-braced-tag-attr | **yes:** `{widget value={$x}}` and `{widget value={$x + $y}}` retain `attribute.value: output(value: expression)`; direct `{widget value=$x}` remains unwrapped. Hand trees, reference acceptance, neighboring-attribute/order checks, malformed-recovery/sibling checks, and edits across direct/wrapped/rejected forms pass. [trees](../test/corpus/braced-tag-attribute-values.txt); [reference fixture](../test/corpus/smarty-reference-braced-tag-attribute-values.txt); [Node checks](../test/braced-tag-attribute-values.test.mjs); [candidate evidence](tasks/037-braced-generic-tag-attribute-values.md) |
 
 ## Generic-tag attribute-name composition
 

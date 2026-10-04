@@ -40,12 +40,18 @@ booleans, nulls, variables, strings, and class constants retain their existing
 node types. Bare IDs are also primary expressions in the tested output,
 condition, function/method argument, and array-element value contexts. See
 [018 trees and checks](../docs/tasks/018-generic-tag-identifier-values.md).
-In a generic-tag attribute, the grammar accepts a direct expression value such
-as `selected=$labels.{$key}`. Smarty also accepts the braced attribute form
-`selected={$labels.{$key}}`, but that surrounding `{...}` is not currently
-supported in attribute values. The application witness
-`view_labels/cable_label.tpl:35` uses the braced form; record it for a separate
-Task 037 after Task 035 review rather than widening the dynamic-index change.
+In a generic-tag named attribute, a direct expression value such as
+`selected=$labels.{$key}` remains the direct expression in `attribute.value`.
+For the Smarty-valid braced form `selected={$labels.{$key}}`, the attribute
+owns a nested `output` node in `attribute.value`, and `output.value` owns the
+expression. The wrapper retains its two source braces and full expression
+detail. This applies to supported expression types generally, not only to
+dynamic-dot indices. The application witness
+`view_labels/cable_label.tpl:35` exercises the method-index composition; see
+[Task 037 trees and checks](../test/corpus/braced-tag-attribute-values.txt),
+[reference trees](../test/corpus/smarty-reference-braced-tag-attribute-values.txt),
+[Node checks](braced-tag-attribute-values.test.mjs), and the
+[Task 037 evidence](../docs/tasks/037-braced-generic-tag-attribute-values.md).
 The attribute-name field preserves simple ASCII identifiers and existing
 primitive aliases. It also supports `tag_attribute_name` leaves for hyphenated
 names, digit-prefixed names, and nonempty segments separated by single colons

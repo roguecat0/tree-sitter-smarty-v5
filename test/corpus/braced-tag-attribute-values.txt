@@ -1,0 +1,147 @@
+==================
+Braced variable attribute value
+==================
+{widget value={$x}}
+---
+(source_file
+  (custom_tag
+    name: (identifier)
+    (attribute name: (identifier) value: (output value: (variable name: (identifier))))))
+
+==================
+Braced arithmetic attribute value
+==================
+{widget value={$x + $y}}
+---
+(source_file
+  (custom_tag
+    name: (identifier)
+    (attribute name: (identifier) value: (output value: (binary_expression
+      left: (variable name: (identifier))
+      right: (variable name: (identifier)))))))
+
+==================
+Braced string attribute value
+==================
+{widget value={"text"}}
+---
+(source_file
+  (custom_tag
+    name: (identifier)
+    (attribute name: (identifier) value: (output value: (string)))))
+
+==================
+Braced dynamic-dot attribute value
+==================
+{widget selected={$map.{$key}}}
+---
+(source_file
+  (custom_tag
+    name: (identifier)
+    (attribute name: (identifier) value: (output value: (index_expression
+      object: (variable name: (identifier))
+      index: (variable name: (identifier)))))))
+
+==================
+Braced dynamic-dot method index attribute value
+==================
+{html_options selected={$label_type_ids.{$printer->get_id()}}}
+---
+(source_file
+  (custom_tag
+    name: (identifier)
+    (attribute name: (identifier) value: (output value: (index_expression
+      object: (variable name: (identifier))
+      index: (method_call_expression
+        object: (variable name: (identifier))
+        method: (identifier)))))))
+
+==================
+Neighboring direct and braced values preserve attribute order
+==================
+{widget before=1 selected={$x + $y} after=$z}{$after}
+---
+(source_file
+  (custom_tag
+    name: (identifier)
+    (attribute name: (identifier) value: (number))
+    (attribute name: (identifier) value: (output value: (binary_expression
+      left: (variable name: (identifier))
+      right: (variable name: (identifier)))))
+    (attribute name: (identifier) value: (variable name: (identifier))))
+  (output value: (variable name: (identifier))))
+
+==================
+Direct value remains unwrapped
+==================
+{widget selected=$x}{$after}
+---
+(source_file
+  (custom_tag
+    name: (identifier)
+    (attribute name: (identifier) value: (variable name: (identifier))))
+  (output value: (variable name: (identifier))))
+
+==================
+Spaces around equals and before inner close
+==================
+{widget value = {$x}}{widget value= {$x}}{widget value={$x }}
+---
+(source_file
+  (custom_tag name: (identifier)
+    (attribute name: (identifier) value: (output value: (variable name: (identifier)))))
+  (custom_tag name: (identifier)
+    (attribute name: (identifier) value: (output value: (variable name: (identifier)))))
+  (custom_tag name: (identifier)
+    (attribute name: (identifier) value: (output value: (variable name: (identifier))))))
+
+==================
+Leading inner whitespace is rejected and later output survives
+==================
+{widget value={ $x}}{$after}
+---
+(source_file
+  (ERROR (identifier) (identifier) (string_fragment))
+  (text)
+  (output value: (variable name: (identifier))))
+
+==================
+Malformed expression in braced attribute value keeps tag and later output
+==================
+{widget value={$x + }}{$after}
+---
+(source_file
+  (custom_tag
+    name: (identifier)
+    (attribute name: (identifier) value: (output
+      value: (variable name: (identifier))
+      (ERROR))))
+  (output value: (variable name: (identifier))))
+
+==================
+Incomplete outer generic tag keeps following output
+==================
+{widget value={$x}{$after}
+---
+(source_file
+  (custom_tag name: (identifier)
+    (attribute name: (identifier) value: (output value: (variable name: (identifier))))
+    (MISSING "}"))
+  (output value: (variable name: (identifier))))
+
+==================
+Incomplete generic tag in if retains block closer and root output
+==================
+{if true}{widget value={$x}{/if}{$after}
+---
+(source_file
+  (if_block
+    (if_tag condition: (boolean))
+    (custom_tag
+      name: (identifier)
+      (attribute
+        name: (identifier)
+        value: (output value: (variable name: (identifier))))
+      (MISSING "}"))
+    (if_close_tag))
+  (output value: (variable name: (identifier))))

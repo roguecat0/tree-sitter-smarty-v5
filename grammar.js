@@ -18,7 +18,7 @@ const classReservedWords = [...cases("self"), ...cases("parent")];
 export default grammar({
   name: "smarty2",
   externals: $ => [
-    $.text, $._output_attribute_error_marker,
+    $.text, $._output_attribute_error_marker, $._tag_attribute_output_space, $._tag_attribute_output_start,
     $.string_fragment, $._backtick_interpolation_start,
     $._literal_opener, $.literal_content, $.literal_close_tag,
     $._word_and_operator, $._word_or_operator, $._word_xor_operator,
@@ -70,7 +70,7 @@ export default grammar({
     output: $ => choice(
       // A no-source external marker forces a parse error after this explicit
       // recovery node without making any input spelling valid.
-      prec(9, seq("{", field("value", $.function_call_expression), alias(repeat1($.attribute), "ERROR"), $._output_attribute_error_marker, "}")),
+      prec(9, seq("{", field("value", $.function_call_expression), alias(repeat1(alias($._builtin_attribute, $.attribute)), "ERROR"), $._output_attribute_error_marker, "}")),
       prec(9, seq("{", field("value", $.function_call_expression), "}")),
       seq("{", field("value", $._expression), "}"),
     ),
@@ -98,7 +98,20 @@ export default grammar({
       // accepts them as ordinary names in the generic attribute slot.
       alias(choice(...controlWords, ...classReservedWords), $.identifier),
     ),
-    attribute: $ => seq(field("name", $._attribute_name), "=", field("value", $._tag_attribute_value)),
+    attribute: $ => seq(
+      field("name", $._attribute_name), "=",
+      choice(
+        seq(
+          $._tag_attribute_output_space,
+          field("value", alias($._tag_attribute_output_value, $.output)),
+        ),
+        field("value", choice(
+          prec(2, alias($._tag_attribute_output_value, $.output)),
+          $._tag_attribute_value,
+        )),
+      ),
+    ),
+    _builtin_attribute: $ => seq(field("name", $._attribute_name), "=", field("value", $._tag_attribute_value)),
     tag_attribute_name: _ => token(choice(
       /[0-9]+[a-zA-Z_][a-zA-Z0-9_-]*(?::[a-zA-Z0-9_-]+)*/,
       /[a-zA-Z_][a-zA-Z0-9_-]*-[a-zA-Z0-9_-]*(?::[a-zA-Z0-9_-]+)*/,
@@ -109,6 +122,14 @@ export default grammar({
     // general value in outputs, conditions, or other expression contexts.
     _tag_argument_value: $ => choice(prec(1, $._expression), prec(-1, $.identifier), prec(-1, $._not_identifier), prec(-1, alias($._modifier_identifier, $.identifier))),
     _tag_attribute_value: $ => choice(prec(1, $._expression), prec(-1, $.identifier), prec(-1, $._not_identifier), prec(-1, alias($._modifier_identifier, $.identifier))),
+    // Custom-tag attributes can take a nested braced expression. The opener
+    // token rejects Smarty's auto-literal `{ ` form; a conditional external
+    // gap token allows whitespace after `=` only when a braced value follows.
+    _tag_attribute_output_value: $ => seq(
+      $._tag_attribute_output_start,
+      field("value", $._expression),
+      "}",
+    ),
     if_block: $ => seq(
       $.if_tag, repeat($._node), repeat($.elseif_clause), optional($.else_clause), $.if_close_tag,
     ),
@@ -131,14 +152,14 @@ export default grammar({
         // Modern binding headers accept the same ordinary trailing attributes
         // and bare option flags as legacy headers. Keep them as direct, ordered
         // children after the synthesized source/key/item fields.
-        repeat(choice($.attribute, alias($.foreach_nocache_attribute, $.attribute), $.foreach_option)), "}",
+        repeat(choice(alias($._builtin_attribute, $.attribute), alias($.foreach_nocache_attribute, $.attribute), $.foreach_option)), "}",
       )),
       // Tree-sitter cannot create a named node from an empty repeat; an empty
       // legacy list is therefore represented by the absence of a header node.
       seq("{", "foreach", optional(token.immediate(/\s+/)), "}"),
       seq("{", "foreach", alias(repeat1(seq(
         token.immediate(/\s+/),
-        choice($.attribute, alias($.foreach_nocache_attribute, $.attribute), $.foreach_option, field("argument", $._legacy_foreach_argument)),
+        choice(alias($._builtin_attribute, $.attribute), alias($.foreach_nocache_attribute, $.attribute), $.foreach_option, field("argument", $._legacy_foreach_argument)),
       )), $.legacy_foreach_header), "}"),
     ),
     _legacy_foreach_argument: $ => $._tag_attribute_value,
@@ -163,7 +184,7 @@ export default grammar({
       optional(seq("step", field("step", $._expression))),
       repeat(choice(
         seq("max", "=", field("max", $._expression)),
-        $.attribute,
+        alias($._builtin_attribute, $.attribute),
         $.for_option,
         field("argument", $._for_bare_argument),
       )),
@@ -173,7 +194,7 @@ export default grammar({
       seq(
         field("initializer", $.for_initializer), repeat(seq(",", field("initializer", $.for_initializer))),
         ";", field("condition", $._expression), ";", field("update", $.for_update),
-        repeat(choice($.attribute, $.for_option, field("argument", $._for_bare_argument))),
+        repeat(choice(alias($._builtin_attribute, $.attribute), $.for_option, field("argument", $._for_bare_argument))),
         optional(field("argument", alias("step", $.identifier))),
       ),
       // Keep the loop boundary navigable when the C-style condition is omitted.
@@ -182,7 +203,7 @@ export default grammar({
       prec(-1, seq(
         field("initializer", $.for_initializer), repeat(seq(",", field("initializer", $.for_initializer))),
         ";", ";", field("update", $.for_update),
-        repeat(choice($.attribute, $.for_option, field("argument", $._for_bare_argument))),
+        repeat(choice(alias($._builtin_attribute, $.attribute), $.for_option, field("argument", $._for_bare_argument))),
         optional(field("argument", alias("step", $.identifier))),
         $._output_attribute_error_marker,
       )),
@@ -221,7 +242,7 @@ export default grammar({
     ),
     section_header_name: $ => choice(seq("name", "=", field("value", $.identifier)), prec(4, seq(field("value", $.identifier)))),
     section_header_loop: $ => choice(seq("loop", "=", field("value", $._expression)), field("value", $._expression)),
-    _section_option: $ => choice($.attribute, $.section_option),
+    _section_option: $ => choice(alias($._builtin_attribute, $.attribute), $.section_option),
     section_option: _ => "nocache",
     sectionelse_clause: $ => seq($.sectionelse_tag, repeat($._node)),
     sectionelse_tag: _ => seq("{", "sectionelse", "}"),
