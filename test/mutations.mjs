@@ -76,12 +76,19 @@ try {
   cpSync(join(root, 'src/tree_sitter'), join(dir, 'src/tree_sitter'), { recursive: true });
   cpSync(join(root, 'src/scanner.c'), join(dir, 'src/scanner.c'));
   writeFileSync(join(dir, 'package.json'), '{"type":"module"}');
-  const options = { cwd: dir, encoding: 'utf8', timeout: 30_000, env: process.env };
+  const options = { cwd: dir, encoding: 'utf8', env: process.env };
+  // The full Smarty grammar takes about 11s to regenerate in an isolated
+  // mutation workspace on this host. Leave a 120s finite ceiling so parallel
+  // parser builds or load spikes do not turn ordinary regeneration into a
+  // false mutation-suite failure. The focused fixture parse is much smaller;
+  // retain a separate 60s ceiling for it.
+  const generateOptions = {...options, timeout: 120_000};
+  const testOptions = {...options, timeout: 60_000};
   // The main runner has already passed the full unmodified corpus. Establish
   // that this isolated workspace is usable once, then regenerate only mutants.
   writeFileSync(join(dir, 'grammar.js'), original);
-  execFileSync('tree-sitter', ['generate'], options);
-  execFileSync('tree-sitter', ['test', '--show-fields', '--include', mutations[0].fixture], options);
+  execFileSync('tree-sitter', ['generate'], generateOptions);
+  execFileSync('tree-sitter', ['test', '--show-fields', '--include', mutations[0].fixture], testOptions);
   for (const mutation of mutations) {
     assert.equal(original.split(mutation.from).length, 2, `Mutation anchor must match exactly once: ${mutation.name}`);
     let modified = original.replace(mutation.from, mutation.to);
@@ -90,8 +97,8 @@ try {
       modified = modified.replace(mutation.alsoFrom, mutation.alsoTo);
     }
     writeFileSync(join(dir, 'grammar.js'), modified);
-    execFileSync('tree-sitter', ['generate'], options);
-    const result = spawnSync('tree-sitter', ['test', '--show-fields', '--include', mutation.fixture], options);
+    execFileSync('tree-sitter', ['generate'], generateOptions);
+    const result = spawnSync('tree-sitter', ['test', '--show-fields', '--include', mutation.fixture], testOptions);
     assert.ifError(result.error);
     assert.equal(result.status, 1, `Bug escaped: ${mutation.name}\n${result.stdout}\n${result.stderr}`);
     assert.match(result.stdout, /1 failure:/, 'Must be a tree assertion failure, not a build/tool failure');

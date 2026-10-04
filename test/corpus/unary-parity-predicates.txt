@@ -1,0 +1,163 @@
+==================
+condition odd
+==================
+{if $n is odd}Y{/if}
+---
+(source_file
+  (if_block
+    (if_tag
+      condition: (single_condition_expression
+        left: (variable name: (identifier))
+        operator: (single_condition_operator)))
+    (text)
+    (if_close_tag)))
+
+==================
+output not even
+==================
+{$n is not even}
+---
+(source_file
+  (output
+    value: (single_condition_expression
+      left: (variable name: (identifier))
+      operator: (single_condition_operator))))
+
+==================
+condition mixed case and repeated spaces
+==================
+{if $n  Is   NoT  Odd}Y{/if}
+---
+(source_file
+  (if_block
+    (if_tag
+      condition: (single_condition_expression
+        left: (variable name: (identifier))
+        operator: (single_condition_operator)))
+    (text)
+    (if_close_tag)))
+
+==================
+condition with syntax whitespace
+==================
+{if $n is  not even}Y{/if}
+---
+(source_file
+  (if_block
+    (if_tag
+      condition: (single_condition_expression
+        left: (variable name: (identifier))
+        operator: (single_condition_operator)))
+    (text)
+    (if_close_tag)))
+
+==================
+comparison precedence
+==================
+{if 0 < 2 is odd}Y{/if}
+---
+(source_file
+  (if_block
+    (if_tag
+      condition: (binary_expression
+        left: (number)
+        right: (single_condition_expression
+          left: (number)
+          operator: (single_condition_operator))))
+    (text)
+    (if_close_tag)))
+
+==================
+parenthesized comparison precedence
+==================
+{if (0 < 2) is odd}Y{/if}
+---
+(source_file
+  (if_block
+    (if_tag
+      condition: (single_condition_expression
+        left: (parenthesized_expression
+          (binary_expression left: (number) right: (number)))
+        operator: (single_condition_operator)))
+    (text)
+    (if_close_tag)))
+
+==================
+arithmetic operand
+==================
+{if 4+1 is even}Y{/if}
+---
+(source_file
+  (if_block
+    (if_tag
+      condition: (single_condition_expression
+        left: (binary_expression left: (number) right: (number))
+        operator: (single_condition_operator)))
+    (text)
+    (if_close_tag)))
+
+==================
+arithmetic after predicate
+==================
+{$n is even + 1}
+---
+(source_file
+  (output
+    value: (binary_expression
+      left: (single_condition_expression
+        left: (variable name: (identifier))
+        operator: (single_condition_operator))
+      right: (number))))
+
+==================
+boolean composition
+==================
+{if $a is odd && $b is not even}Y{/if}
+---
+(source_file
+  (if_block
+    (if_tag
+      condition: (binary_expression
+        left: (single_condition_expression left: (variable name: (identifier)) operator: (single_condition_operator))
+        right: (single_condition_expression left: (variable name: (identifier)) operator: (single_condition_operator))))
+    (text)
+    (if_close_tag)))
+
+==================
+parenthesized predicate
+==================
+{if ($n is odd) && $flag}Y{/if}
+---
+(source_file
+  (if_block
+    (if_tag
+      condition: (binary_expression
+        left: (parenthesized_expression
+          (single_condition_expression left: (variable name: (identifier)) operator: (single_condition_operator)))
+        right: (variable name: (identifier))))
+    (text)
+    (if_close_tag)))
+
+==================
+parenthesized modifier argument
+==================
+{$x|default:($n is odd)}
+---
+(source_file
+  (output
+    value: (modifier_expression
+      value: (variable name: (identifier))
+      name: (identifier)
+      argument: (parenthesized_expression
+        (single_condition_expression left: (variable name: (identifier)) operator: (single_condition_operator))))))
+
+==================
+binary parity grouping remains distinct
+==================
+{if $n is odd by 2}Y{/if}
+---
+(source_file
+  (if_block
+    (if_tag condition: (binary_expression left: (variable name: (identifier)) operator: (parity_by_operator) right: (number)))
+    (text)
+    (if_close_tag)))

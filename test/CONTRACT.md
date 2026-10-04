@@ -238,7 +238,7 @@ contexts and syntax boundary are audited in
 followed immediately by `$` remain string content. Configurable delimiters
 and HTML injection remain outside this contract. Other built-in blocks besides
 `if`, `foreach`, `for`, `section`, and `literal`, word arithmetic alias `mod`,
-unary `is [not] odd/even`, `is not div by`, other `is ...` predicates, additional bitwise/math operators,
+`is not div by`, other `is ...` predicates, additional bitwise/math operators,
 dynamic member access, and dynamic config variables remain current gaps to assess and address according to
 common usage and usefulness to parser consumers; the explicit plugin/custom-tag
 boundary is the exception. Recovery on unfinished and malformed input is part
@@ -253,10 +253,23 @@ right)` shape. The operator retains its original case, internal whitespace,
 and exact source range from `is` through `by`; its whitespace-delimited `odd`
 or `even` word must be separate. These predicates preserve the existing
 `is div by` precedence and compose in supported output and condition contexts.
-The distinct unary forms `is [not] odd/even` remain a syntax gap. See
+The unary forms `is odd`, `is even`, `is not odd`, and `is not even` are
+`single_condition_expression(left, operator: single_condition_operator)`
+postfix predicates with no right operand. Their operator node preserves case
+and internal whitespace and starts at `is`, excluding the required leading
+separator. Their precedence preserves the observed distinction between
+`0 < 2 is odd` and `(0 < 2) is odd`, and permits following arithmetic to wrap
+the predicate result. The external scanner consumes the required whitespace
+before `is`; the pinned compiler's semantic mapping mishandles tabs/newlines
+inside that lexer token despite accepting them lexically, so runtime evidence
+for those separators is intentionally limited. `{if 3 is oddness}` leaves
+`ness` after Smarty's `SINGLECOND` prefix and remains a compiler error. See
 [Task 043 trees and checks](../test/corpus/parity-grouping-predicates.txt) and
 its implementation evidence in
-[the task brief](../docs/tasks/043-parity-grouping-predicates.md).
+[the task brief](../docs/tasks/043-parity-grouping-predicates.md), plus [Task
+044 trees and checks](corpus/unary-parity-predicates.txt),
+[reference/full-engine/recovery/edit checks](unary-parity-predicates.test.mjs),
+and [its brief](../docs/tasks/044-unary-parity-predicates.md).
 
 Short `[...]` and `array(...)` literals produce `array_literal` nodes. Each
 comma-separated value is an `array_element` with a `value` field; keyed entries
@@ -394,14 +407,14 @@ the prefix, reports the malformed region, and retains a later output. Ordinary
 reference, range, recovery, and edit checks are in [Task 036](../docs/tasks/036-modifier-at-prefix.md).
 The recorder establishes syntax and modifier event/name only, not registration
 or execution.
-The exact Smarty predicate `is div by` is also a `binary_expression` with a
+The exact Smarty predicate `is div by` is a `binary_expression` with a
 named `div_by_operator`; it is available anywhere the shared full-expression
 rule is used, including outputs, conditions, and parenthesized modifier
 arguments. The operator's source range spans `is` through `by`, retaining the
 original whitespace between words. Its left side uses supported expressions;
 its right side uses a supported value, including unary and parenthesized forms.
-Other word aliases and `is ...` predicates remain unsupported, as do direct
-unparenthesized modifier arguments that use the narrower argument rule. Evidence:
+Other `is ...` predicates remain unsupported, as do direct unparenthesized
+modifier arguments that use the narrower argument rule. Evidence:
 [divisibility trees](corpus/divisibility-predicate.txt) and
 [reference/full-engine/recovery/edit checks](divisibility-predicate.test.mjs).
 Binary bitwise AND `&` is a shared-expression operator, represented by

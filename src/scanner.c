@@ -19,6 +19,7 @@ enum TokenType {
   WORD_EQUALITY_OPERATOR,
   WORD_RELATIONAL_OPERATOR,
   BRACKET_BRACED_INDEX_OPEN,
+  SINGLE_CONDITION_OPERATOR,
 };
 
 typedef struct {
@@ -238,19 +239,81 @@ static bool scan_word_comparison_operator(TSLexer *lexer, const bool *valid_symb
   return true;
 }
 
-static bool scan_word_operator_with_gap(TSLexer *lexer, const bool *valid_symbols) {
+static bool scan_single_condition_operator(TSLexer *lexer);
+
+static bool scan_gap_operator(TSLexer *lexer, const bool *valid_symbols) {
   if (!is_smarty_whitespace(lexer->lookahead)) return false;
   while (is_smarty_whitespace(lexer->lookahead)) lexer->advance(lexer, true);
   int32_t first = ascii_lower(lexer->lookahead);
   if (first == 'n') {
     if (scan_nocache_or_neq_after_gap(lexer, valid_symbols)) return true;
   }
+  if (first == 'i' && valid_symbols[SINGLE_CONDITION_OPERATOR])
+    return scan_single_condition_operator(lexer);
   if ((first == 'e' || first == 'n' || first == 'g' || first == 'l') &&
       (valid_symbols[WORD_EQUALITY_OPERATOR] || valid_symbols[WORD_RELATIONAL_OPERATOR]))
     return scan_word_comparison_operator(lexer, valid_symbols);
   if (first == 'a' || first == 'o' || first == 'x')
     return scan_word_operator(lexer, valid_symbols);
   return false;
+}
+
+// Skip SINGLECOND's leading whitespace so the public operator range starts at
+// `is`. The gap dispatcher calls this only when `is` is the next word and
+// defers to the longer grouping predicate when `by` follows.
+static bool consume_single_condition_phrase(TSLexer *lexer, bool mark_operator_end) {
+  if (ascii_lower(lexer->lookahead) != 'i') return false;
+  lexer->advance(lexer, false);
+  if (ascii_lower(lexer->lookahead) != 's') return false;
+  lexer->advance(lexer, false);
+  if (!is_smarty_whitespace(lexer->lookahead)) return false;
+  while (is_smarty_whitespace(lexer->lookahead)) lexer->advance(lexer, false);
+
+  if (ascii_lower(lexer->lookahead) == 'n') {
+    lexer->advance(lexer, false);
+    if (ascii_lower(lexer->lookahead) != 'o') return false;
+    lexer->advance(lexer, false);
+    if (ascii_lower(lexer->lookahead) != 't') return false;
+    lexer->advance(lexer, false);
+    if (!is_smarty_whitespace(lexer->lookahead)) return false;
+    while (is_smarty_whitespace(lexer->lookahead)) lexer->advance(lexer, false);
+  }
+
+  const int32_t first = ascii_lower(lexer->lookahead);
+  if (first != 'o' && first != 'e') return false;
+  lexer->advance(lexer, false);
+  if (first == 'o') {
+    if (ascii_lower(lexer->lookahead) != 'd') return false;
+    lexer->advance(lexer, false);
+    if (ascii_lower(lexer->lookahead) != 'd') return false;
+    lexer->advance(lexer, false);
+  } else {
+    if (ascii_lower(lexer->lookahead) != 'v') return false;
+    lexer->advance(lexer, false);
+    if (ascii_lower(lexer->lookahead) != 'e') return false;
+    lexer->advance(lexer, false);
+    if (ascii_lower(lexer->lookahead) != 'n') return false;
+    lexer->advance(lexer, false);
+  }
+  if (mark_operator_end) lexer->mark_end(lexer);
+
+  // `scond` has no word-end assertion in the pinned lexer, so `oddness`
+  // still emits this prefix and then fails on the unconsumed `ness`. Only
+  // distinguish the overlapping complete `is ... odd/even by` production.
+  if (is_smarty_whitespace(lexer->lookahead)) {
+    while (is_smarty_whitespace(lexer->lookahead)) lexer->advance(lexer, false);
+    if (ascii_lower(lexer->lookahead) == 'b') {
+      lexer->advance(lexer, false);
+      if (ascii_lower(lexer->lookahead) == 'y') return false;
+    }
+  }
+  return true;
+}
+
+static bool scan_single_condition_operator(TSLexer *lexer) {
+  if (!consume_single_condition_phrase(lexer, true)) return false;
+  lexer->result_symbol = SINGLE_CONDITION_OPERATOR;
+  return true;
 }
 
 // Called after the opening `{` (and optional `/`) has been consumed. A
@@ -489,13 +552,11 @@ bool tree_sitter_smarty2_external_scanner_scan(void *payload, TSLexer *lexer, co
       scan_tag_attribute_output_start(lexer)) return true;
   if (!state->in_literal && valid_symbols[BRACKET_BRACED_INDEX_OPEN] &&
       scan_bracket_braced_index_open(lexer)) return true;
-  if (!state->in_literal && (valid_symbols[WORD_AND_OPERATOR] || valid_symbols[WORD_OR_OPERATOR] || valid_symbols[WORD_XOR_OPERATOR] ||
-      valid_symbols[WORD_EQUALITY_OPERATOR] || valid_symbols[WORD_RELATIONAL_OPERATOR]) &&
-      scan_word_operator_with_gap(lexer, valid_symbols)) return true;
-  if (!state->in_literal && valid_symbols[OUTPUT_NOCACHE_NAME] && is_smarty_whitespace(lexer->lookahead)) {
-    do lexer->advance(lexer, true); while (is_smarty_whitespace(lexer->lookahead));
-    if (ascii_lower(lexer->lookahead) == 'n' && scan_nocache_or_neq_after_gap(lexer, valid_symbols)) return true;
-  }
+  if (!state->in_literal && !valid_symbols[TEXT] && is_smarty_whitespace(lexer->lookahead) &&
+      (valid_symbols[OUTPUT_NOCACHE_NAME] || valid_symbols[WORD_AND_OPERATOR] || valid_symbols[WORD_OR_OPERATOR] ||
+       valid_symbols[WORD_XOR_OPERATOR] || valid_symbols[WORD_EQUALITY_OPERATOR] ||
+       valid_symbols[WORD_RELATIONAL_OPERATOR] || valid_symbols[SINGLE_CONDITION_OPERATOR]))
+    return scan_gap_operator(lexer, valid_symbols);
   if (valid_symbols[LITERAL_OPENER] && scan_literal_opener(lexer, state)) return true;
   if (valid_symbols[LITERAL_CONTENT] && state->in_literal && scan_literal_content(lexer, state)) return true;
   if (valid_symbols[LITERAL_CLOSE_TAG] && (state->in_literal || state->expect_literal_close))

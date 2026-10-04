@@ -4257,6 +4257,15 @@
           },
           "named": true,
           "value": "binary_expression"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_if_single_condition_expression"
+          },
+          "named": true,
+          "value": "single_condition_expression"
         }
       ]
     },
@@ -4434,6 +4443,31 @@
             "content": {
               "type": "SYMBOL",
               "name": "_if_unary"
+            }
+          }
+        ]
+      }
+    },
+    "_if_single_condition_expression": {
+      "type": "PREC_LEFT",
+      "value": 0,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "FIELD",
+            "name": "left",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_if_arithmetic"
+            }
+          },
+          {
+            "type": "FIELD",
+            "name": "operator",
+            "content": {
+              "type": "SYMBOL",
+              "name": "single_condition_operator"
             }
           }
         ]
@@ -5274,6 +5308,10 @@
           },
           "named": true,
           "value": "binary_expression"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "single_condition_expression"
         }
       ]
     },
@@ -5363,6 +5401,31 @@
         "type": "PATTERN",
         "value": "is[\\t \\r\\n\\v\\f]+(?:not[\\t \\r\\n\\v\\f]+)?(?:odd|even)[\\t \\r\\n\\v\\f]+by",
         "flags": "i"
+      }
+    },
+    "single_condition_expression": {
+      "type": "PREC_LEFT",
+      "value": 0,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "FIELD",
+            "name": "left",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_arithmetic"
+            }
+          },
+          {
+            "type": "FIELD",
+            "name": "operator",
+            "content": {
+              "type": "SYMBOL",
+              "name": "single_condition_operator"
+            }
+          }
+        ]
       }
     },
     "_unary": {
@@ -7691,6 +7754,10 @@
     {
       "type": "SYMBOL",
       "name": "_bracket_braced_index_open"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "single_condition_operator"
     }
   ],
   "inline": [],
