@@ -1,0 +1,147 @@
+==================
+Output casts and precedence
+==================
+{(int) $x}{(INT)$x}{(string) 12}{(array)$x}{(int) -$x + 1}{(int) ($x + 1)}
+---
+(source_file
+  (output value: (typecast_expression operator: (typecast_operator) argument: (variable name: (identifier))))
+  (output value: (typecast_expression operator: (typecast_operator) argument: (variable name: (identifier))))
+  (output value: (typecast_expression operator: (typecast_operator) argument: (number)))
+  (output value: (typecast_expression operator: (typecast_operator) argument: (variable name: (identifier))))
+  (output value: (binary_expression
+    left: (typecast_expression operator: (typecast_operator)
+      argument: (unary_expression argument: (variable name: (identifier))))
+    right: (number)))
+  (output value: (typecast_expression operator: (typecast_operator)
+    argument: (parenthesized_expression
+      (binary_expression left: (variable name: (identifier)) right: (number))))))
+
+==================
+Typecasts in if comparison
+==================
+{if (int) $x > 0}Y{elseif (string)$name == "ok"}S{/if}
+---
+(source_file
+  (if_block
+    (if_tag condition: (binary_expression
+      left: (typecast_expression operator: (typecast_operator) argument: (variable name: (identifier)))
+      right: (number)))
+    (text)
+    (elseif_clause (elseif_tag condition: (binary_expression
+      left: (typecast_expression operator: (typecast_operator) argument: (variable name: (identifier)))
+      right: (string)))
+      (text))
+    (if_close_tag)))
+
+==================
+Generic positional cast expression remains one argument
+==================
+{widget $a + (int) $x}
+---
+(source_file
+  (custom_tag name: (identifier)
+    argument: (binary_expression
+      left: (variable name: (identifier))
+      right: (typecast_expression operator: (typecast_operator) argument: (variable name: (identifier))))))
+
+==================
+Generic named cast expression remains one attribute value
+==================
+{widget value=(int) $x}
+---
+(source_file
+  (custom_tag name: (identifier)
+    (attribute name: (identifier)
+      value: (typecast_expression operator: (typecast_operator) argument: (variable name: (identifier))))))
+
+==================
+Built-in assignment attribute cast
+==================
+{assign var=x value=(int) $x}
+---
+(source_file
+  (custom_tag name: (identifier)
+    (attribute name: (identifier) value: (identifier))
+    (attribute name: (identifier)
+      value: (typecast_expression operator: (typecast_operator) argument: (variable name: (identifier))))))
+
+==================
+Cast in instance method argument
+==================
+{$o->f((int) $x)}
+---
+(source_file
+  (output value: (method_call_expression
+    object: (variable name: (identifier))
+    method: (identifier)
+    argument: (typecast_expression operator: (typecast_operator) argument: (variable name: (identifier))))))
+
+==================
+Modifier input cast
+==================
+{(int) $x|escape}
+---
+(source_file
+  (output value: (modifier_expression
+    value: (typecast_expression operator: (typecast_operator) argument: (variable name: (identifier)))
+    name: (identifier))))
+
+==================
+Modifier argument cast
+==================
+{$x|default:(int) $y}
+---
+(source_file
+  (output value: (modifier_expression
+    value: (variable name: (identifier))
+    name: (identifier)
+    argument: (typecast_expression operator: (typecast_operator) argument: (variable name: (identifier))))))
+
+==================
+Cast in bracket index
+==================
+{$a[(int) $x]}
+---
+(source_file
+  (output value: (index_expression
+    object: (variable name: (identifier))
+    index: (typecast_expression operator: (typecast_operator) argument: (variable name: (identifier))))))
+
+==================
+Cast array key and value
+==================
+{array((int) $x=>(string) $y)}
+---
+(source_file
+  (output value: (array_literal
+    (array_element
+      key: (typecast_expression operator: (typecast_operator) argument: (variable name: (identifier)))
+      value: (typecast_expression operator: (typecast_operator) argument: (variable name: (identifier)))))))
+
+==================
+Ordinary parenthesized identifier stays a primary
+==================
+{(foo)}
+---
+(source_file (output value: (parenthesized_expression (identifier))))
+
+==================
+Invalid cast spelling preserves following output
+==================
+{array((foo) $x)}{$after}
+---
+(source_file
+  (output value: (array_literal
+    (ERROR (parenthesized_expression (identifier)))
+    (array_element value: (variable name: (identifier)))))
+  (output value: (variable name: (identifier))))
+
+==================
+Missing cast operand retains next output
+==================
+{array((int)=>"v")}{$after}
+---
+(source_file
+  (ERROR (typecast_operator) (string_fragment))
+  (text)
+  (output value: (variable name: (identifier))))

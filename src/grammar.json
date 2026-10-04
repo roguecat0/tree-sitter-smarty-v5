@@ -4444,6 +4444,10 @@
         {
           "type": "SYMBOL",
           "name": "modifier_expression"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "typecast_expression"
         }
       ]
     },
@@ -5310,8 +5314,62 @@
         {
           "type": "SYMBOL",
           "name": "modifier_expression"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "typecast_expression"
         }
       ]
+    },
+    "typecast_expression": {
+      "type": "PREC",
+      "value": 4,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "FIELD",
+            "name": "operator",
+            "content": {
+              "type": "SYMBOL",
+              "name": "typecast_operator"
+            }
+          },
+          {
+            "type": "FIELD",
+            "name": "argument",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_typecast_argument"
+            }
+          }
+        ]
+      }
+    },
+    "_typecast_argument": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "_primary"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "unary_expression"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "typecast_expression"
+        }
+      ]
+    },
+    "typecast_operator": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "\\((?:int(?:eger)?|bool(?:ean)?|float|double|real|string|binary|array|object)\\)",
+        "flags": "i"
+      }
     },
     "_primary": {
       "type": "CHOICE",
@@ -5601,6 +5659,10 @@
                   {
                     "type": "SYMBOL",
                     "name": "unary_expression"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "typecast_expression"
                   }
                 ]
               }
@@ -6009,6 +6071,10 @@
         {
           "type": "SYMBOL",
           "name": "unary_expression"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "typecast_expression"
         },
         {
           "type": "SYMBOL",
@@ -7207,6 +7273,10 @@
     "_modifier_argument": {
       "type": "CHOICE",
       "members": [
+        {
+          "type": "SYMBOL",
+          "name": "typecast_expression"
+        },
         {
           "type": "SYMBOL",
           "name": "section_property_expression"

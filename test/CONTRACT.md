@@ -234,12 +234,14 @@ also have a `key` field. Empty arrays and trailing commas are supported. Keys
 may be supported primary expressions or bare identifier names; supported
 `unary_expression` forms are also accepted directly as keys and retain their
 `operator` and `argument` fields. An unparenthesized compound expression key
-remains rejected; a compound key must be parenthesized. Typecast keys such as
-`(int) $x` are a separate confirmed Smarty gap queued as Task 041, and are not
-implied by unary-key support. Values use the full supported expression
-grammar. Nested literals compose as primary expressions and are retained in
-unknown tag arguments and attributes. Leading and repeated commas, spread,
-assignment, and PHP runtime array behavior are outside this tree contract.
+remains rejected; a compound key must be parenthesized. Task 041 adds a
+`typecast_expression` key and value shape for Smarty's shared `TYPECAST value`
+production; this is separate from unary-key support. The independently reviewed
+implementation and all audited context trees are covered by [Task 041](../docs/tasks/041-typecast-expressions.md).
+Values use the full supported expression grammar. Nested literals compose as
+primary expressions and are retained in unknown tag arguments and attributes.
+Leading and repeated commas, spread, assignment, and PHP runtime array behavior
+are outside this tree contract.
 Evidence: [array trees](corpus/array-literals.txt), [unary key trees and
 reference/recovery/edit checks](unary-array-keys.test.mjs).
 

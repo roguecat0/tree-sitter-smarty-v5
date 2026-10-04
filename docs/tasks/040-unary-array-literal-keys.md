@@ -273,5 +273,5 @@ and trailing output. Those assertions were added; the focused check and full
 `npm test` passed again, and the reviewer accepted the revision. No findings
 remain within this task's scope. The orchestrator marks this task complete.
 
-Task 041, for the separately confirmed typecast-key syntax, is the next task to
-create and review after this commit.
+Task 041 is complete after independent brief and implementation review; its
+separate typecast expression family includes reviewed typecast array keys.

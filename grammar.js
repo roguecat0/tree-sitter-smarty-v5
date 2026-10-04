@@ -308,7 +308,7 @@ export default grammar({
       field("operator", alias(token(/[nN][oO][tT]/), $.word_operator)),
       token.immediate(/[\t \r\n\v\f]+/), field("argument", $._if_unary),
     )),
-    _if_modified: $ => choice($._if_primary, $.modifier_expression),
+    _if_modified: $ => choice($._if_primary, $.modifier_expression, $.typecast_expression),
     _if_primary: $ => choice(
       // Smarty rejects the auto-literal `{ ` spelling. Consume this exact
       // boundary as a local parse error instead of letting global extras
@@ -381,7 +381,17 @@ export default grammar({
       field("operator", alias(token(/[nN][oO][tT]/), $.word_operator)),
       token.immediate(/[\t \r\n\v\f]+/), field("argument", $._unary),
     )),
-    _modified: $ => choice($._primary, $.modifier_expression),
+    _modified: $ => choice($._primary, $.modifier_expression, $.typecast_expression),
+    // Smarty's TYPECAST lexer pattern consumes optional following whitespace,
+    // but this tree's operator field deliberately spans only the parenthesized
+    // spelling; global extras account for the gap before its operand. Keep the
+    // operand at the existing unary/value boundary, so a prefix sign belongs
+    // to the cast but adjacent modifier or arithmetic expressions remain out.
+    typecast_expression: $ => prec(4, seq(
+      field("operator", $.typecast_operator), field("argument", $._typecast_argument),
+    )),
+    _typecast_argument: $ => choice($._primary, $.unary_expression, $.typecast_expression),
+    typecast_operator: _ => token(/\((?:int(?:eger)?|bool(?:ean)?|float|double|real|string|binary|array|object)\)/i),
     // Static Smarty IDs are primary values. Keep digit-prefixed ID tokens in
     // the same node family; pure decimals remain numbers and primitives keep
     // their dedicated token types.
@@ -401,7 +411,7 @@ export default grammar({
       seq("array", "(", optional(seq($.array_element, repeat(seq(",", $.array_element)), optional(","))), ")"),
     ),
     array_element: $ => choice(
-      seq(field("key", choice($._primary, $.unary_expression)), "=>", field("value", $._expression)),
+      seq(field("key", choice($._primary, $.unary_expression, $.typecast_expression)), "=>", field("value", $._expression)),
       field("value", $._expression),
     ),
     variable: $ => seq("$", field("name", alias(token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/), $.identifier))),
@@ -437,7 +447,7 @@ export default grammar({
     // Bare [true]/[false]/[null] are Smarty section names. Only parentheses or
     // an actual compound expression make primitives expression-valued indices.
     _index_value: $ => choice(
-      $._nonliteral_primary, $.unary_expression, $.modifier_expression, $.binary_expression,
+      $._nonliteral_primary, $.unary_expression, $.typecast_expression, $.modifier_expression, $.binary_expression,
       alias($._xor_expression, $.binary_expression), alias($._or_expression, $.binary_expression),
       alias($._word_or_expression, $.binary_expression), alias($._and_expression, $.binary_expression),
       alias($._word_and_expression, $.binary_expression),
@@ -518,6 +528,6 @@ export default grammar({
       field("value", $._modified), choice(token(prec(2, /\|@{1,2}/)), "|"), field("name", $.identifier),
       repeat(seq(":", field("argument", $._modifier_argument))),
     )),
-    _modifier_argument: $ => choice($.section_property_expression, $.variable, $.loop_metadata_expression, $.config_variable, $.member_expression, $.method_call_expression, $.function_call_expression, $.static_method_call_expression, $.index_expression, alias($._config_index, $.index_expression), $.array_literal, $.number, $.string, $.interpolated_string, $.parenthesized_expression, $.boolean, $.null, $.class_constant_expression, $.identifier, alias($._modifier_identifier, $.identifier)),
+    _modifier_argument: $ => choice($.typecast_expression, $.section_property_expression, $.variable, $.loop_metadata_expression, $.config_variable, $.member_expression, $.method_call_expression, $.function_call_expression, $.static_method_call_expression, $.index_expression, alias($._config_index, $.index_expression), $.array_literal, $.number, $.string, $.interpolated_string, $.parenthesized_expression, $.boolean, $.null, $.class_constant_expression, $.identifier, alias($._modifier_identifier, $.identifier)),
   }
 });
