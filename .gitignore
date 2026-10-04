@@ -50,3 +50,4 @@ zig-out/
 # my
 vendor
 corpus/*
+templates_c/
