@@ -14,6 +14,25 @@ parentheses, left-associative arithmetic, and modifier applications. Multiplicat
 division, and remainder bind tighter than addition and subtraction. Modifier
 applications bind tighter than arithmetic in this subset.
 
+Every currently supported expression output accepts one or more trailing,
+case-insensitive `nocache` suffixes. Each occurrence is a separate ordered
+direct `attribute` child of `output`, with an exact-spelling `identifier` in
+`name`; `value` continues to own the complete output expression. A bare suffix
+has no `value` field, while a valued suffix preserves its complete expression
+under `attribute.value`. Suffix parsing includes the shared symbolic and word
+comparison/boolean operators, bitwise `&`, and `is div by` expression families.
+Standalone bare identifiers remain supported outputs without a suffix; the
+ambiguous `{widget nocache}` remains a generic tag with a positional identifier
+argument. Smarty's compiler accepts nocache flag values
+`true`, `false`, `1`, and `0`, quoted or unquoted, while the syntax tree retains
+wider parsed expressions and case spelling. `assign`, `nofilter`, other output
+attributes, and runtime caching behavior remain separate gaps. The recorder's
+acceptance of `{$x nocache|escape}` does not establish ownership after the
+suffix; the full compiler rejects that form. See [Task 042 trees and
+checks](../test/corpus/output-nocache-attribute.txt),
+[Node checks](../test/output-nocache-attribute.test.mjs), and the
+[implementation evidence](../docs/tasks/042-output-nocache-attribute.md#implementation-and-corpus-evidence).
+
 Whitespace-delimited, case-insensitive prefix `not` is a shared expression
 operator. It produces `unary_expression` with a `word_operator` in `operator`
 and its complete operand in `argument`, at the same binding level as symbolic

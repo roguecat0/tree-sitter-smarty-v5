@@ -19,7 +19,7 @@ export default grammar({
   name: "smarty2",
   externals: $ => [
     $.text, $._output_attribute_error_marker, $._tag_attribute_output_space, $._tag_attribute_output_start,
-    $._if_header_close_recovery,
+    $._if_header_close_recovery, $._output_nocache_name,
     $.string_fragment, $._backtick_interpolation_start,
     $._literal_opener, $.literal_content, $.literal_close_tag,
     $._word_and_operator, $._word_or_operator, $._word_xor_operator,
@@ -72,6 +72,12 @@ export default grammar({
     output: $ => choice(
       // A no-source external marker forces a parse error after this explicit
       // recovery node without making any input spelling valid.
+      // Smarty's `outattr` suffix is deliberately limited here to nocache;
+      // assign/nofilter and arbitrary attributes have separate contracts.
+      // This shared expression path mirrors `outattr ::= output attributes`
+      // while the explicit function-call error alternative preserves useful
+      // recovery for compiler-invalid named output attributes.
+      prec(-1, seq("{", field("value", $._output_nocache_value), repeat1(alias($._output_nocache_attribute, $.attribute)), "}")),
       prec(9, seq("{", field("value", $.function_call_expression), alias(repeat1(alias($._builtin_attribute, $.attribute)), "ERROR"), $._output_attribute_error_marker, "}")),
       prec(9, seq("{", field("value", $.function_call_expression), "}")),
       seq("{", field("value", $._expression), "}"),
@@ -114,6 +120,20 @@ export default grammar({
       ),
     ),
     _builtin_attribute: $ => seq(field("name", $._attribute_name), "=", field("value", $._tag_attribute_value)),
+    _output_nocache_attribute: $ => seq(
+      field("name", alias($._output_nocache_name, $.identifier)),
+      optional(seq("=", field("value", $._expression))),
+    ),
+    // Keep bare static identifiers available to generic tags such as
+    // `{widget nocache}`. These suffix-only aliases extend supported output
+    // expressions without broadening the separate bracket-index value rule.
+    _output_nocache_value: $ => choice(
+      $._index_value, $.section_property_expression, $.boolean, $.null,
+      alias($._bitwise_and_expression, $.binary_expression),
+      alias($._word_equality_expression, $.binary_expression),
+      alias($._word_relational_expression, $.binary_expression),
+      alias($._div_by_expression, $.binary_expression),
+    ),
     tag_attribute_name: _ => token(choice(
       /[0-9]+[a-zA-Z_][a-zA-Z0-9_-]*(?::[a-zA-Z0-9_-]+)*/,
       /[a-zA-Z_][a-zA-Z0-9_-]*-[a-zA-Z0-9_-]*(?::[a-zA-Z0-9_-]+)*/,

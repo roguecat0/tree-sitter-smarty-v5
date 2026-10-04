@@ -1,0 +1,150 @@
+==================
+Upstream parent template output
+==================
+{$test nocache}
+---
+(source_file
+  (output
+    value: (variable name: (identifier))
+    (attribute name: (identifier))))
+
+==================
+Upstream template function parameter output
+==================
+{$param nocache}
+---
+(source_file
+  (output
+    value: (variable name: (identifier))
+    (attribute name: (identifier))))
+
+==================
+Parenthesized arithmetic output with valued suffix
+==================
+{($x + 1) nocache=true}
+---
+(source_file
+  (output
+    value: (parenthesized_expression
+      (binary_expression left: (variable name: (identifier)) right: (number)))
+    (attribute name: (identifier) value: (boolean))))
+
+==================
+Modifier output with bare suffix
+==================
+{$x|escape NoCache}
+---
+(source_file
+  (output
+    value: (modifier_expression value: (variable name: (identifier)) name: (identifier))
+    (attribute name: (identifier))))
+
+==================
+Repeated bare and valued suffixes retain order and spelling
+==================
+{$x nocache NoCache=true NOCACHE=0}
+---
+(source_file
+  (output
+    value: (variable name: (identifier))
+    (attribute name: (identifier))
+    (attribute name: (identifier) value: (boolean))
+    (attribute name: (identifier) value: (number))))
+
+==================
+Built-in isset output with suffix
+==================
+{isset($x) nocache}
+---
+(source_file
+  (output
+    value: (function_call_expression name: (identifier) argument: (variable name: (identifier)))
+    (attribute name: (identifier))))
+
+==================
+Suffix composition in a block next to a generic tag and output
+==================
+{if $enabled}{$value nocache}{/if}{widget value=$value}{$after}
+---
+(source_file
+  (if_block
+    (if_tag condition: (variable name: (identifier)))
+    (output value: (variable name: (identifier)) (attribute name: (identifier)))
+    (if_close_tag))
+  (custom_tag name: (identifier) (attribute name: (identifier) value: (variable name: (identifier))))
+  (output value: (variable name: (identifier))))
+
+==================
+Compound output suffix leaves following text and output as siblings
+==================
+{($x + 1) nocache}tail{$after}
+---
+(source_file
+  (output
+    value: (parenthesized_expression (binary_expression left: (variable name: (identifier)) right: (number)))
+    (attribute name: (identifier)))
+  (text)
+  (output value: (variable name: (identifier))))
+
+==================
+Method, static call, and section property outputs
+==================
+{$obj->run() nocache}{DateTime::getLastErrors() nocache}{$smarty.section.row.index nocache}
+---
+(source_file
+  (output
+    value: (method_call_expression object: (variable name: (identifier)) method: (identifier))
+    (attribute name: (identifier)))
+  (output
+    value: (static_method_call_expression class: (identifier) method: (identifier))
+    (attribute name: (identifier)))
+  (output
+    value: (section_property_expression section: (identifier) property: (identifier))
+    (attribute name: (identifier))))
+
+==================
+Unknown tag bare nocache remains a positional identifier
+==================
+{widget nocache}
+---
+(source_file (custom_tag name: (identifier) argument: (identifier)))
+
+==================
+Word equality ne keeps its operator before the suffix
+==================
+{$x ne $y nocache}
+---
+(source_file
+  (output
+    value: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier)))
+    (attribute name: (identifier))))
+
+==================
+Word equality neq keeps its operator before the suffix
+==================
+{$x neq $y nocache}
+---
+(source_file
+  (output
+    value: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier)))
+    (attribute name: (identifier))))
+
+==================
+Bitwise and output keeps its operator before the suffix
+==================
+{$x & $y nocache}
+---
+(source_file
+  (output
+    value: (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier)))
+    (attribute name: (identifier))))
+
+==================
+Word relational output retains expression structure
+==================
+{$x GTE $y nocache}
+---
+(source_file
+  (output
+    value: (binary_expression left: (variable name: (identifier)) operator: (word_operator) right: (variable name: (identifier)))
+    (attribute name: (identifier))))

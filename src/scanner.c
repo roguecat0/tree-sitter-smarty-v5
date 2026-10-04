@@ -7,6 +7,7 @@ enum TokenType {
   TAG_ATTRIBUTE_OUTPUT_SPACE,
   TAG_ATTRIBUTE_OUTPUT_START,
   IF_HEADER_CLOSE_RECOVERY,
+  OUTPUT_NOCACHE_NAME,
   STRING_FRAGMENT,
   BACKTICK_INTERPOLATION_START,
   LITERAL_OPENER,
@@ -25,12 +26,38 @@ typedef struct {
   bool expect_literal_close;
 } ScannerState;
 
+static int32_t ascii_lower(int32_t c);
+static bool is_smarty_whitespace(int32_t c);
+
 static bool is_ascii_digit(int32_t c) {
   return c >= '0' && c <= '9';
 }
 
 static bool is_ascii_identifier_start(int32_t c) {
   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
+}
+
+static bool scan_nocache_or_neq_after_gap(TSLexer *lexer, const bool *valid_symbols) {
+  if (ascii_lower(lexer->lookahead) != 'n') return false;
+  lexer->advance(lexer, false);
+  if (ascii_lower(lexer->lookahead) == 'e' && valid_symbols[WORD_EQUALITY_OPERATOR]) {
+    lexer->advance(lexer, false);
+    if (ascii_lower(lexer->lookahead) == 'q') lexer->advance(lexer, false);
+    lexer->mark_end(lexer);
+    if (!is_smarty_whitespace(lexer->lookahead)) return false;
+    lexer->result_symbol = WORD_EQUALITY_OPERATOR;
+    return true;
+  }
+  if (ascii_lower(lexer->lookahead) != 'o' || !valid_symbols[OUTPUT_NOCACHE_NAME]) return false;
+  static const char rest[] = "ocache";
+  for (size_t i = 0; i < sizeof(rest) - 1; i++) {
+    if (ascii_lower(lexer->lookahead) != rest[i]) return false;
+    lexer->advance(lexer, false);
+  }
+  if (is_ascii_identifier_start(lexer->lookahead) || is_ascii_digit(lexer->lookahead) || lexer->lookahead == '-') return false;
+  lexer->mark_end(lexer);
+  lexer->result_symbol = OUTPUT_NOCACHE_NAME;
+  return true;
 }
 
 static int32_t ascii_lower(int32_t c) {
@@ -215,6 +242,9 @@ static bool scan_word_operator_with_gap(TSLexer *lexer, const bool *valid_symbol
   if (!is_smarty_whitespace(lexer->lookahead)) return false;
   while (is_smarty_whitespace(lexer->lookahead)) lexer->advance(lexer, true);
   int32_t first = ascii_lower(lexer->lookahead);
+  if (first == 'n') {
+    if (scan_nocache_or_neq_after_gap(lexer, valid_symbols)) return true;
+  }
   if ((first == 'e' || first == 'n' || first == 'g' || first == 'l') &&
       (valid_symbols[WORD_EQUALITY_OPERATOR] || valid_symbols[WORD_RELATIONAL_OPERATOR]))
     return scan_word_comparison_operator(lexer, valid_symbols);
@@ -462,6 +492,10 @@ bool tree_sitter_smarty2_external_scanner_scan(void *payload, TSLexer *lexer, co
   if (!state->in_literal && (valid_symbols[WORD_AND_OPERATOR] || valid_symbols[WORD_OR_OPERATOR] || valid_symbols[WORD_XOR_OPERATOR] ||
       valid_symbols[WORD_EQUALITY_OPERATOR] || valid_symbols[WORD_RELATIONAL_OPERATOR]) &&
       scan_word_operator_with_gap(lexer, valid_symbols)) return true;
+  if (!state->in_literal && valid_symbols[OUTPUT_NOCACHE_NAME] && is_smarty_whitespace(lexer->lookahead)) {
+    do lexer->advance(lexer, true); while (is_smarty_whitespace(lexer->lookahead));
+    if (ascii_lower(lexer->lookahead) == 'n' && scan_nocache_or_neq_after_gap(lexer, valid_symbols)) return true;
+  }
   if (valid_symbols[LITERAL_OPENER] && scan_literal_opener(lexer, state)) return true;
   if (valid_symbols[LITERAL_CONTENT] && state->in_literal && scan_literal_content(lexer, state)) return true;
   if (valid_symbols[LITERAL_CLOSE_TAG] && (state->in_literal || state->expect_literal_close))

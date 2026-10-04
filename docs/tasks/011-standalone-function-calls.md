@@ -338,3 +338,18 @@ boundary now records this remaining gap.
   regressions, 004/005 expectation corrections, all requested structural and
   edit checks, current generated source, `npm test`, and the hash-matched corpus
   evidence. One final documentation contradiction was corrected and rechecked.
+
+## Output `nocache` boundary update (2026-10-04)
+
+Task 042 implements the standard trailing `nocache` suffix for supported
+function-shaped outputs, using compiler-confirmed `{isset($x) nocache}` as the
+built-in witness. This resolves the `nocache` portion of the deferred output
+attribute boundary recorded above. Other function-output attributes remain
+separate gaps; the recorder's acceptance of `{$x nocache|escape}` still does
+not establish modifier ownership after the suffix. See [Task 042 implementation
+evidence](042-output-nocache-attribute.md#implementation-and-corpus-evidence).
+Task 042's reviewed follow-up also pins suffix ownership after supported word
+equality and relational aliases (`ne`, `neq`, case variants, and `GTE`), mixed
+word boolean expressions, symbolic comparisons, bitwise `&`, and `is div by`.
+Its output-value branch keeps a bare static identifier available to the
+ambiguous generic-tag path while preserving structured binary expressions.
