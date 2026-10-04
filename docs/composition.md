@@ -16,6 +16,7 @@ Cartesian suite merely to fill the matrix.
 | Expression form | Assignment RHS | Output value | `if` / `elseif` condition | `foreach` source | Custom-tag positional argument | Custom-tag attribute value | Function / method argument | Modifier input | Modifier argument | Bracket index expression | Array key | Array value |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Braced expression wrapper in generic-tag named attribute (`name={EXPR}`) | — | — | — | — | — | yes [U-braced-tag-attr](#ev-u-braced-tag-attr) | — | — | — | — | — | — |
+| Braced output expression inside bracket index (`$a[{EXPR}]`) | ? | yes [B-index](#ev-b-index) | no [U-braced-condition](#ev-u-braced-condition) | ? | ? | yes [B-index](#ev-b-index) | ? | ? | ? | yes [B-index](#ev-b-index) | ? | ? |
 | Variable / config variable | limited [ARHS-variable](#ev-assignment-rhs) | yes [V-output](#ev-v-output) | yes [V-condition](#ev-v-condition) | yes [V-source](#ev-v-source) | yes [V-tag-pos](#ev-v-tag-pos) | yes [V-tag-attr](#ev-v-tag-attr) | yes [V-call-arg](#ev-v-call-arg) | yes [V-mod-input](#ev-v-mod-input) | yes [V-mod-arg](#ev-v-mod-arg) | yes [V-bracket](#ev-v-bracket) | ? [U-variable-array-key](#ev-u-variable-array-key) | yes [V-array-value](#ev-v-array-value) |
 | Primitive / string / number | yes [ARHS-literals](#ev-assignment-rhs) | yes [P-output](#ev-p-output) | yes [P-condition](#ev-p-condition) | ? [U-primitive-source](#ev-u-primitive-source) | ? [U-primitive-tag-pos](#ev-u-primitive-tag-pos) | yes [P-tag-attr](#ev-p-tag-attr) | yes [P-call-arg](#ev-p-call-arg) | yes [P-mod-input](#ev-p-mod-input) | yes [P-mod-arg](#ev-p-mod-arg) | yes [P-bracket](#ev-p-bracket) | yes [P-array-key](#ev-p-array-key) | yes [P-array-value](#ev-p-array-value) |
 | Interpolated string (double-quoted) | ? [U-assignment-rhs](#ev-u-assignment-rhs) | yes [IS-output](#ev-is-output) | ? [U-is-condition](#ev-u-is-condition) | ? [U-is-source](#ev-u-is-source) | ? [U-is-tag-pos](#ev-u-is-tag-pos) | yes [IS-tag-attr](#ev-is-tag-attr) | ? [U-is-call-arg](#ev-u-is-call-arg) | ? [U-is-mod-input](#ev-u-is-mod-input) | yes [IS-mod-arg](#ev-is-mod-arg) | ? [U-is-bracket](#ev-u-is-bracket) | ? [U-is-array-key](#ev-u-is-array-key) | ? [U-is-array-value](#ev-u-is-array-value) |
@@ -35,6 +36,29 @@ Cartesian suite merely to fill the matrix.
 | Class constant (`Class::NAME`) | ? [U-assignment-rhs](#ev-u-assignment-rhs) | yes [CC-output](#ev-cc-output) | yes [CC-condition](#ev-cc-condition) | ? [U-constant-source](#ev-u-constant-source) | yes [CC-tag-pos](#ev-cc-tag-pos) | yes [CC-tag-attr](#ev-cc-tag-attr) | yes [CC-call-arg](#ev-cc-call-arg) | yes [CC-mod-input](#ev-cc-mod-input) | yes [CC-mod-arg](#ev-cc-mod-arg) | yes [CC-bracket](#ev-cc-bracket) | yes [CC-array-key](#ev-cc-array-key) | yes [CC-array-value](#ev-cc-array-value) |
 | Static class method call (`Class::method(...)`) | ? [U-assignment-rhs](#ev-u-assignment-rhs) | yes [SM-output](#ev-sm-output) | yes [SM-condition](#ev-sm-condition) | yes [SM-source](#ev-sm-source) | yes [SM-tag-pos](#ev-sm-tag-pos) | yes [SM-tag-attr](#ev-sm-tag-attr) | yes [SM-call-arg](#ev-sm-call-arg) | yes [SM-mod-input](#ev-sm-mod-input) | yes [SM-mod-arg](#ev-sm-mod-arg) | yes [SM-bracket](#ev-sm-bracket) | yes [SM-array-key](#ev-sm-array-key) | yes [SM-array-value](#ev-sm-array-value) |
 | Bare identifier (modifier, generic-tag, primary-expression, and array-key positions) | ? [U-assignment-rhs](#ev-u-assignment-rhs) | yes [ID-output](#ev-id-output) | yes [ID-condition](#ev-id-condition) | ? | yes [GT-ID-pos](#ev-gt-id-pos) | yes [GT-ID-attr](#ev-gt-id-attr) | yes [ID-call-arg](#ev-id-call-arg) | ? | yes [MOD-ID-arg](#ev-mod-id-arg) | ? | yes — bare ID keys already have a hand-authored tree in [array literals](../test/corpus/array-literals.txt#L12) | yes [ID-array-value](#ev-id-array-value) |
+
+The Task 038 row tracks an output wrapper used as the expression inside a
+bracket index. Pinned Smarty 5.8.4 and hand-authored trees verify the wrapper in
+output values, generic-tag attribute values, and nested bracket indices;
+arithmetic precedence, method/config composition, modifiers, source ranges,
+recovery boundaries, and incremental edits are checked. Other context pairings
+remain unknown. The separately accepted braced form in an `if`/`elseif`
+condition needs its own condition and block-recovery brief (queued Task 039).
+See [Task 038 implementation evidence](tasks/038-braced-expressions-in-bracket-indices.md).
+
+<a id="ev-u-braced-condition"></a>
+<a id="ev-b-index"></a>
+
+**B-index:** `{$a[{$x}]}` retains an outer output, `index_expression`, and
+nested `output(value: variable)`; direct `$a[$x]` retains its direct index
+child. The same nested structure is tested in generic-tag attribute values,
+left-nested method/config index chains, arithmetic, modifier expressions, and
+nested indices. Exact source ranges and independent following output are
+asserted. Pinned Smarty 5.8.4 accepts the valid probes; malformed missing-bracket
+cases have localized `ERROR` trees that preserve following output and, in a
+block, the close tag. See [hand trees](../test/corpus/braced-bracket-indices.txt),
+[reference fixtures](../test/corpus/smarty-reference-braced-bracket-indices.txt),
+and [checks](../test/braced-bracket-indices.test.mjs).
 
 ## Task 036 modifier-prefix composition evidence
 

@@ -16,6 +16,7 @@ enum TokenType {
   WORD_XOR_OPERATOR,
   WORD_EQUALITY_OPERATOR,
   WORD_RELATIONAL_OPERATOR,
+  BRACKET_BRACED_INDEX_OPEN,
 };
 
 typedef struct {
@@ -50,6 +51,21 @@ static bool scan_tag_attribute_output_start(TSLexer *lexer) {
   if (is_smarty_whitespace(lexer->lookahead) || lexer->lookahead == '*') return false;
   lexer->mark_end(lexer);
   lexer->result_symbol = TAG_ATTRIBUTE_OUTPUT_START;
+  return true;
+}
+
+// Select a separate bracket-index production only when a Smarty braced
+// expression follows the opening bracket. The token ends at `[`: outer
+// whitespace stays a skipped extra, while the lookahead rejects `{ $expr}`.
+static bool scan_bracket_braced_index_open(TSLexer *lexer) {
+  if (lexer->lookahead != '[') return false;
+  lexer->advance(lexer, false);
+  lexer->mark_end(lexer);
+  while (is_smarty_whitespace(lexer->lookahead)) lexer->advance(lexer, false);
+  if (lexer->lookahead != '{') return false;
+  lexer->advance(lexer, false);
+  if (is_smarty_whitespace(lexer->lookahead) || lexer->lookahead == '*') return false;
+  lexer->result_symbol = BRACKET_BRACED_INDEX_OPEN;
   return true;
 }
 
@@ -427,6 +443,8 @@ bool tree_sitter_smarty2_external_scanner_scan(void *payload, TSLexer *lexer, co
       scan_tag_attribute_output_space(lexer)) return true;
   if (!state->in_literal && valid_symbols[TAG_ATTRIBUTE_OUTPUT_START] && !valid_symbols[TEXT] &&
       scan_tag_attribute_output_start(lexer)) return true;
+  if (!state->in_literal && valid_symbols[BRACKET_BRACED_INDEX_OPEN] &&
+      scan_bracket_braced_index_open(lexer)) return true;
   if (!state->in_literal && (valid_symbols[WORD_AND_OPERATOR] || valid_symbols[WORD_OR_OPERATOR] || valid_symbols[WORD_XOR_OPERATOR] ||
       valid_symbols[WORD_EQUALITY_OPERATOR] || valid_symbols[WORD_RELATIONAL_OPERATOR]) &&
       scan_word_operator_with_gap(lexer, valid_symbols)) return true;

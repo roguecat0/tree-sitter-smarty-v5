@@ -2411,6 +2411,10 @@
             "named": true
           },
           {
+            "type": "output",
+            "named": true
+          },
+          {
             "type": "parenthesized_expression",
             "named": true
           },

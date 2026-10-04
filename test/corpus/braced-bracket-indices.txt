@@ -1,0 +1,85 @@
+==================
+Braced and outer-spaced indices retain wrapper ownership
+==================
+{$a[{$x}]}{$a[ {$x} ]}{$a[$x]}
+---
+(source_file
+  (output value: (index_expression object: (variable name: (identifier)) index: (output value: (variable name: (identifier)))))
+  (output value: (index_expression object: (variable name: (identifier)) index: (output value: (variable name: (identifier)))))
+  (output value: (index_expression object: (variable name: (identifier)) index: (variable name: (identifier)))))
+
+==================
+Method and config index composition remains left nested under modifier
+==================
+{$rows[$row->get_id()][{$smarty.const.FB_FOLLOW_UP_REPAIR}]|escape}
+---
+(source_file
+  (output value: (modifier_expression
+    value: (index_expression
+      object: (index_expression
+        object: (variable name: (identifier))
+        index: (method_call_expression object: (variable name: (identifier)) method: (identifier)))
+      index: (output value: (index_expression
+        object: (index_expression object: (variable name: (identifier)) index: (identifier))
+        index: (identifier))))
+    name: (identifier))))
+
+==================
+Arithmetic in a braced index retains precedence
+==================
+{$rows[{$i + 1 * 2}]}
+---
+(source_file
+  (output value: (index_expression
+    object: (variable name: (identifier))
+    index: (output value: (binary_expression
+      left: (variable name: (identifier))
+      right: (binary_expression
+        left: (number)
+        right: (number)))))))
+
+==================
+Wrapped modifier expression remains one bracket index
+==================
+{$rows[{$i|escape}]}
+---
+(source_file
+  (output value: (index_expression
+    object: (variable name: (identifier))
+    index: (output value: (modifier_expression value: (variable name: (identifier)) name: (identifier))))))
+
+==================
+Nested braced bracket indices each own their wrapper
+==================
+{$matrix[{$rows[{$i}]}]}
+---
+(source_file
+  (output value: (index_expression
+    object: (variable name: (identifier))
+    index: (output value: (index_expression
+      object: (variable name: (identifier))
+      index: (output value: (variable name: (identifier))))))))
+
+==================
+Unknown tag attribute expression keeps method and trailing sibling
+==================
+{widget value=$rows[{$row->get_id()}]}{$after}
+---
+(source_file
+  (custom_tag name: (identifier)
+    (attribute name: (identifier)
+      value: (index_expression object: (variable name: (identifier)) index: (output value: (method_call_expression object: (variable name: (identifier)) method: (identifier))))))
+  (output value: (variable name: (identifier))))
+
+==================
+Application-shaped method and config index chains
+==================
+{$groups[$row->get_id()][{$smarty.const.REPAIR}]|escape}{$groups[{$row->get_article_number()}][{$smarty.const.REPAIR}]|escape}
+---
+(source_file
+  (output value: (modifier_expression value: (index_expression
+    object: (index_expression object: (variable name: (identifier)) index: (method_call_expression object: (variable name: (identifier)) method: (identifier)))
+    index: (output value: (index_expression object: (index_expression object: (variable name: (identifier)) index: (identifier)) index: (identifier)))) name: (identifier)))
+  (output value: (modifier_expression value: (index_expression
+    object: (index_expression object: (variable name: (identifier)) index: (output value: (method_call_expression object: (variable name: (identifier)) method: (identifier))))
+    index: (output value: (index_expression object: (index_expression object: (variable name: (identifier)) index: (identifier)) index: (identifier)))) name: (identifier))))

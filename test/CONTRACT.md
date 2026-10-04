@@ -425,6 +425,17 @@ Evidence: [index trees](corpus/index-access.txt) and
 reference/recovery/edit checks](corpus/dynamic-dot-index.txt) and
 [Task 035 checks](dynamic-dot-index.test.mjs).
 
+A complete Smarty expression enclosed in `{...}` is also accepted inside a
+variable/config bracket index. Preserve the usual left-nested `index_expression`
+and place a nested `output(value: EXPR)` in its `index` field; the inner braces
+belong to that wrapper, not a template-level sibling. Ordinary `$a[$x]` keeps
+its direct index child. Whitespace between the outer `[`/`]` and the braced
+expression is accepted, but whitespace immediately after the inner `{` is
+rejected by Smarty. Missing-bracket recovery may expose a localized `ERROR`
+containing the receiver followed by the inner `output`; following output and a
+surrounding block closer remain separate navigable nodes. See [Task 038 trees,
+reference/recovery/edit checks, and corpus evidence](../docs/tasks/038-braced-expressions-in-bracket-indices.md).
+
 Case-insensitive `true`/`false` and `null` produce named leaf `boolean` and `null`
 nodes, retaining their original text/ranges. They are primary expressions and
 modifier arguments. Only opening tag names reserve primitive words; longer names,

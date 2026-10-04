@@ -1,0 +1,73 @@
+==================
+smarty-5.8.4-braced-index-variable
+==================
+{$a[{$x}]}
+---
+(source_file
+  (output value: (index_expression object: (variable name: (identifier))
+    index: (output value: (variable name: (identifier))))))
+
+==================
+smarty-5.8.4-braced-index-outer-spacing
+==================
+{$a[ {$x} ]}
+---
+(source_file
+  (output value: (index_expression object: (variable name: (identifier))
+    index: (output value: (variable name: (identifier))))))
+
+==================
+smarty-5.8.4-braced-index-method-config
+==================
+{$rows[$row->get_id()][{$smarty.const.FB_FOLLOW_UP_REPAIR}]|escape}
+---
+(source_file
+  (output value: (modifier_expression
+    value: (index_expression
+      object: (index_expression object: (variable name: (identifier))
+        index: (method_call_expression object: (variable name: (identifier)) method: (identifier)))
+      index: (output value: (index_expression
+        object: (index_expression object: (variable name: (identifier)) index: (identifier))
+        index: (identifier))))
+    name: (identifier))))
+
+==================
+smarty-5.8.4-braced-index-arithmetic
+==================
+{$rows[{$i + 1 * 2}]}
+---
+(source_file
+  (output value: (index_expression object: (variable name: (identifier))
+    index: (output value: (binary_expression left: (variable name: (identifier))
+      right: (binary_expression left: (number) right: (number)))))))
+
+==================
+smarty-5.8.4-braced-index-modifier
+==================
+{$rows[{$i|escape}]}
+---
+(source_file
+  (output value: (index_expression object: (variable name: (identifier))
+    index: (output value: (modifier_expression value: (variable name: (identifier)) name: (identifier))))))
+
+==================
+smarty-5.8.4-braced-index-nested
+==================
+{$matrix[{$rows[{$i}]}]}
+---
+(source_file
+  (output value: (index_expression object: (variable name: (identifier))
+    index: (output value: (index_expression object: (variable name: (identifier))
+      index: (output value: (variable name: (identifier))))))))
+
+==================
+smarty-5.8.4-braced-index-generic-tag
+==================
+{widget value=$rows[{$row->get_id()}]}{$after}
+---
+(source_file
+  (custom_tag name: (identifier)
+    (attribute name: (identifier)
+      value: (index_expression object: (variable name: (identifier))
+        index: (output value: (method_call_expression object: (variable name: (identifier)) method: (identifier))))))
+  (output value: (variable name: (identifier))))

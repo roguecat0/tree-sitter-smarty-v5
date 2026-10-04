@@ -23,6 +23,7 @@ export default grammar({
     $._literal_opener, $.literal_content, $.literal_close_tag,
     $._word_and_operator, $._word_or_operator, $._word_xor_operator,
     $._word_equality_operator, $._word_relational_operator,
+    $._bracket_braced_index_open,
   ],
   extras: _ => [/\s/],
   word: $ => $.identifier,
@@ -103,10 +104,10 @@ export default grammar({
       choice(
         seq(
           $._tag_attribute_output_space,
-          field("value", alias($._tag_attribute_output_value, $.output)),
+          field("value", alias($._braced_output_expression, $.output)),
         ),
         field("value", choice(
-          prec(2, alias($._tag_attribute_output_value, $.output)),
+          prec(2, alias($._braced_output_expression, $.output)),
           $._tag_attribute_value,
         )),
       ),
@@ -122,11 +123,16 @@ export default grammar({
     // general value in outputs, conditions, or other expression contexts.
     _tag_argument_value: $ => choice(prec(1, $._expression), prec(-1, $.identifier), prec(-1, $._not_identifier), prec(-1, alias($._modifier_identifier, $.identifier))),
     _tag_attribute_value: $ => choice(prec(1, $._expression), prec(-1, $.identifier), prec(-1, $._not_identifier), prec(-1, alias($._modifier_identifier, $.identifier))),
-    // Custom-tag attributes can take a nested braced expression. The opener
-    // token rejects Smarty's auto-literal `{ ` form; a conditional external
-    // gap token allows whitespace after `=` only when a braced value follows.
-    _tag_attribute_output_value: $ => seq(
+    // Braced Smarty expressions in an attribute or bracket index use a nested
+    // output node. The opener token rejects the auto-literal `{ ` form; the
+    // attribute-only gap token separately allows whitespace after `=`.
+    _braced_output_expression: $ => seq(
       $._tag_attribute_output_start,
+      field("value", $._expression),
+      "}",
+    ),
+    _braced_index_output_expression: $ => seq(
+      "{",
       field("value", $._expression),
       "}",
     ),
@@ -352,7 +358,10 @@ export default grammar({
       ))),
       prec.dynamic(4, field("index", $.section_index)),
       prec.dynamic(4, field("index", $.section_property_index)),
-      seq("[", field("index", $._index_value), "]"),
+      choice(
+        prec.dynamic(50, seq($._bracket_braced_index_open, field("index", alias($._braced_index_output_expression, $.output)), "]")),
+        seq("[", field("index", $._index_value), "]"),
+      ),
     ),
     section_index: $ => seq("[", field("name", $.identifier), "]"),
     section_property_index: $ => seq("[", field("section", $.identifier), ".", field("property", $.identifier), "]"),
