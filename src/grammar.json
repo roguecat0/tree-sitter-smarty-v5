@@ -5592,8 +5592,17 @@
               "type": "FIELD",
               "name": "key",
               "content": {
-                "type": "SYMBOL",
-                "name": "_primary"
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "_primary"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "unary_expression"
+                  }
+                ]
               }
             },
             {

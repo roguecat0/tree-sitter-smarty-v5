@@ -231,13 +231,17 @@ exclusions remain listed with that syntax contract.
 Short `[...]` and `array(...)` literals produce `array_literal` nodes. Each
 comma-separated value is an `array_element` with a `value` field; keyed entries
 also have a `key` field. Empty arrays and trailing commas are supported. Keys
-may be supported primary expressions or bare identifier names; a compound
-expression key must be parenthesized. Values use the full supported expression
+may be supported primary expressions or bare identifier names; supported
+`unary_expression` forms are also accepted directly as keys and retain their
+`operator` and `argument` fields. An unparenthesized compound expression key
+remains rejected; a compound key must be parenthesized. Typecast keys such as
+`(int) $x` are a separate confirmed Smarty gap queued as Task 041, and are not
+implied by unary-key support. Values use the full supported expression
 grammar. Nested literals compose as primary expressions and are retained in
 unknown tag arguments and attributes. Leading and repeated commas, spread,
 assignment, and PHP runtime array behavior are outside this tree contract.
-Evidence: [array trees](corpus/array-literals.txt) and
-[reference/recovery/edit checks](array-literals.test.mjs).
+Evidence: [array trees](corpus/array-literals.txt), [unary key trees and
+reference/recovery/edit checks](unary-array-keys.test.mjs).
 
 Static `#name#` expressions produce `config_variable` with a `name: (identifier)`
 field in outputs, conditions, tag arguments/attributes and modifier inputs/arguments.

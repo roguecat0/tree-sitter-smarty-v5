@@ -401,7 +401,7 @@ export default grammar({
       seq("array", "(", optional(seq($.array_element, repeat(seq(",", $.array_element)), optional(","))), ")"),
     ),
     array_element: $ => choice(
-      seq(field("key", $._primary), "=>", field("value", $._expression)),
+      seq(field("key", choice($._primary, $.unary_expression)), "=>", field("value", $._expression)),
       field("value", $._expression),
     ),
     variable: $ => seq("$", field("name", alias(token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/), $.identifier))),

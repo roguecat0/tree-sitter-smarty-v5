@@ -91,6 +91,10 @@
             "named": true
           },
           {
+            "type": "unary_expression",
+            "named": true
+          },
+          {
             "type": "variable",
             "named": true
           }

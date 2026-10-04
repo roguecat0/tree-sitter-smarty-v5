@@ -130,3 +130,27 @@ array in foreach body
           object: (variable name: (identifier)) member: (identifier))
           value: (boolean)))))
     (foreach_close_tag)))
+
+==================
+unary array keys
+==================
+{array(-1=>"v")}{array(not $x=>"v")}
+---
+(source_file
+  (output value: (array_literal
+    (array_element key: (unary_expression argument: (number)) value: (string))))
+  (output value: (array_literal
+    (array_element key: (unary_expression operator: (word_operator) argument: (variable name: (identifier))) value: (string)))))
+
+==================
+unary key in generic tag addition
+==================
+{html_options options=array(-1=>" ")+$yes_no_options selected=$selected}{$after}
+---
+(source_file
+  (custom_tag name: (identifier)
+    (attribute name: (identifier) value: (binary_expression
+      left: (array_literal (array_element key: (unary_expression argument: (number)) value: (string)))
+      right: (variable name: (identifier))))
+    (attribute name: (identifier) value: (variable name: (identifier))))
+  (output value: (variable name: (identifier))))
