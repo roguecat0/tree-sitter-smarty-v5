@@ -4248,6 +4248,15 @@
           },
           "named": true,
           "value": "binary_expression"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_if_parity_by_expression"
+          },
+          "named": true,
+          "value": "binary_expression"
         }
       ]
     },
@@ -4384,6 +4393,39 @@
             "content": {
               "type": "PATTERN",
               "value": "\\s+"
+            }
+          },
+          {
+            "type": "FIELD",
+            "name": "right",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_if_unary"
+            }
+          }
+        ]
+      }
+    },
+    "_if_parity_by_expression": {
+      "type": "PREC_LEFT",
+      "value": 0,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "FIELD",
+            "name": "left",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_if_arithmetic"
+            }
+          },
+          {
+            "type": "FIELD",
+            "name": "operator",
+            "content": {
+              "type": "SYMBOL",
+              "name": "parity_by_operator"
             }
           },
           {
@@ -5223,6 +5265,15 @@
           },
           "named": true,
           "value": "binary_expression"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_parity_by_expression"
+          },
+          "named": true,
+          "value": "binary_expression"
         }
       ]
     },
@@ -5271,6 +5322,47 @@
       "content": {
         "type": "PATTERN",
         "value": "is\\s+div\\s+by"
+      }
+    },
+    "_parity_by_expression": {
+      "type": "PREC_LEFT",
+      "value": 0,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "FIELD",
+            "name": "left",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_arithmetic"
+            }
+          },
+          {
+            "type": "FIELD",
+            "name": "operator",
+            "content": {
+              "type": "SYMBOL",
+              "name": "parity_by_operator"
+            }
+          },
+          {
+            "type": "FIELD",
+            "name": "right",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_unary"
+            }
+          }
+        ]
+      }
+    },
+    "parity_by_operator": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "is[\\t \\r\\n\\v\\f]+(?:not[\\t \\r\\n\\v\\f]+)?(?:odd|even)[\\t \\r\\n\\v\\f]+by",
+        "flags": "i"
       }
     },
     "_unary": {

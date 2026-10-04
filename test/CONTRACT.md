@@ -238,7 +238,7 @@ contexts and syntax boundary are audited in
 followed immediately by `$` remain string content. Configurable delimiters
 and HTML injection remain outside this contract. Other built-in blocks besides
 `if`, `foreach`, `for`, `section`, and `literal`, word arithmetic alias `mod`,
-other `is ...` predicates, additional bitwise/math operators,
+unary `is [not] odd/even`, `is not div by`, other `is ...` predicates, additional bitwise/math operators,
 dynamic member access, and dynamic config variables remain current gaps to assess and address according to
 common usage and usefulness to parser consumers; the explicit plugin/custom-tag
 boundary is the exception. Recovery on unfinished and malformed input is part
@@ -246,6 +246,17 @@ of the parser's goal, especially for interactive editor use, and should be
 represented in tests for each relevant syntax family.
 Static unqualified calls are supported below; their namespace and dynamic-call
 exclusions remain listed with that syntax contract.
+
+Binary Smarty grouping predicates `is [not] odd/even by` are shared expression
+operators with a `binary_expression(left, operator: parity_by_operator,
+right)` shape. The operator retains its original case, internal whitespace,
+and exact source range from `is` through `by`; its whitespace-delimited `odd`
+or `even` word must be separate. These predicates preserve the existing
+`is div by` precedence and compose in supported output and condition contexts.
+The distinct unary forms `is [not] odd/even` remain a syntax gap. See
+[Task 043 trees and checks](../test/corpus/parity-grouping-predicates.txt) and
+its implementation evidence in
+[the task brief](../docs/tasks/043-parity-grouping-predicates.md).
 
 Short `[...]` and `array(...)` literals produce `array_literal` nodes. Each
 comma-separated value is an `array_element` with a `value` field; keyed entries

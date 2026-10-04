@@ -113,9 +113,9 @@ test('Unary RHS and boolean composition retain exact operator structure', () => 
   assert.equal(and.childForFieldName('right').descendantsOfType('div_by_operator').length, 1);
 });
 
-test('Only the exact lower-case predicate with a separated RHS enters this subset', () => {
+test('Divisibility keeps its exact boundary as parity predicates are handled separately', () => {
   for (const source of [
-    '{$n is div by2}', '{$n is not div by 2}', '{$n is even by 2}', '{$n is odd by 2}',
+    '{$n is div by2}', '{$n is not div by 2}',
   ]) {
     assert.equal(parser().parse(source).rootNode.hasError, true, source);
   }

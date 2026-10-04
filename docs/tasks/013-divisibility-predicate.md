@@ -363,6 +363,19 @@ direct unparenthesized modifier arguments remain excluded. The seven original
 TDD fixtures remain intact. Independent task creation review accepted the
 revision after two rounds (2026-10-01), with no remaining findings.
 
+## Later syntax boundary update (Task 043)
+
+Task 013's implementation initially asserted that `is odd by` and `is even by`
+were unsupported. That was accurate for Task 013's narrow scope, but became
+obsolete when Task 043 added the four binary `is [not] odd/even by` forms. The
+old negative examples were removed from the Task 013 boundary check only after
+the pinned Smarty 5.8.4 recorder and full engine accepted
+`{if 5 is odd by 2}T{else}F{/if}` and
+`{if 5 is even by 2}T{else}F{/if}`, and Task 043 added explicit tree, compiler,
+and precedence checks. Task 013 continues to reject `is div by2` and
+`is not div by 2`; `is not div by`, unary `is [not] odd/even`, `is [not] in`,
+`matches`, and other predicates remain separate gaps.
+
 ## Implementation evidence
 
 `grammar.js` adds one left-associative shared arithmetic production whose named

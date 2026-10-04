@@ -311,12 +311,15 @@ export default grammar({
     _if_word_relational_expression: $ => prec(-1, seq(
       field("left", $._if_arithmetic), field("operator", alias($._word_relational_operator, $.word_operator)), field("right", $._if_arithmetic),
     )),
-    _if_arithmetic: $ => choice($._if_multiplicative, alias($._if_additive_expression, $.binary_expression), alias($._if_div_by_expression, $.binary_expression)),
+    _if_arithmetic: $ => choice($._if_multiplicative, alias($._if_additive_expression, $.binary_expression), alias($._if_div_by_expression, $.binary_expression), alias($._if_parity_by_expression, $.binary_expression)),
     _if_additive_expression: $ => prec.left(1, seq(field("left", $._if_arithmetic), field("operator", choice("+", "-")), field("right", $._if_multiplicative))),
     _if_multiplicative: $ => choice($._if_unary, alias($._if_multiplicative_expression, $.binary_expression)),
     _if_multiplicative_expression: $ => prec.left(2, seq(field("left", $._if_multiplicative), field("operator", choice("*", "/", "%")), field("right", $._if_unary))),
     _if_div_by_expression: $ => prec.left(0, seq(
       field("left", $._if_arithmetic), field("operator", $.div_by_operator), token.immediate(/\s+/), field("right", $._if_unary),
+    )),
+    _if_parity_by_expression: $ => prec.left(0, seq(
+      field("left", $._if_arithmetic), field("operator", $.parity_by_operator), field("right", $._if_unary),
     )),
     _if_unary: $ => choice($._if_modified, alias($._if_not_expression, $.unary_expression), alias($._if_sign_expression, $.unary_expression), alias($._if_word_not_expression, $.unary_expression)),
     _if_not_expression: $ => prec(3, seq(field("operator", "!"), field("argument", $._if_unary))),
@@ -378,7 +381,7 @@ export default grammar({
     _word_relational_expression: $ => prec(-1, seq(
       field("left", $._arithmetic), field("operator", alias($._word_relational_operator, $.word_operator)), field("right", $._arithmetic),
     )),
-    _arithmetic: $ => choice($._unary, $.binary_expression, alias($._div_by_expression, $.binary_expression)),
+    _arithmetic: $ => choice($._unary, $.binary_expression, alias($._div_by_expression, $.binary_expression), alias($._parity_by_expression, $.binary_expression)),
     // Match Smarty's expr ::= expr tlop value: the left is a full arithmetic
     // expression, while the RHS stops at one value. The low precedence lets
     // relational expressions consume the predicate on their right; precedence
@@ -388,6 +391,10 @@ export default grammar({
       token.immediate(/\s+/), field("right", $._unary),
     )),
     div_by_operator: _ => token(/is\s+div\s+by/),
+    _parity_by_expression: $ => prec.left(0, seq(
+      field("left", $._arithmetic), field("operator", $.parity_by_operator), field("right", $._unary),
+    )),
+    parity_by_operator: _ => token(/is[\t \r\n\v\f]+(?:not[\t \r\n\v\f]+)?(?:odd|even)[\t \r\n\v\f]+by/i),
     _unary: $ => choice($._modified, $.unary_expression),
     unary_expression: $ => choice($._not_expression, $._sign_expression, $._word_not_expression),
     _not_expression: $ => prec(3, seq(field("operator", "!"), field("argument", $._unary))),

@@ -1,0 +1,54 @@
+==================
+Demo section property parity predicate
+==================
+{if $smarty.section.outer.index is odd by 2}Y{/if}
+---
+(source_file
+  (if_block
+    (if_tag condition: (binary_expression
+      left: (section_property_expression
+        section: (identifier)
+        property: (identifier))
+      operator: (parity_by_operator)
+      right: (number)))
+    (text)
+    (if_close_tag)))
+
+==================
+Output even predicate
+==================
+{$n is even by 2}
+---
+(source_file
+  (output value: (binary_expression
+    left: (variable name: (identifier))
+    operator: (parity_by_operator)
+    right: (number))))
+
+==================
+Negated odd predicate
+==================
+{if $n is not odd by 2}Y{/if}
+---
+(source_file
+  (if_block
+    (if_tag condition: (binary_expression
+      left: (variable name: (identifier))
+      operator: (parity_by_operator)
+      right: (number)))
+    (text)
+    (if_close_tag)))
+
+==================
+Negated even predicate
+==================
+{if $n is not even by 2}Y{/if}
+---
+(source_file
+  (if_block
+    (if_tag condition: (binary_expression
+      left: (variable name: (identifier))
+      operator: (parity_by_operator)
+      right: (number)))
+    (text)
+    (if_close_tag)))
