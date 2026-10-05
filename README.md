@@ -123,3 +123,10 @@ To report either upstream root, pass it explicitly, for example:
 npm run corpus:report -- ./corpus/upstream-smarty-v5.8.4-core /tmp/smarty-upstream-core.json
 npm run corpus:report -- ./corpus/upstream-smarty-v5.8.4-example /tmp/smarty-upstream-example.json
 ```
+
+## Neovim
+
+Smarty highlighting, combined HTML injection (with nested JavaScript/CSS through
+HTML queries), and folds for recognized blocks are available. Smarty syntax
+remains highlighted inside scripts and styles. See [the Neovim setup guide](docs/neovim.md)
+for parser installation, filetype registration, required host queries, and checks.

@@ -236,7 +236,12 @@ argument; other pairings remain unverified. The 23 current earliest-error
 contexts and syntax boundary are audited in
 [task 020](../docs/tasks/020-double-quoted-interpolation.md); backticks not
 followed immediately by `$` remain string content. Configurable delimiters
-and HTML injection remain outside this contract. Other built-in blocks besides
+remain outside this contract. Editor queries are
+specified in Task 045: field-specific Smarty highlights, combined HTML text
+and literal-content injection, and recognized-block folds. Tree shapes are
+unchanged. Smarty captures use priority 110 so nested JavaScript/CSS captures
+at their default priority 100 cannot obscure template syntax. Other built-in
+blocks besides
 `if`, `foreach`, `for`, `section`, and `literal`, word arithmetic alias `mod`,
 `is not div by`, other `is ...` predicates, additional bitwise/math operators,
 dynamic member access, and dynamic config variables remain current gaps to assess and address according to
