@@ -526,23 +526,23 @@ static bool scan_string_fragment(TSLexer *lexer, bool has_content) {
   return false;
 }
 
-void *tree_sitter_smarty2_external_scanner_create(void) { return calloc(1, sizeof(ScannerState)); }
+void *tree_sitter_smarty_v5_external_scanner_create(void) { return calloc(1, sizeof(ScannerState)); }
 
-void tree_sitter_smarty2_external_scanner_destroy(void *payload) { free(payload); }
+void tree_sitter_smarty_v5_external_scanner_destroy(void *payload) { free(payload); }
 
-unsigned tree_sitter_smarty2_external_scanner_serialize(void *payload, char *buffer) {
+unsigned tree_sitter_smarty_v5_external_scanner_serialize(void *payload, char *buffer) {
   ScannerState *state = (ScannerState *)payload;
   buffer[0] = (state->in_literal ? 1 : 0) | (state->expect_literal_close ? 2 : 0);
   return 1;
 }
 
-void tree_sitter_smarty2_external_scanner_deserialize(void *payload, const char *buffer, unsigned length) {
+void tree_sitter_smarty_v5_external_scanner_deserialize(void *payload, const char *buffer, unsigned length) {
   ScannerState *state = (ScannerState *)payload;
   state->in_literal = length > 0 && (buffer[0] & 1) != 0;
   state->expect_literal_close = length > 0 && (buffer[0] & 2) != 0;
 }
 
-bool tree_sitter_smarty2_external_scanner_scan(void *payload, TSLexer *lexer, const bool *valid_symbols) {
+bool tree_sitter_smarty_v5_external_scanner_scan(void *payload, TSLexer *lexer, const bool *valid_symbols) {
   ScannerState *state = (ScannerState *)payload;
   if (!state->in_literal && !valid_symbols[TEXT] && !valid_symbols[TAG_ATTRIBUTE_OUTPUT_START] &&
       valid_symbols[IF_HEADER_CLOSE_RECOVERY] && scan_if_header_close_recovery(lexer)) return true;

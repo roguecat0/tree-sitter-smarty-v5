@@ -5,8 +5,8 @@ It defines the project completion target, role boundaries, handoffs, and review 
 
 Target a broadly useful Smarty 5 parser with practical coverage and robust
 recovery; editor support is the primary use case, and CLI tools and other
-integrations are also expected consumers. `smarty2` is the package name, not the
-language version. Use bounded, tested syntax changes to build toward that goal.
+integrations are also expected consumers. The package is `tree-sitter-smarty-v5`;
+the grammar name is `smarty_v5`. Use bounded, tested syntax changes to build toward that goal.
 Project-specific plugin behavior and arbitrary custom tag semantics are out of
 scope; preserve unknown tags and their supported contents where possible.
 Read `test/CONTRACT.md`, `docs/features.md`, and the selected brief in

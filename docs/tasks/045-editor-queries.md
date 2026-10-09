@@ -23,7 +23,7 @@ Status: complete within the stated editor-query scope.
 ## Implementation evidence
 
 Added canonical highlight/injection/fold queries and checked identical Neovim
-runtime copies under `queries/smarty2/`. The Node binding already reads canonical
+runtime copies under `queries/smarty_v5/`. The Node binding already reads canonical
 highlights and injections. Package metadata now includes the nested query files;
 `npm pack --dry-run --json` lists all six. Tree-sitter metadata declares the
 highlight and injection files. Setup is documented in `docs/neovim.md`.

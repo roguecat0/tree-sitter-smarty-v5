@@ -1,13 +1,13 @@
 [package]
-name = "tree-sitter-smarty2"
-description = "Smarty2 grammar for tree-sitter"
+name = "tree-sitter-smarty-v5"
+description = "SmartyV5 grammar for tree-sitter"
 version = "0.1.0"
 authors = ["roguecat0 <roguecat0@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-keywords = ["incremental", "parsing", "tree-sitter", "smarty2"]
+keywords = ["incremental", "parsing", "tree-sitter", "smarty_v5"]
 categories = ["parser-implementations", "parsing", "text-editors"]
-repository = "https://github.com/tree-sitter/tree-sitter-smarty2"
+repository = "https://github.com/tree-sitter/tree-sitter-smarty-v5"
 edition = "2021"
 autoexamples = false
 

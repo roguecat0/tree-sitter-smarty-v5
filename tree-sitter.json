@@ -2,15 +2,15 @@
   "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
   "grammars": [
     {
-      "name": "smarty2",
-      "camelcase": "Smarty2",
-      "title": "Smarty2",
-      "scope": "source.smarty2",
+      "name": "smarty_v5",
+      "camelcase": "SmartyV5",
+      "title": "Smarty 5",
+      "scope": "source.smarty_v5",
       "file-types": [
         "tpl"
       ],
-      "injection-regex": "^smarty2$",
-      "class-name": "TreeSitterSmarty2",
+      "injection-regex": "^smarty_v5$",
+      "class-name": "TreeSitterSmartyV5",
       "highlights": "queries/highlights.scm",
       "injections": "queries/injections.scm"
     }
@@ -18,7 +18,7 @@
   "metadata": {
     "version": "0.1.0",
     "license": "MIT",
-    "description": "Smarty2 grammar for tree-sitter",
+    "description": "Smarty 5 grammar for tree-sitter",
     "authors": [
       {
         "name": "roguecat0",
@@ -27,7 +27,7 @@
       }
     ],
     "links": {
-      "repository": "https://github.com/tree-sitter/tree-sitter-smarty2",
+      "repository": "https://github.com/tree-sitter/tree-sitter-smarty-v5",
       "funding": ""
     }
   },

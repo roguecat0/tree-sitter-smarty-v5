@@ -1,5 +1,5 @@
 /**
- * @file Initial Smarty 5 subset for tree-sitter (package name: smarty2)
+ * @file Initial Smarty 5 subset for tree-sitter (grammar name: smarty_v5)
  * @author roguecat0 <roguecat0@gmail.com>
  * @license MIT
  */
@@ -16,7 +16,7 @@ const controlWords = ["if", "else", "elseif", "foreach", "foreachelse", "for", "
 const classReservedWords = [...cases("self"), ...cases("parent")];
 
 export default grammar({
-  name: "smarty2",
+  name: "smarty_v5",
   externals: $ => [
     $.text, $._output_attribute_error_marker, $._tag_attribute_output_space, $._tag_attribute_output_start,
     $._if_header_close_recovery, $._output_nocache_name,

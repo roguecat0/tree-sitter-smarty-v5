@@ -56,7 +56,7 @@ test('interpolation keeps variable highlighting and script boundary edits match 
 
 test('runtime queries match canonical queries and all Smarty highlights outrank hosts', () => {
   for (const name of ['highlights', 'injections', 'folds']) {
-    assert.equal(readFileSync(new URL(`../queries/smarty2/${name}.scm`, import.meta.url), 'utf8'),
+    assert.equal(readFileSync(new URL(`../queries/smarty_v5/${name}.scm`, import.meta.url), 'utf8'),
       readFileSync(new URL(`../queries/${name}.scm`, import.meta.url), 'utf8'));
   }
   const q = query('highlights');

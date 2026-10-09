@@ -25,10 +25,10 @@ type NodeInfo =
  *
  * @example
  * import Parser from "tree-sitter";
- * import Smarty2 from "tree-sitter-smarty2";
+ * import SmartyV5 from "tree-sitter-smarty-v5";
  *
  * const parser = new Parser();
- * parser.setLanguage(Smarty2);
+ * parser.setLanguage(SmartyV5);
  */
 declare const binding: {
   /**

@@ -2,7 +2,7 @@
 local root = vim.fn.getcwd()
 local deps = assert(vim.env.SMARTY_EDITOR_DEPS, 'set SMARTY_EDITOR_DEPS to a directory containing html/javascript/css.so')
 vim.opt.runtimepath:prepend(root)
-vim.treesitter.language.add('smarty2', {path = deps .. '/smarty2.so'})
+vim.treesitter.language.add('smarty_v5', {path = deps .. '/smarty_v5.so'})
 for _, lang in ipairs({'html','javascript','css'}) do
   vim.treesitter.language.add(lang, {path = deps .. '/' .. lang .. '.so'})
 end
@@ -15,7 +15,7 @@ vim.treesitter.query.set('html','injections', [[
 local source = '<div class="{$class}"><script>const x = "{$value}"; {if $ok}run();{/if}</script><style>.x { color: {$color}; }</style>{literal}<script>const raw = 1;</script>{/literal}</div>'
 local buf = vim.api.nvim_create_buf(false,true)
 vim.api.nvim_buf_set_lines(buf,0,-1,false,{source})
-local p = vim.treesitter.get_parser(buf,'smarty2')
+local p = vim.treesitter.get_parser(buf,'smarty_v5')
 p:parse(true)
 local seen = {}
 p:for_each_tree(function(tree, lt)
@@ -23,7 +23,7 @@ p:for_each_tree(function(tree, lt)
   assert(tree:root():type() ~= 'ERROR', 'lost host tree')
 end)
 assert(seen.html and seen.javascript and seen.css, 'missing nested language')
-local highlights = assert(vim.treesitter.query.get('smarty2','highlights'))
+local highlights = assert(vim.treesitter.query.get('smarty_v5','highlights'))
 local function check_template(text)
   p:parse(true)
   local root_node = p:trees()[1]:root()
@@ -54,7 +54,7 @@ end
 check_template(source)
 -- Literal bodies must not acquire Smarty variable captures.
 local literal_source = '<script>{literal}const s = "{$opaque}";{/literal}</script>'
-local literal_tree = vim.treesitter.get_string_parser(literal_source,'smarty2'):parse()[1]
+local literal_tree = vim.treesitter.get_string_parser(literal_source,'smarty_v5'):parse()[1]
 for id in highlights:iter_captures(literal_tree:root(),literal_source,0,-1) do
   assert(highlights.captures[id] ~= 'variable', 'literal body interpreted as Smarty')
 end
@@ -63,7 +63,7 @@ local offset = assert(source:find('{$value}',1,true)) - 1
 vim.api.nvim_buf_set_text(buf,0,offset+2,0,offset+7,{''})
 p:parse(true)
 local broken = vim.api.nvim_buf_get_lines(buf,0,-1,false)[1]
-local fresh = vim.treesitter.get_string_parser(broken,'smarty2')
+local fresh = vim.treesitter.get_string_parser(broken,'smarty_v5')
 fresh:parse(true)
 assert(p:trees()[1]:root():sexpr() == fresh:trees()[1]:root():sexpr(), 'incremental broken tree differs')
 vim.api.nvim_buf_set_text(buf,0,offset+2,0,offset+2,{'value'})

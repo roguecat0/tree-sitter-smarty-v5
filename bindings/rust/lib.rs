@@ -1,4 +1,4 @@
-//! This crate provides Smarty2 language support for the [tree-sitter] parsing library.
+//! This crate provides SmartyV5 language support for the [tree-sitter] parsing library.
 //!
 //! Typically, you will use the [`LANGUAGE`] constant to add this language to a
 //! tree-sitter [`Parser`], and then use the parser to parse some code:
@@ -7,10 +7,10 @@
 //! let code = r#"
 //! "#;
 //! let mut parser = tree_sitter::Parser::new();
-//! let language = tree_sitter_smarty2::LANGUAGE;
+//! let language = tree_sitter_smarty_v5::LANGUAGE;
 //! parser
 //!     .set_language(&language.into())
-//!     .expect("Error loading Smarty2 parser");
+//!     .expect("Error loading SmartyV5 parser");
 //! let tree = parser.parse(code, None).unwrap();
 //! assert!(!tree.root_node().has_error());
 //! ```
@@ -21,11 +21,11 @@
 use tree_sitter_language::LanguageFn;
 
 extern "C" {
-    fn tree_sitter_smarty2() -> *const ();
+    fn tree_sitter_smarty_v5() -> *const ();
 }
 
 /// The tree-sitter [`LanguageFn`] for this grammar.
-pub const LANGUAGE: LanguageFn = unsafe { LanguageFn::from_raw(tree_sitter_smarty2) };
+pub const LANGUAGE: LanguageFn = unsafe { LanguageFn::from_raw(tree_sitter_smarty_v5) };
 
 /// The content of the [`node-types.json`] file for this grammar.
 ///
@@ -55,6 +55,6 @@ mod tests {
         let mut parser = tree_sitter::Parser::new();
         parser
             .set_language(&super::LANGUAGE.into())
-            .expect("Error loading Smarty2 parser");
+            .expect("Error loading SmartyV5 parser");
     }
 }

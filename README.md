@@ -1,6 +1,6 @@
-# tree-sitter-smarty2
+# tree-sitter-smarty-v5
 
-A Tree-sitter grammar for **Smarty 5**. The package name `smarty2`
+A Tree-sitter grammar for **Smarty 5**. The grammar name is `smarty_v5`;
 distinguishes this project from another parser; it does not mean Smarty version 2.
 
 The goal is a reasonably full-featured, reusable parser for common Smarty 5

@@ -1,4 +1,4 @@
-"""Smarty2 grammar for tree-sitter"""
+"""Smarty 5 grammar for tree-sitter"""
 
 from importlib.resources import files as _files
 
