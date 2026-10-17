@@ -9,6 +9,7 @@ enum TokenType {
   IF_HEADER_CLOSE_RECOVERY,
   OUTPUT_NOCACHE_NAME,
   STRING_FRAGMENT,
+  QUOTED_COMMENT_START,
   BACKTICK_INTERPOLATION_START,
   LITERAL_OPENER,
   LITERAL_CONTENT,
@@ -461,7 +462,26 @@ static bool consume_dollar_id_start(TSLexer *lexer) {
   return is_ascii_identifier_start(lexer->lookahead);
 }
 
-static bool scan_string_fragment(TSLexer *lexer, bool has_content) {
+// Literal markers are ordinary characters in Smarty's double-quoted string
+// mode. Consume them as part of the surrounding fragment so the default
+// delimiter scanner cannot switch into its top-level literal mode here.
+static bool consume_quoted_literal_marker(TSLexer *lexer) {
+  if (lexer->lookahead != '{') return false;
+  lexer->advance(lexer, false);
+  if (lexer->lookahead == '/') lexer->advance(lexer, false);
+  static const char spelling[] = "literal";
+  for (size_t i = 0; i < sizeof(spelling) - 1; i++) {
+    if (ascii_lower(lexer->lookahead) != spelling[i]) return false;
+    lexer->advance(lexer, false);
+  }
+  while (is_smarty_whitespace(lexer->lookahead)) lexer->advance(lexer, false);
+  if (lexer->lookahead != '}') return false;
+  lexer->advance(lexer, false);
+  lexer->mark_end(lexer);
+  return true;
+}
+
+static bool scan_string_fragment(TSLexer *lexer, bool has_content, const bool *valid_symbols) {
 
   while (!lexer->eof(lexer)) {
     if (lexer->lookahead == '"') break;
@@ -487,7 +507,26 @@ static bool scan_string_fragment(TSLexer *lexer, bool has_content) {
     }
 
     if (lexer->lookahead == '{') {
-      lexer->advance(lexer, false);
+      if (consume_quoted_literal_marker(lexer)) {
+        has_content = true;
+        continue;
+      }
+      bool consumed_opening = false;
+      if (valid_symbols[QUOTED_COMMENT_START]) {
+        lexer->advance(lexer, false);
+        if (lexer->lookahead == '*') {
+          if (has_content) {
+            lexer->result_symbol = STRING_FRAGMENT;
+            return true;
+          }
+          lexer->advance(lexer, false);
+          lexer->mark_end(lexer);
+          lexer->result_symbol = QUOTED_COMMENT_START;
+          return true;
+        }
+        consumed_opening = true;
+      }
+      if (!consumed_opening) lexer->advance(lexer, false);
       if (lexer->lookahead != '}' && lexer->lookahead != '{' &&
           lexer->lookahead != ' ' && lexer->lookahead != '\t' &&
           lexer->lookahead != '\n' && lexer->lookahead != '\r' &&
@@ -569,11 +608,11 @@ bool tree_sitter_smarty_v5_external_scanner_scan(void *payload, TSLexer *lexer, 
       lexer->result_symbol = BACKTICK_INTERPOLATION_START;
       return true;
     }
-    if (valid_symbols[STRING_FRAGMENT] && scan_string_fragment(lexer, true)) return true;
+    if (valid_symbols[STRING_FRAGMENT] && scan_string_fragment(lexer, true, valid_symbols)) return true;
     return false;
   }
 
-  if (valid_symbols[STRING_FRAGMENT] && scan_string_fragment(lexer, false)) {
+  if (valid_symbols[STRING_FRAGMENT] && scan_string_fragment(lexer, false, valid_symbols)) {
     return true;
   }
 

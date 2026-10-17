@@ -7283,7 +7283,7 @@
         },
         {
           "type": "PATTERN",
-          "value": "\"(?:[^\"\\\\$]|\\\\.|\\$[^A-Za-z0-9_$]|\\$[0-9]+[^A-Za-z0-9_$]|\\$\\$*[^A-Za-z0-9_$]|\\$\\$*[0-9]+[^A-Za-z0-9_$]|\\$[0-9]+\\$\\$*[^A-Za-z0-9_$])*(?:\\$[0-9]*)?(?:\\$\\$*)?\""
+          "value": "\"(?:[^\"\\\\${]|\\{(?:[^*\"$\\\\]|\\\\.|\\$[^A-Za-z0-9_$]|\\$[0-9]+[^A-Za-z0-9_$]|\\$\\$*[^A-Za-z0-9_$]|\\$\\$*[0-9]+[^A-Za-z0-9_$]|\\$[0-9]+\\$\\$*[^A-Za-z0-9_$])|\\\\.|\\$[^A-Za-z0-9_$]|\\$[0-9]+[^A-Za-z0-9_$]|\\$\\$*[^A-Za-z0-9_$]|\\$\\$*[0-9]+[^A-Za-z0-9_$]|\\$[0-9]+\\$\\$*[^A-Za-z0-9_$])*(?:\\$[0-9]*)?(?:\\$\\$*)?\\{?\""
         }
       ]
     },
@@ -7372,6 +7372,48 @@
               "value": "}"
             }
           ]
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "_quoted_comment_start"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "_output_attribute_error_marker"
+            }
+          ]
+        },
+        {
+          "type": "FIELD",
+          "name": "value",
+          "content": {
+            "type": "SYMBOL",
+            "name": "if_block"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "value",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "custom_tag"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "custom_close_tag"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "assignment_tag"
+              }
+            ]
+          }
         },
         {
           "type": "SEQ",
@@ -7751,6 +7793,10 @@
     {
       "type": "SYMBOL",
       "name": "string_fragment"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_quoted_comment_start"
     },
     {
       "type": "SYMBOL",

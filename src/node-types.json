@@ -4566,10 +4566,14 @@
     "fields": {
       "value": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "array_literal",
+            "named": true
+          },
+          {
+            "type": "assignment_tag",
             "named": true
           },
           {
@@ -4589,11 +4593,23 @@
             "named": true
           },
           {
+            "type": "custom_close_tag",
+            "named": true
+          },
+          {
+            "type": "custom_tag",
+            "named": true
+          },
+          {
             "type": "function_call_expression",
             "named": true
           },
           {
             "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "if_block",
             "named": true
           },
           {

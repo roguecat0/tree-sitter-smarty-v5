@@ -47,11 +47,11 @@ Comment in config condition
 (source_file (if_block (if_tag condition: (config_variable name: (identifier))) (comment) (output value: (config_variable name: (identifier))) (if_close_tag)))
 
 ==================
-Quoted comment remains string
+Comment in a quoted value is rejected
 ==================
 {widget label="{* ignored *}"}
 ---
-(source_file (custom_tag name: (identifier) (attribute name: (identifier) value: (string))))
+(source_file (ERROR (identifier) (identifier) (string_fragment) (ERROR) (string_fragment)))
 
 ==================
 Comment ends at first terminator

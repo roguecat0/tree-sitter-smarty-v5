@@ -241,8 +241,17 @@ reviewed composition contexts are output, generic-tag attribute, and modifier
 argument; other pairings remain unverified. The 23 current earliest-error
 contexts and syntax boundary are audited in
 [task 020](../docs/tasks/020-double-quoted-interpolation.md); backticks not
-followed immediately by `$` remain string content. Configurable delimiters
-remain outside this contract. Editor queries are
+followed immediately by `$` remain string content. Inside double-quoted
+content, recognized Smarty tags retain their regular structure under a
+`string_interpolation value` field. Evidence covers nested `if` blocks in
+output/modifier input, named and positional generic-tag values, function/method
+arguments, escaped quotes/braces, nested quoted output, and independent unknown opening/closing tags. Literal
+markers in this mode remain `string_fragment` text; a Smarty comment opener in
+a double-quoted tag value is a syntax error. Other block families and
+configurable delimiters remain unverified or unsupported. See [Task 047 trees and checks](corpus/tags-in-quoted-attributes.txt),
+[comment rejection evidence](corpus/comments.txt), and
+[Task 047 implementation evidence](../docs/tasks/047-tags-in-quoted-attributes.md#implementation-evidence-2026-10-17).
+Editor queries are
 specified in Task 045: field-specific Smarty highlights, combined HTML text
 and literal-content injection, and recognized-block folds. Tree shapes are
 unchanged. Smarty captures use priority 110 so nested JavaScript/CSS captures

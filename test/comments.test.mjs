@@ -7,16 +7,16 @@ assert.equal(examples.length, 10);
 for (const { name, source } of examples) {
   test(`Comment reference: ${name}`, () => {
     const root = parser().parse(source).rootNode;
-    assert.equal(root.hasError, false, root.toString());
     const expected = reference(source);
-    // Existing double-quoted strings do not model Smarty interpolation yet.
-    // Keep the tree fixture, but explicitly record the observed reference rejection.
-    if (name === 'Quoted comment remains string') {
+    // Smarty's lexer rejects a comment opener within a double-quoted tag
+    // attribute. Task 047 corrects the old parser-only string expectation.
+    if (name === 'Comment in a quoted value is rejected') {
       assert.match(expected.error, /Syntax error.*Unexpected/);
       assert.deepEqual(expected.events, []);
-      assert.equal(root.descendantsOfType('string')[0].text, '"{* ignored *}"');
+      assert.equal(root.hasError, true, root.toString());
       assert.equal(root.descendantsOfType('comment').length, 0);
     } else {
+      assert.equal(root.hasError, false, root.toString());
       assert.equal(expected.error, null);
       assert.deepEqual(observations(root), expected.events);
     }

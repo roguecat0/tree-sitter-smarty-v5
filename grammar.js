@@ -20,7 +20,7 @@ export default grammar({
   externals: $ => [
     $.text, $._output_attribute_error_marker, $._tag_attribute_output_space, $._tag_attribute_output_start,
     $._if_header_close_recovery, $._output_nocache_name,
-    $.string_fragment, $._backtick_interpolation_start,
+    $.string_fragment, $._quoted_comment_start, $._backtick_interpolation_start,
     $._literal_opener, $.literal_content, $.literal_close_tag,
     $._word_and_operator, $._word_or_operator, $._word_xor_operator,
     $._word_equality_operator, $._word_relational_operator,
@@ -142,8 +142,12 @@ export default grammar({
     // Smarty's tag value productions accept a direct ID in these two tag-only
     // positions. Keep it out of _expression so a bare name does not become a
     // general value in outputs, conditions, or other expression contexts.
-    _tag_argument_value: $ => choice(prec(1, $._expression), prec(-1, $.identifier), prec(-1, $._not_identifier), prec(-1, alias($._modifier_identifier, $.identifier))),
-    _tag_attribute_value: $ => choice(prec(1, $._expression), prec(-1, $.identifier), prec(-1, $._not_identifier), prec(-1, alias($._modifier_identifier, $.identifier))),
+    _tag_argument_value: $ => choice(
+      prec(1, $._expression), prec(-1, $.identifier), prec(-1, $._not_identifier), prec(-1, alias($._modifier_identifier, $.identifier)),
+    ),
+    _tag_attribute_value: $ => choice(
+      prec(1, $._expression), prec(-1, $.identifier), prec(-1, $._not_identifier), prec(-1, alias($._modifier_identifier, $.identifier)),
+    ),
     // Braced Smarty expressions in an attribute or bracket index use a nested
     // output node. The opener token rejects the auto-literal `{ ` form; the
     // attribute-only gap token separately allows whitespace after `=`.
@@ -539,9 +543,13 @@ export default grammar({
     boolean: _ => choice(...cases("true"), ...cases("false")),
     null: _ => choice(...cases("null")),
     number: _ => /[0-9]+(?:\.[0-9]+)?/,
+    // The double-quoted token excludes an unescaped `{*` so that the string
+    // scanner can report Smarty's rejected comment opener. The paired-brace
+    // branch preserves the old dollar and escape alternatives without regex
+    // lookahead; in particular, `{$name}` must still select interpolation.
     string: _ => choice(
       /'[^'\\]*(?:\\.[^'\\]*)*'/,
-      /"(?:[^"\\$]|\\.|\$[^A-Za-z0-9_$]|\$[0-9]+[^A-Za-z0-9_$]|\$\$*[^A-Za-z0-9_$]|\$\$*[0-9]+[^A-Za-z0-9_$]|\$[0-9]+\$\$*[^A-Za-z0-9_$])*(?:\$[0-9]*)?(?:\$\$*)?"/,
+      /"(?:[^"\\${]|\{(?:[^*"$\\]|\\.|\$[^A-Za-z0-9_$]|\$[0-9]+[^A-Za-z0-9_$]|\$\$*[^A-Za-z0-9_$]|\$\$*[0-9]+[^A-Za-z0-9_$]|\$[0-9]+\$\$*[^A-Za-z0-9_$])|\\.|\$[^A-Za-z0-9_$]|\$[0-9]+[^A-Za-z0-9_$]|\$\$*[^A-Za-z0-9_$]|\$\$*[0-9]+[^A-Za-z0-9_$]|\$[0-9]+\$\$*[^A-Za-z0-9_$])*(?:\$[0-9]*)?(?:\$\$*)?\{?"/,
     ),
     // Smarty switches lexer modes inside double quotes. External tokens keep
     // literal fragments distinct from actual variable/tag interpolation, and
@@ -553,6 +561,12 @@ export default grammar({
     string_interpolation: $ => choice(
       field("value", choice($.variable, alias($._interpolated_digit_id, $.variable))),
       seq("{", field("value", $._expression), "}"),
+      seq($._quoted_comment_start, $._output_attribute_error_marker),
+      // Smarty's double-quoted lexer re-enters ordinary tag parsing for a
+      // template tag. Keep the supported block and generic-tag structure under
+      // the string interpolation boundary instead of flattening it to text.
+      field("value", $.if_block),
+      field("value", choice($.custom_tag, $.custom_close_tag, $.assignment_tag)),
       seq($._backtick_interpolation_start, field("value", $._expression), token.immediate("`")),
     ),
     // Smarty's double-quoted lexer accepts digit-prefixed IDs. Keep that

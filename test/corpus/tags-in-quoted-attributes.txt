@@ -1,0 +1,204 @@
+==================
+Conditional block in a generic tag attribute
+==================
+{html_options options=$options selected="{if $a}1{else}0{/if}"}
+---
+(source_file
+  (custom_tag
+    name: (identifier)
+    (attribute name: (identifier) value: (variable name: (identifier)))
+    (attribute name: (identifier) value: (interpolated_string
+      (string_interpolation
+        value: (if_block
+          (if_tag condition: (variable name: (identifier)))
+          (text)
+          (else_clause (else_tag) (text))
+          (if_close_tag)))))))
+
+==================
+Conditional inside a double-quoted output and modifier input
+==================
+{"before {if $a}yes{else}no{/if} after"|escape}
+---
+(source_file
+  (output value: (modifier_expression
+    value: (interpolated_string
+      (string_fragment)
+      (string_interpolation
+        value: (if_block
+          (if_tag condition: (variable name: (identifier)))
+          (text)
+          (else_clause (else_tag) (text))
+          (if_close_tag)))
+      (string_fragment))
+    name: (identifier))))
+
+==================
+Conditional inside a double-quoted method argument
+==================
+{$object->render("before {if $a}yes{/if} after")}
+---
+(source_file
+  (output value: (method_call_expression
+    object: (variable name: (identifier))
+    method: (identifier)
+    argument: (interpolated_string
+      (string_fragment)
+      (string_interpolation
+        value: (if_block
+          (if_tag condition: (variable name: (identifier)))
+          (text)
+          (if_close_tag)))
+      (string_fragment)))))
+
+==================
+Conditional inside a positional generic-tag value
+==================
+{widget "before {if $a}yes{/if} after"}
+---
+(source_file
+  (custom_tag name: (identifier)
+    argument: (interpolated_string
+      (string_fragment)
+      (string_interpolation
+        value: (if_block
+          (if_tag condition: (variable name: (identifier)))
+          (text)
+          (if_close_tag)))
+      (string_fragment))))
+
+==================
+Conditional inside a function argument
+==================
+{strlen("before {if $a}yes{/if} after")}
+---
+(source_file
+  (output value: (function_call_expression
+    name: (identifier)
+    argument: (interpolated_string
+      (string_fragment)
+      (string_interpolation
+        value: (if_block
+          (if_tag condition: (variable name: (identifier)))
+          (text)
+          (if_close_tag)))
+      (string_fragment)))))
+
+==================
+Single-quoted braces remain string content
+==================
+{widget value='before {if $a}literal{/if} after'}
+---
+(source_file
+  (custom_tag name: (identifier)
+    (attribute name: (identifier) value: (string))))
+
+==================
+Text and variable interpolation around a nested conditional
+==================
+{widget value="before {$name}:{if $outer}A{if $inner}B{/if}{else}C{/if} after"}
+---
+(source_file
+  (custom_tag
+    name: (identifier)
+    (attribute name: (identifier) value: (interpolated_string
+      (string_fragment)
+      (string_interpolation value: (variable name: (identifier)))
+      (string_fragment)
+      (string_interpolation
+        value: (if_block
+          (if_tag condition: (variable name: (identifier)))
+          (text)
+          (if_block
+            (if_tag condition: (variable name: (identifier)))
+            (text)
+            (if_close_tag))
+          (else_clause (else_tag) (text))
+          (if_close_tag)))
+      (string_fragment)))))
+
+==================
+Literal markers are text around a recognized conditional
+==================
+{widget value="before {literal}literal{/literal}{if $a}yes{else}no{/if} after"}
+---
+(source_file
+  (custom_tag
+    name: (identifier)
+    (attribute name: (identifier) value: (interpolated_string
+      (string_fragment)
+      (string_interpolation
+        value: (if_block
+          (if_tag condition: (variable name: (identifier)))
+          (text)
+          (else_clause (else_tag) (text))
+          (if_close_tag)))
+      (string_fragment)))))
+
+==================
+Unknown opening and closing tags remain separate interpolations
+==================
+{widget value="{unknown x=$v}{/unknown}"}
+---
+(source_file
+  (custom_tag
+    name: (identifier)
+    (attribute name: (identifier) value: (interpolated_string
+      (string_interpolation
+        value: (custom_tag
+          name: (identifier)
+          (attribute name: (identifier) value: (variable name: (identifier)))))
+      (string_interpolation
+        value: (custom_close_tag name: (identifier)))))))
+
+==================
+Escaped quotes remain fragments around a nested conditional
+==================
+{html_options selected="before \"x\" {if $a}1{else}0{/if}"}
+---
+(source_file
+  (custom_tag
+    name: (identifier)
+    (attribute name: (identifier) value: (interpolated_string
+      (string_fragment)
+      (string_interpolation
+        value: (if_block
+          (if_tag condition: (variable name: (identifier)))
+          (text)
+          (else_clause (else_tag) (text))
+          (if_close_tag)))))))
+
+==================
+Escaped braces stay literal around a nested conditional
+==================
+{html_options selected="before \{literal\} {if $a}yes{/if} \{/literal\} after"}
+---
+(source_file
+  (custom_tag name: (identifier)
+    (attribute name: (identifier) value: (interpolated_string
+      (string_fragment)
+      (string_interpolation
+        value: (if_block
+          (if_tag condition: (variable name: (identifier)))
+          (text)
+          (if_close_tag)))
+      (string_fragment)))))
+
+==================
+Nested quoted output stays inside the conditional
+==================
+{html_options selected="before {if $a}{$object->render("x")}{/if} after"}
+---
+(source_file
+  (custom_tag name: (identifier)
+    (attribute name: (identifier) value: (interpolated_string
+      (string_fragment)
+      (string_interpolation
+        value: (if_block
+          (if_tag condition: (variable name: (identifier)))
+          (output value: (method_call_expression
+            object: (variable name: (identifier))
+            method: (identifier)
+            argument: (string)))
+          (if_close_tag)))
+      (string_fragment)))))
