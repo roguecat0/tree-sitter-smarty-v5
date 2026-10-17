@@ -510,12 +510,36 @@ export default grammar({
       "->", field("method", reserved("property", $.identifier)), "(",
       optional(seq(field("argument", $._expression), repeat(seq(",", field("argument", $._expression))))), ")",
     )),
+    // A namespace-qualified static receiver keeps each source identifier and
+    // separator in one named range. Only separators within the name are
+    // immediate, so expression whitespace before the first segment remains
+    // available; a rooted name is allowed with only one segment.
+    _qualified_name_segment: $ => choice(
+      // The class-reserved set normally excludes self/parent for a plain
+      // receiver, but all namespace segments are Smarty IDs. Use the empty
+      // property-reserved set locally and restore exact lowercase control-word
+      // spellings that the global reserved set would otherwise intercept.
+      reserved("property", $.identifier),
+      alias(choice(...controlWords), $.identifier),
+      // Smarty namespace segments also accept IDs with digits before the first
+      // letter; keep that spelling local to qualified class names.
+      alias($._modifier_identifier, $.identifier),
+    ),
+    _qualified_name_segment_immediate: _ => token.immediate(/[0-9]*[a-zA-Z_][a-zA-Z0-9_]*/),
+    qualified_name: $ => choice(
+      prec.dynamic(2, seq("\\", alias($._qualified_name_segment_immediate, $.identifier), repeat(seq(
+        token.immediate("\\"), alias($._qualified_name_segment_immediate, $.identifier),
+      )))),
+      seq($._qualified_name_segment, token.immediate("\\"), alias($._qualified_name_segment_immediate, $.identifier),
+        repeat(seq(token.immediate("\\"), alias($._qualified_name_segment_immediate, $.identifier)))),
+    ),
     // Static calls are a distinct primary expression. Keep the class and method
     // identifiers separate from class constants and preserve each argument.
     // Match the class-name tokens accepted by static constants, including
     // control words and primitive literals while excluding self and parent.
     static_method_call_expression: $ => prec(9, seq(
       field("class", choice(
+        $.qualified_name,
         reserved("class", $.identifier), alias(choice(...controlWords), $.identifier),
         alias($.boolean, $.identifier), alias($.null, $.identifier),
       )), token.immediate("::"),

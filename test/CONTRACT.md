@@ -549,8 +549,23 @@ compilation for literal output, without executing plugins. Evidence:
 Adjacent static `Class::NAME` values produce `class_constant_expression` with
 `class: (identifier)` and `constant: (identifier)` fields and anonymous `::`.
 Static class method calls such as `Class::method($value)` produce a distinct
-`static_method_call_expression` with `class` and `method` identifier fields and
-repeated `argument` fields. They compose in outputs, conditions, foreach
+`static_method_call_expression` with `class`, `method`, and repeated `argument`
+fields. Unrooted and rooted namespace-qualified receivers such as
+`Demo\Assets\Builder::method()` and `\Demo::method()` keep the complete
+receiver range in `class: (qualified_name)`, whose identifier children preserve
+segment spelling/case and whose separators (including an optional root
+separator) remain inside the node range. Namespace segments may have leading
+digits before their first letter or underscore, matching Smarty's namespace ID
+pattern; this rule is local to qualified receivers and does not broaden
+ordinary identifiers. Namespace segments include contextual
+words such as `if`, `true`, `null`, `self`, and `parent`; method names remain
+identifier fields, including contextual names such as `for`. Both `::` tokens
+must be adjacent to the receiver and method, while whitespace before `(` is
+accepted. Whitespace inside namespace separators, repeated separators, and
+trailing namespace separators do not form a qualified call. A space before a
+separator may instead form a generic tag and positional expression, with the
+usual recorder/compiler distinction for unknown tags. Qualified calls compose
+in outputs, conditions, foreach
 sources, generic-tag arguments and attributes, function/method arguments,
 modifier inputs/arguments, bracket indices, and array keys/values. A direct
 generic-tag value retains the complete call rather than splitting it into a
@@ -559,12 +574,14 @@ constant plus separate tag arguments. Method-result chains remain unsupported.
 Class and method names retain exact spelling. Control-word and primitive-token
 class names, such as `if`, `true`, and `null`, are accepted and represented by
 identifier nodes. Constants compose as primary expressions and modifier
-arguments; `{Class}` stays a generic tag. Internal whitespace is rejected.
-Case-insensitive `self`/`parent` remain excluded static class receivers; the
-pinned recorder rejects those forms. Namespaces, dynamic receivers, static
+arguments; `{Class}` stays a generic tag. Whitespace within a qualified
+receiver does not form a qualified call.
+Case-insensitive `self`/`parent` remain excluded as unqualified class
+receivers; they are accepted as namespace segments. Namespaced standalone and
+class constants remain separate gaps, as do dynamic receivers, static
 properties, constant access suffixes, global constants and runtime symbol
-validation remain outside this bounded feature.
+validation. See Task 048 for the exact boundary and evidence.
 Evidence: [constant trees](corpus/class-constants.txt) and
 [reference/field/range/edit checks](class-constants.test.mjs); [static method
 call trees](corpus/static-class-method-calls.txt) and
-[reference/full-engine/recovery/edit checks](static-class-method-calls.test.mjs).
+[reference/full-engine/recovery/edit checks](static-class-method-calls.test.mjs); [qualified call trees and checks](corpus/namespaced-static-method-calls.txt) and [Task 048 evidence](../docs/tasks/048-namespaced-static-method-calls.md#implementation-evidence).

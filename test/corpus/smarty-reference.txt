@@ -153,3 +153,46 @@ smarty-5.8.4-section-short-header-options
       object: (variable name: (identifier))
       index: (section_index name: (identifier))))
     (section_close_tag)))
+
+====================
+smarty-5.8.4-TemplateLexer-namespace-static-method
+====================
+{Demo\Assets::build()}
+---
+(source_file
+  (output
+    value: (static_method_call_expression
+      class: (qualified_name
+        (identifier)
+        (identifier))
+      method: (identifier))))
+
+====================
+smarty-5.8.4-TemplateLexer-digit-prefixed-namespace-segments
+====================
+{1Demo\Assets::build()}
+---
+(source_file
+  (output value: (static_method_call_expression
+    class: (qualified_name (identifier) (identifier))
+    method: (identifier))))
+
+====================
+smarty-5.8.4-TemplateLexer-digit-prefixed-namespace-segments-later
+====================
+{Demo\2Assets::build()}
+---
+(source_file
+  (output value: (static_method_call_expression
+    class: (qualified_name (identifier) (identifier))
+    method: (identifier))))
+
+====================
+smarty-5.8.4-TemplateLexer-digit-prefixed-namespace-segments-rooted
+====================
+{\1Demo\2Assets::build()}
+---
+(source_file
+  (output value: (static_method_call_expression
+    class: (qualified_name (identifier) (identifier))
+    method: (identifier))))

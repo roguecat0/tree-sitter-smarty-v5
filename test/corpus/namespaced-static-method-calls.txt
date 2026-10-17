@@ -1,0 +1,295 @@
+==================
+Unrooted namespace qualified static method
+==================
+{Demo\Assets\Builder::build()}
+---
+(source_file
+  (output
+    value: (static_method_call_expression
+      class: (qualified_name
+        (identifier)
+        (identifier)
+        (identifier))
+      method: (identifier))))
+
+==================
+Rooted one segment static method with arguments
+==================
+{\Demo::build($x, 2)}
+---
+(source_file
+  (output
+    value: (static_method_call_expression
+      class: (qualified_name
+        (identifier))
+      method: (identifier)
+      argument: (variable name: (identifier))
+      argument: (number))))
+
+==================
+Contextual namespace segments and method
+==================
+{Demo\if\true\null\self\parent::for()}
+---
+(source_file
+  (output
+    value: (static_method_call_expression
+      class: (qualified_name
+        (identifier)
+        (identifier)
+        (identifier)
+        (identifier)
+        (identifier)
+        (identifier))
+      method: (identifier))))
+
+==================
+Contextual namespace spellings retain case
+==================
+{Demo\IF\TRUE\SeLf::for()}
+---
+(source_file
+  (output
+    value: (static_method_call_expression
+      class: (qualified_name
+        (identifier)
+        (identifier)
+        (identifier)
+        (identifier))
+      method: (identifier))))
+
+==================
+Whitespace before call parenthesis is accepted
+==================
+{Demo\Assets::build ()}
+---
+(source_file
+  (output
+    value: (static_method_call_expression
+      class: (qualified_name
+        (identifier)
+        (identifier))
+      method: (identifier))))
+
+==================
+Unqualified static method regression
+==================
+{Thing::make($x)}
+---
+(source_file
+  (output
+    value: (static_method_call_expression
+      class: (identifier)
+      method: (identifier)
+      argument: (variable name: (identifier)))))
+
+==================
+Namespaced static call in condition
+==================
+{if Demo\Assets::enabled($x)}Y{/if}
+---
+(source_file
+  (if_block
+    (if_tag
+      condition: (static_method_call_expression
+        class: (qualified_name
+          (identifier)
+          (identifier))
+        method: (identifier)
+        argument: (variable name: (identifier))))
+    (text)
+    (if_close_tag)))
+
+==================
+Namespaced static call in assignment RHS
+==================
+{$target = Demo\Assets::build()}
+---
+(source_file
+  (assignment_tag
+    target: (variable name: (identifier))
+    value: (static_method_call_expression
+      class: (qualified_name
+        (identifier)
+        (identifier))
+      method: (identifier))))
+
+==================
+Namespaced static call in foreach source
+==================
+{foreach Demo\Assets::items() as $item}{$item}{/foreach}
+---
+(source_file
+  (foreach_block
+    (foreach_tag
+      source: (static_method_call_expression
+        class: (qualified_name
+          (identifier)
+          (identifier))
+        method: (identifier))
+      item: (variable name: (identifier)))
+    (output value: (variable name: (identifier)))
+    (foreach_close_tag)))
+
+==================
+Namespaced static call in generic tag argument
+==================
+{widget Demo\Assets::build($x)}
+---
+(source_file
+  (custom_tag
+    name: (identifier)
+    argument: (static_method_call_expression
+      class: (qualified_name
+        (identifier)
+        (identifier))
+      method: (identifier)
+      argument: (variable name: (identifier)))))
+
+==================
+Namespaced static call in generic tag attribute
+==================
+{widget value=Demo\Assets::build($x)}
+---
+(source_file
+  (custom_tag
+    name: (identifier)
+    (attribute
+      name: (identifier)
+      value: (static_method_call_expression
+        class: (qualified_name
+          (identifier)
+          (identifier))
+        method: (identifier)
+        argument: (variable name: (identifier))))))
+
+==================
+Namespaced static call nested as call argument
+==================
+{Wrapper::run(Demo\Assets::build())}
+---
+(source_file
+  (output
+    value: (static_method_call_expression
+      class: (identifier)
+      method: (identifier)
+      argument: (static_method_call_expression
+        class: (qualified_name
+          (identifier)
+          (identifier))
+        method: (identifier)))))
+
+==================
+Namespaced static call as modifier argument
+==================
+{$x|default:Demo\Assets::fallback()}
+---
+(source_file
+  (output
+    value: (modifier_expression
+      value: (variable name: (identifier))
+      name: (identifier)
+      argument: (static_method_call_expression
+        class: (qualified_name
+          (identifier)
+          (identifier))
+        method: (identifier)))))
+
+==================
+Namespaced static call as modifier input
+==================
+{Demo\Assets::build()|escape}
+---
+(source_file
+  (output
+    value: (modifier_expression
+      value: (static_method_call_expression
+        class: (qualified_name
+          (identifier)
+          (identifier))
+        method: (identifier))
+      name: (identifier))))
+
+==================
+Namespaced static call in bracket index
+==================
+{$a[Demo\Assets::index()]}
+---
+(source_file
+  (output
+    value: (index_expression
+      object: (variable name: (identifier))
+      index: (static_method_call_expression
+        class: (qualified_name
+          (identifier)
+          (identifier))
+        method: (identifier)))))
+
+==================
+Namespaced static call in array key and value
+==================
+{[Demo\Assets::key()=>Demo\Assets::build()]}
+---
+(source_file
+  (output
+    value: (array_literal
+      (array_element
+        key: (static_method_call_expression
+          class: (qualified_name
+            (identifier)
+            (identifier))
+          method: (identifier))
+        value: (static_method_call_expression
+          class: (qualified_name
+            (identifier)
+            (identifier))
+          method: (identifier))))))
+
+==================
+Namespaced class constant stays outside static call
+==================
+{Thing::READY}{$after}
+---
+(source_file
+  (output value: (class_constant_expression class: (identifier) constant: (identifier)))
+  (output value: (variable name: (identifier))))
+
+
+==================
+Digit-prefixed first namespace segment
+==================
+{1Demo\Assets::build()}
+---
+(source_file
+  (output
+    value: (static_method_call_expression
+      class: (qualified_name
+        (identifier)
+        (identifier))
+      method: (identifier))))
+
+==================
+Digit-prefixed later namespace segment
+==================
+{Demo\2Assets::build()}
+---
+(source_file
+  (output
+    value: (static_method_call_expression
+      class: (qualified_name
+        (identifier)
+        (identifier))
+      method: (identifier))))
+
+==================
+Rooted digit-prefixed namespace segments
+==================
+{\1Demo\2Assets::build()}
+---
+(source_file
+  (output
+    value: (static_method_call_expression
+      class: (qualified_name
+        (identifier)
+        (identifier))
+      method: (identifier))))

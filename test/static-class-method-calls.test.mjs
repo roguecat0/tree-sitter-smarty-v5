@@ -78,8 +78,13 @@ test('Static call edit to and from a class constant matches fresh trees', () => 
   }
 });
 
-test('Unsupported static receiver and method-result chains remain visible errors', () => {
-  for (const source of ['{\\App\\Thing::make($x)}', '{$class::make($x)}', '{Thing::make($x)->name}', '{Thing::make($x)->run()}']) {
+test('Rooted namespace receiver is supported while dynamic receivers and method-result chains remain visible errors', () => {
+  const rooted = String.raw`{\App\Thing::make($x)}`;
+  assert.equal(reference(rooted).error, null, rooted);
+  const rootedRoot = parser().parse(rooted).rootNode;
+  assert.equal(rootedRoot.hasError, false, rootedRoot.toString());
+  assert.equal(rootedRoot.firstNamedChild.childForFieldName('value').childForFieldName('class').type, 'qualified_name');
+  for (const source of ['{$class::make($x)}', '{Thing::make($x)->name}', '{Thing::make($x)->run()}']) {
     const root = parser().parse(source).rootNode;
     assert.equal(root.hasError, true, root.toString());
   }

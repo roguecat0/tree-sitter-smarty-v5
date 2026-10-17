@@ -497,17 +497,17 @@ historical totals because Task 017 adds a modifier-only atom/context pairing.
 
 ## Planned current-template gap coverage (2026-10-17)
 
-The current FBS/HDB audit added six bounded tasks. Task 046 is implemented and
-independently reviewed; its verified branch-condition compositions are linked
-below. The other five remain planning briefs. The audit alone promotes no
-composition cell.
+The current FBS/HDB audit added six bounded tasks. Tasks 046–048 are implemented
+and independently reviewed; their verified compositions are linked below. The
+other three remain planning briefs. The audit alone promotes no composition
+cell.
 
 - [046](tasks/046-else-if-branches.md) adds a branch-header spelling; it reuses
   condition expressions and checks nested block ownership.
 - [047](tasks/047-tags-in-quoted-attributes.md) extends quoted-string contents;
   probe shared string contexts and retain explicit nested tag/block structure.
 - [048](tasks/048-namespaced-static-method-calls.md) extends the static-call
-  receiver; audit shared expression routing without changing unqualified trees.
+  receiver; its implementation and verified compositions are recorded below.
 - [049](tasks/049-braced-modifier-arguments.md) adds a wrapper specifically in
   modifier argument position and checks ownership in enclosing expressions.
 - [050](tasks/050-output-nofilter.md) adds an output-owned suffix; it does not
@@ -519,3 +519,27 @@ Each implementation must add/update rows or context evidence for the pairs it
 actually verifies and leave other pairs explicitly unverified. The briefs name
 representative contexts, malformed boundaries and incremental edits; the audit
 alone supplies no new cross-context acceptance evidence.
+
+## Task 048 namespace-qualified static calls
+
+Smarty 5.8.4 accepts a rooted or unrooted qualified receiver with adjacent
+namespace separators and `::`; Tree-sitter preserves its source as
+`class: (qualified_name (identifier) ...)`. The static-call node and its
+argument fields stay the same as for unqualified calls. Task 048 verifies these
+pairs with hand-authored trees and recorder projections:
+
+| Context | Minimized example | Verified ownership |
+| --- | --- | --- |
+| Output | `{Demo\Assets\Builder::build()}` | Output value is one static call; class node spans all segments and separators. |
+| Condition | `{if Demo\Assets::enabled($x)}Y{/if}` | Condition owns one complete static call. |
+| Foreach source | `{foreach Demo\Assets::items() as $item}{$item}{/foreach}` | Source owns one complete static call. |
+| Generic positional/named value | `{widget Demo\Assets::build()}` / `{widget value=Demo\Assets::build()}` | Each value owns one call; recorder confirms argument count and named attribute order. |
+| Nested function/method argument | `{strlen(Demo\Assets::name())}` / `{$o->run(Demo\Assets::name())}` | The nested call remains one argument. |
+| Modifier input/argument | `{Demo\Assets::build()|escape}` / `{$x|default:Demo\Assets::fallback()}` | The call remains the complete modifier input or argument. |
+| Bracket index and array key/value | `{$items[Demo\Assets::index()]}` / `{[Demo\Assets::key()=>Demo\Assets::build()]}` | Each index, key, and value owns its complete call. |
+
+Rooted one-segment names, contextual and digit-prefixed segments, source ranges, the accepted
+space before `(`, separator-spacing errors, malformed recovery, and incremental
+qualification edits are checked in the same task. Namespaced standalone and
+class constants are Smarty-valid but remain unsupported syntax gaps. See [Task 048
+trees](../test/corpus/namespaced-static-method-calls.txt), [Node checks](../test/namespaced-static-method-calls.test.mjs), and [implementation evidence](tasks/048-namespaced-static-method-calls.md#implementation-evidence).

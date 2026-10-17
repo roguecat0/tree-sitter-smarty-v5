@@ -3409,6 +3409,21 @@
     }
   },
   {
+    "type": "qualified_name",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "range_for_header",
     "named": true,
     "fields": {
@@ -4535,6 +4550,10 @@
           {
             "type": "identifier",
             "named": true
+          },
+          {
+            "type": "qualified_name",
+            "named": true
           }
         ]
       },
@@ -5178,6 +5197,10 @@
   },
   {
     "type": "[",
+    "named": false
+  },
+  {
+    "type": "\\",
     "named": false
   },
   {
