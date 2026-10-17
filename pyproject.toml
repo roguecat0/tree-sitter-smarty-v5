@@ -3,7 +3,7 @@ requires = ["setuptools>=62.4.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "tree-sitter-smarty-v5"
+name = "tree-sitter-smarty_v5"
 description = "Smarty 5 grammar for tree-sitter"
 version = "0.1.0"
 keywords = ["incremental", "parsing", "tree-sitter", "smarty_v5"]
@@ -19,7 +19,7 @@ license.text = "MIT"
 readme = "README.md"
 
 [project.urls]
-Homepage = "https://github.com/tree-sitter/tree-sitter-smarty-v5"
+Homepage = "https://github.com/tree-sitter/tree-sitter-smarty_v5"
 Funding = ""
 
 [project.optional-dependencies]

@@ -1,5 +1,5 @@
-LANGUAGE_NAME := tree-sitter-smarty-v5
-HOMEPAGE_URL := https://github.com/tree-sitter/tree-sitter-smarty-v5
+LANGUAGE_NAME := tree-sitter-smarty_v5
+HOMEPAGE_URL := https://github.com/tree-sitter/tree-sitter-smarty_v5
 VERSION := 0.1.0
 
 # repository

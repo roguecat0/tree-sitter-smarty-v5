@@ -25,7 +25,7 @@ type NodeInfo =
  *
  * @example
  * import Parser from "tree-sitter";
- * import SmartyV5 from "tree-sitter-smarty-v5";
+ * import SmartyV5 from "tree-sitter-smarty_v5";
  *
  * const parser = new Parser();
  * parser.setLanguage(SmartyV5);

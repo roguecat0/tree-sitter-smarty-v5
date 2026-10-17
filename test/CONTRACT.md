@@ -2,7 +2,7 @@
 
 Target: a reusable Smarty 5 parser with broad practical coverage and robust
 recovery, with the grammar name `smarty_v5` and package name
-`tree-sitter-smarty-v5`. Editor support is the primary use
+`tree-sitter-smarty_v5`. Editor support is the primary use
 case, and the syntax trees should also serve CLI tools and other integrations.
 The grammar is currently partial. Bounded feature tasks are the development
 method, not the intended coverage ceiling. Project-specific plugin behavior and

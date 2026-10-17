@@ -1,4 +1,4 @@
-module github.com/tree-sitter/tree-sitter-smarty-v5
+module github.com/tree-sitter/tree-sitter-smarty_v5
 
 go 1.22
 

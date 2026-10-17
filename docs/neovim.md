@@ -17,7 +17,7 @@ after parser updates. Add this repository to your plugin manager's runtime path,
 or configure it explicitly (replace the path):
 
 ```lua
-vim.opt.runtimepath:prepend('/absolute/path/to/tree-sitter-smarty-v5')
+vim.opt.runtimepath:prepend('/absolute/path/to/tree-sitter-smarty_v5')
 vim.treesitter.language.register('smarty_v5', 'smarty')
 -- .tpl is also used by other template languages. Add this only for Smarty files.
 vim.filetype.add({ extension = { tpl = 'smarty' } })
