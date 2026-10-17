@@ -75,6 +75,9 @@ const mutations = [
   { name: 'addition binds tighter than multiplication', fixture: 'Arithmetic precedence',
     from: '[[1, ["+", "-"]], [2, ["*", "/", "%"]]]',
     to: '[[2, ["+", "-"]], [1, ["*", "/", "%"]]]' },
+  { name: 'nofilter loses the output-owned suffix path', fixture: 'Simple nofilter output and following output',
+    from: 'repeat1(alias($._output_suffix_attribute, $.attribute)), "}")),',
+    to: 'repeat1(alias($._builtin_attribute, $.attribute)), "}")),' },
 ];
 
 console.log('\nChecking that deliberate grammar bugs are caught:');

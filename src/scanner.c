@@ -7,7 +7,7 @@ enum TokenType {
   TAG_ATTRIBUTE_OUTPUT_SPACE,
   TAG_ATTRIBUTE_OUTPUT_START,
   IF_HEADER_CLOSE_RECOVERY,
-  OUTPUT_NOCACHE_NAME,
+  OUTPUT_ATTRIBUTE_NAME,
   STRING_FRAGMENT,
   QUOTED_COMMENT_START,
   BACKTICK_INTERPOLATION_START,
@@ -39,7 +39,7 @@ static bool is_ascii_identifier_start(int32_t c) {
   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
 }
 
-static bool scan_nocache_or_neq_after_gap(TSLexer *lexer, const bool *valid_symbols) {
+static bool scan_suffix_or_neq_after_gap(TSLexer *lexer, const bool *valid_symbols) {
   if (ascii_lower(lexer->lookahead) != 'n') return false;
   lexer->advance(lexer, false);
   if (ascii_lower(lexer->lookahead) == 'e' && valid_symbols[WORD_EQUALITY_OPERATOR]) {
@@ -50,15 +50,26 @@ static bool scan_nocache_or_neq_after_gap(TSLexer *lexer, const bool *valid_symb
     lexer->result_symbol = WORD_EQUALITY_OPERATOR;
     return true;
   }
-  if (ascii_lower(lexer->lookahead) != 'o' || !valid_symbols[OUTPUT_NOCACHE_NAME]) return false;
-  static const char rest[] = "ocache";
-  for (size_t i = 0; i < sizeof(rest) - 1; i++) {
-    if (ascii_lower(lexer->lookahead) != rest[i]) return false;
-    lexer->advance(lexer, false);
+  if (ascii_lower(lexer->lookahead) != 'o' || !valid_symbols[OUTPUT_ATTRIBUTE_NAME]) return false;
+  lexer->advance(lexer, false);
+  if (ascii_lower(lexer->lookahead) == 'c') {
+    static const char rest[] = "cache";
+    for (size_t i = 0; i < sizeof(rest) - 1; i++) {
+      if (ascii_lower(lexer->lookahead) != rest[i]) return false;
+      lexer->advance(lexer, false);
+    }
+  } else if (ascii_lower(lexer->lookahead) == 'f') {
+    static const char rest[] = "filter";
+    for (size_t i = 0; i < sizeof(rest) - 1; i++) {
+      if (ascii_lower(lexer->lookahead) != rest[i]) return false;
+      lexer->advance(lexer, false);
+    }
+  } else {
+    return false;
   }
   if (is_ascii_identifier_start(lexer->lookahead) || is_ascii_digit(lexer->lookahead) || lexer->lookahead == '-') return false;
   lexer->mark_end(lexer);
-  lexer->result_symbol = OUTPUT_NOCACHE_NAME;
+  lexer->result_symbol = OUTPUT_ATTRIBUTE_NAME;
   return true;
 }
 
@@ -247,7 +258,7 @@ static bool scan_gap_operator(TSLexer *lexer, const bool *valid_symbols) {
   while (is_smarty_whitespace(lexer->lookahead)) lexer->advance(lexer, true);
   int32_t first = ascii_lower(lexer->lookahead);
   if (first == 'n') {
-    if (scan_nocache_or_neq_after_gap(lexer, valid_symbols)) return true;
+    if (scan_suffix_or_neq_after_gap(lexer, valid_symbols)) return true;
   }
   if (first == 'i' && valid_symbols[SINGLE_CONDITION_OPERATOR])
     return scan_single_condition_operator(lexer);
@@ -592,7 +603,7 @@ bool tree_sitter_smarty_v5_external_scanner_scan(void *payload, TSLexer *lexer, 
   if (!state->in_literal && valid_symbols[BRACKET_BRACED_INDEX_OPEN] &&
       scan_bracket_braced_index_open(lexer)) return true;
   if (!state->in_literal && !valid_symbols[TEXT] && is_smarty_whitespace(lexer->lookahead) &&
-      (valid_symbols[OUTPUT_NOCACHE_NAME] || valid_symbols[WORD_AND_OPERATOR] || valid_symbols[WORD_OR_OPERATOR] ||
+      (valid_symbols[OUTPUT_ATTRIBUTE_NAME] || valid_symbols[WORD_AND_OPERATOR] || valid_symbols[WORD_OR_OPERATOR] ||
        valid_symbols[WORD_XOR_OPERATOR] || valid_symbols[WORD_EQUALITY_OPERATOR] ||
        valid_symbols[WORD_RELATIONAL_OPERATOR] || valid_symbols[SINGLE_CONDITION_OPERATOR]))
     return scan_gap_operator(lexer, valid_symbols);

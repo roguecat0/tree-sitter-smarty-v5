@@ -26,7 +26,7 @@ all Smarty variants are covered. `Partial` means only the described forms work.
 
 | Feature | Status and supported boundary | Evidence / next task |
 | --- | --- | --- |
-| Text/output boundaries | Partial: ordinary text, expression output and default `auto_literal` brace boundaries; supported expression outputs own ordered direct `attribute` children for bare/valued/repeated case-insensitive trailing `nocache`, including symbolic and word comparison/boolean expressions, bitwise `&`, and `is div by`. The suffix keeps the output expression in `output.value` and preserves the suffix name/value ranges. `{widget nocache}` remains a generic tag. `assign`, `nofilter`, arbitrary output attributes, and compiler/runtime effects remain gaps | [initial trees](../test/corpus/initial.txt); [default boundary trees](../test/corpus/smarty-reference.txt); [nocache trees](../test/corpus/output-nocache-attribute.txt); [reference/compiler/recovery/edit checks](../test/output-nocache-attribute.test.mjs); [014](tasks/014-default-auto-literal-boundary.md); [011](tasks/011-standalone-function-calls.md); [042 evidence](tasks/042-output-nocache-attribute.md#implementation-and-corpus-evidence); Ready: [050 nofilter](tasks/050-output-nofilter.md) |
+| Text/output boundaries | Partial: ordinary text, expression output and default `auto_literal` brace boundaries; supported expression outputs own ordered direct `attribute` children for bare/valued/repeated case-insensitive trailing `nocache` and `nofilter`, including symbolic and word comparison/boolean expressions, bitwise `&`, and `is div by`. The suffix keeps the output expression in `output.value` and preserves the suffix name/value ranges. The pinned compiler accepts exact lowercase `nofilter` and flag values `true`, `false`, `1`, and `0` quoted or unquoted; the parser retains case variants and wider valued expressions without treating compiler failures as syntax errors. `{widget nocache}` and `{widget nofilter}` remain generic tags. `assign`, arbitrary output attributes, and compiler/runtime effects remain separate gaps | [initial trees](../test/corpus/initial.txt); [default boundary trees](../test/corpus/smarty-reference.txt); [nocache trees](../test/corpus/output-nocache-attribute.txt); [nofilter trees and checks](../test/corpus/output-nofilter.txt); [reference/compiler/recovery/edit checks](../test/output-nocache-attribute.test.mjs), [nofilter checks](../test/output-nofilter.test.mjs); [014](tasks/014-default-auto-literal-boundary.md); [011](tasks/011-standalone-function-calls.md); [042 evidence](tasks/042-output-nocache-attribute.md#implementation-and-corpus-evidence); [050 implementation evidence](tasks/050-output-nofilter.md#implementation-evidence-2026-10-17) |
 | Shorthand assignment tags | Partial: short assignment tags produce `assignment_tag` with structured direct-variable or supported nonempty-index targets, full expression values, and only compiler-confirmed bare or valued `nocache` options. Arbitrary trailing attributes are rejected. Empty append and bare identifier section-index targets remain standard syntax gaps; ordinary `{assign}` stays a generic tag and plugin/runtime assignment semantics are not inferred | [033 trees, reference/full-engine/recovery/edit checks, and separate corpus evidence](tasks/033-shorthand-assignment-tags.md) |
 | Variables/numbers | Partial: simple variable names, unsigned decimal numbers | initial trees |
 | Strings | Partial: supported quoted literals and the reviewed Task 020 forms—direct, braced, and immediate-backtick-dollar interpolation in double-quoted strings; dollars not followed by Smarty ID remain literal (including digit suffixes); non-expression backticks remain string text. Digit-prefixed variables are supported only inside interpolated strings; unquoted `{$5a}` remains unsupported. Task 047 adds recognized tags and `if` blocks inside double-quoted strings in reviewed output, named/positional generic-tag values, function/method arguments, and modifier-input contexts. `{literal}` markers remain fragments; comment openers in quoted values are syntax errors. Other block families and compositions remain unverified | [manual interpolation trees and checks](../test/corpus/interpolated-strings.txt); [020 corpus evidence](tasks/020-double-quoted-interpolation.md); [047 trees, compiler/reference/recovery/edit checks](tasks/047-tags-in-quoted-attributes.md#implementation-evidence-2026-10-17) |
@@ -41,7 +41,7 @@ all Smarty variants are covered. `Partial` means only the described forms work.
 | Smarty comments | Supported: `{* ... *}` through first terminator; non-nesting | [002](tasks/002-comments.md) |
 | Object properties | Partial: static ASCII `->name` chains from variables/calls; no dynamic members | [003](tasks/003-object-properties.md) |
 | Object method calls | Partial: static names, ordinary arguments, property/call chains | [004](tasks/004-object-method-calls.md) |
-| Standalone function calls | Partial: unqualified static identifier calls with ordinary expression arguments; namespaced, dynamic, and `::` callees and result chains remain gaps. Trailing function-output `nocache` is covered by the shared output feature in Task 042; other function-output attributes remain gaps | [call trees](../test/corpus/standalone-function-calls.txt); [011](tasks/011-standalone-function-calls.md); [042](tasks/042-output-nocache-attribute.md) |
+| Standalone function calls | Partial: unqualified static identifier calls with ordinary expression arguments; namespaced, dynamic, and `::` callees and result chains remain gaps. Trailing function-output `nocache` and `nofilter` are covered by the shared output feature in Tasks 042 and 050; other function-output attributes remain gaps | [call trees](../test/corpus/standalone-function-calls.txt); [011](tasks/011-standalone-function-calls.md); [042](tasks/042-output-nocache-attribute.md); [050](tasks/050-output-nofilter.md) |
 | Dot/index read access | Partial: static dot keys, dynamic `.{$expr}` indices with full expression structure, ordinary bracket indices, and bounded left-nested chains. Braced Smarty expressions inside bracket indices (`$rows[{$index}]`) preserve the complete expression under a nested `output` in `index`, including repeated indices, outer bracket spacing, and tested output/generic-tag attribute composition. Smarty-accepted empty append indices (`$rows[]`) and bare identifier bracket keys (`$rows[key]`) remain separate standard syntax gaps in reads and assignment targets | [007](tasks/007-index-access.md); [035 trees, reference/recovery/edit checks, and corpus evidence](tasks/035-dynamic-dot-index.md); [037 braced attribute values](tasks/037-braced-generic-tag-attribute-values.md); [038 trees, references, recovery/edit checks, and corpus evidence](tasks/038-braced-expressions-in-bracket-indices.md) |
 | Boolean/null literals | Supported: case-insensitive literals; bare section indices excluded | [008](tasks/008-primitive-literals.md) |
 | Static class constants | Partial: adjacent static `Class::NAME` expressions | [009](tasks/009-class-constants.md) |
@@ -82,8 +82,9 @@ corpus failures still need to drive further inventory and task updates.
 Task 011 passes its implementation gate for ordinary standalone calls; Task 042
 also covers trailing function-output `nocache` and has passed independent
 implementation review. Task 011's independent review remains pending.
-Namespaced/dynamic/result-chain calls and output `assign`/`nofilter`/other
-attribute gaps stay visible in the feature rows. Interpolation,
+Namespaced/dynamic/result-chain calls and output `assign`/arbitrary attribute
+gaps stay visible in the feature rows. Task 050 implements output `nofilter`;
+independent review remains pending. Interpolation,
 bitwise/word operators, and other unimplemented inventory rows still need briefs
 or scope decisions.
 
@@ -350,12 +351,11 @@ plugins, runtime values, inheritance resolution, HTML or JavaScript.
 | Ternary expression | `{$group_id == -1 ? $main_group_id : $group_id}` | [051](tasks/051-ternary-expressions.md) |
 
 Task 048 uses neutral namespaces in its tracked fixtures and confirms their
-compile-only behavior. Task 046's implementation removes the branch-related errors in
-eight FBS templates; Task 047 clears three quoted-conditional templates and has passed
-independent implementation review. Task 049 clears FBS `view_actions/edit_action.tpl`
-after 046. The separate corpus reports show the remaining FBS errors in
-`view_incident_report/change_owner.tpl` and vendored `debug.tpl`; HDB still has
-the user-rights template and vendored `debug.tpl`. `index.tpl` needs 048,
-`change_owner.tpl` and debug templates need 050, and the HDB user-rights template
-needs 051. Do not add gains from individual tasks blindly. Tasks 046–049 are
-complete after independent review; Tasks 050–051 remain planning work.
+compile-only behavior. Task 046 removes branch-related errors in eight FBS
+templates; Task 047 clears three quoted-conditional templates. Task 049 clears
+FBS `view_actions/edit_action.tpl` after 046. Task 050 clears the remaining FBS
+errors in `change_owner.tpl` and vendored `debug.tpl`, and the vendored HDB
+`debug.tpl`; FBS is now 201/201 clean. HDB's remaining error is the user-rights
+template assigned to 051. Do not add gains from individual tasks blindly.
+Tasks 046–050 are complete after independent review; Task 051 remains planning
+work.

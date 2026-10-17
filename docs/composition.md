@@ -513,10 +513,9 @@ historical totals because Task 017 adds a modifier-only atom/context pairing.
 
 ## Planned current-template gap coverage (2026-10-17)
 
-The current FBS/HDB audit added six bounded tasks. Tasks 046–049 are implemented
-and independently reviewed; their verified compositions are linked below. The
-other two remain planning briefs. The audit alone promotes no composition
-cell.
+The current FBS/HDB audit added six bounded tasks. Tasks 046–050 are implemented
+and independently reviewed; Task 051 remains a planning brief. Verified
+compositions are linked below. The audit alone promotes no composition cell.
 
 - [046](tasks/046-else-if-branches.md) adds a branch-header spelling; it reuses
   condition expressions and checks nested block ownership.
@@ -527,7 +526,8 @@ cell.
 - [049](tasks/049-braced-modifier-arguments.md) adds a wrapper specifically in
   modifier argument position and checks ownership in enclosing expressions.
 - [050](tasks/050-output-nofilter.md) adds an output-owned suffix; it does not
-  make output attributes general expression operators.
+  make output attributes general expression operators. Its verified output
+  contexts are recorded below.
 - [051](tasks/051-ternary-expressions.md) adds a shared expression form with
   precedence and colon-boundary probes, including modifier arguments and arrays.
 
@@ -535,6 +535,20 @@ Each implementation must add/update rows or context evidence for the pairs it
 actually verifies and leave other pairs explicitly unverified. The briefs name
 representative contexts, malformed boundaries and incremental edits; the audit
 alone supplies no new cross-context acceptance evidence.
+
+## Task 050 output `nofilter` suffix
+
+The suffix is an output-owned `attribute` child; `output.value` remains the
+complete expression. Hand-authored trees cover variable, modifier, index,
+method, and built-in function outputs, mixed and repeated ordered suffixes,
+nested `if`/`foreach` blocks, and following outputs. Compiler checks cover
+lowercase `nofilter` with accepted flag values and mixed/repeated `nocache`;
+case variants and wider values remain parser syntax even where Smarty rejects
+them. Generic tag positional and named arguments remain independent. These
+checks verify the contexts explicitly listed here and do not imply support for
+arbitrary output attributes or nofilter runtime behavior. See [Task 050
+trees](../test/corpus/output-nofilter.txt), [reference/compiler/recovery/edit
+checks](../test/output-nofilter.test.mjs), and its [implementation evidence](tasks/050-output-nofilter.md#implementation-evidence-2026-10-17).
 
 ## Task 048 namespace-qualified static calls
 

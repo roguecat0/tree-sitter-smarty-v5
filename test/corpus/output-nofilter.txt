@@ -1,0 +1,76 @@
+==================
+Simple nofilter output and following output
+==================
+{$value nofilter}{$after}
+---
+(source_file
+  (output value: (variable name: (identifier)) (attribute name: (identifier)))
+  (output value: (variable name: (identifier))))
+
+==================
+Modifier and indexed outputs keep nofilter separate
+==================
+{$value|escape nofilter}{$rows[$index] nofilter}
+---
+(source_file
+  (output value: (modifier_expression value: (variable name: (identifier)) name: (identifier)) (attribute name: (identifier)))
+  (output value: (index_expression object: (variable name: (identifier)) index: (variable name: (identifier))) (attribute name: (identifier))))
+
+==================
+Method output keeps suffix as a direct child
+==================
+{$obj->render() nofilter}
+---
+(source_file
+  (output value: (method_call_expression object: (variable name: (identifier)) method: (identifier)) (attribute name: (identifier))))
+
+==================
+Mixed valued suffixes retain source order
+==================
+{$value nofilter=true nocache=false}
+---
+(source_file
+  (output value: (variable name: (identifier))
+    (attribute name: (identifier) value: (boolean))
+    (attribute name: (identifier) value: (boolean))))
+
+==================
+NoFilter spelling and wider value remain syntactic attributes
+==================
+{$value NoFilter=$flag}
+---
+(source_file
+  (output value: (variable name: (identifier)) (attribute name: (identifier) value: (variable name: (identifier)))))
+
+==================
+Built-in call and nested block suffix ownership
+==================
+{isset($value) nofilter}{if $enabled}{foreach $rows as $row}{$row nofilter}{/foreach}{/if}
+---
+(source_file
+  (output value: (function_call_expression name: (identifier) argument: (variable name: (identifier))) (attribute name: (identifier)))
+  (if_block
+    (if_tag condition: (variable name: (identifier)))
+    (foreach_block
+      (foreach_tag source: (variable name: (identifier)) item: (variable name: (identifier)))
+      (output value: (variable name: (identifier)) (attribute name: (identifier)))
+      (foreach_close_tag))
+    (if_close_tag)))
+
+==================
+Unknown tag arguments keep generic-tag structure
+==================
+{widget nofilter}{widget nofilter=$flag}
+---
+(source_file
+  (custom_tag name: (identifier) argument: (identifier))
+  (custom_tag name: (identifier) (attribute name: (identifier) value: (variable name: (identifier)))))
+
+==================
+Missing nofilter value errors and preserves following output
+==================
+{$value nofilter=}{$after}
+---
+(source_file
+  (output value: (variable name: (identifier)) (attribute name: (identifier)) (ERROR))
+  (output value: (variable name: (identifier))))

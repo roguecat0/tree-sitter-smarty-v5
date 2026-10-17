@@ -106,15 +106,14 @@ test('nocache followed by a modifier remains a recorder/compiler mismatch only',
   assert.ok(fullEngine(source, { mode: 'compile' }).error);
 });
 
-test('Other output attributes remain outside this feature', () => {
-  for (const source of ['{$x foo=1}{$after}', '{$x nofilter}{$after}']) {
+test('Arbitrary output attributes remain outside the supported suffixes', () => {
+  for (const source of ['{$x foo=1}{$after}']) {
     assert.equal(reference(source).error, null, `the recorder accepts arbitrary output attribute syntax: ${source}`);
     const root = parser().parse(source).rootNode;
     assert.ok(root.hasError, root.toString());
     assert.equal(root.namedChildren.at(-1).text, '{$after}');
   }
   assert.ok(fullEngine('{$x foo=1}', { mode: 'compile' }).error);
-  assert.equal(fullEngine('{$x nofilter}', { mode: 'compile' }).error, null, 'compiler-valid nofilter stays a separate grammar gap');
 });
 
 test('Editing across the output suffix matches fresh trees at every step', () => {
