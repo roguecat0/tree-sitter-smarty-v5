@@ -17,6 +17,7 @@ Cartesian suite merely to fill the matrix.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Braced expression wrapper in generic-tag named attribute (`name={EXPR}`) | — | — | — | — | — | yes [U-braced-tag-attr](#ev-u-braced-tag-attr) | — | — | — | — | — | — |
 | Braced expression wrapper in an `if`/`elseif` condition (`{if {EXPR} ...}`) | — | — | yes [U-braced-condition](#ev-u-braced-condition) | — | — | — | — | — | — | — | — | — |
+| Braced modifier argument wrapper (`modifier:{EXPR}`) | — | yes [B-mod-arg](#ev-b-mod-arg) | yes [B-mod-arg](#ev-b-mod-arg) | — | — | yes [B-mod-arg](#ev-b-mod-arg) | limited [B-mod-arg](#ev-b-mod-arg) | — | yes [B-mod-arg](#ev-b-mod-arg) | — | — | yes [B-mod-arg](#ev-b-mod-arg) |
 | Braced output expression inside bracket index (`$a[{EXPR}]`) | ? | yes [B-index](#ev-b-index) | ? | ? | ? | yes [B-index](#ev-b-index) | ? | ? | ? | yes [B-index](#ev-b-index) | ? | ? |
 | Variable / config variable | limited [ARHS-variable](#ev-assignment-rhs) | yes [V-output](#ev-v-output) | yes [V-condition](#ev-v-condition) | yes [V-source](#ev-v-source) | yes [V-tag-pos](#ev-v-tag-pos) | yes [V-tag-attr](#ev-v-tag-attr) | yes [V-call-arg](#ev-v-call-arg) | yes [V-mod-input](#ev-v-mod-input) | yes [V-mod-arg](#ev-v-mod-arg) | yes [V-bracket](#ev-v-bracket) | ? [U-variable-array-key](#ev-u-variable-array-key) | yes [V-array-value](#ev-v-array-value) |
 | Primitive / string / number | yes [ARHS-literals](#ev-assignment-rhs) | yes [P-output](#ev-p-output) | yes [P-condition](#ev-p-condition) | ? [U-primitive-source](#ev-u-primitive-source) | ? [U-primitive-tag-pos](#ev-u-primitive-tag-pos) | yes [P-tag-attr](#ev-p-tag-attr) | yes [P-call-arg](#ev-p-call-arg) | yes [P-mod-input](#ev-p-mod-input) | yes [P-mod-arg](#ev-p-mod-arg) | yes [P-bracket](#ev-p-bracket) | yes [P-array-key](#ev-p-array-key) | yes [P-array-value](#ev-p-array-value) |
@@ -107,6 +108,21 @@ cases have localized `ERROR` trees that preserve following output and, in a
 block, the close tag. See [hand trees](../test/corpus/braced-bracket-indices.txt),
 [reference fixtures](../test/corpus/smarty-reference-braced-bracket-indices.txt),
 and [checks](../test/braced-bracket-indices.test.mjs).
+
+<a id="ev-b-mod-arg"></a>
+
+**B-mod-arg:** A complete braced expression after a modifier colon is retained
+as `modifier_expression.argument: output(value: expression)`. Hand trees check
+the wrapper and inner-expression ranges, repeated arguments, arithmetic
+precedence, inner and outer modifier ownership, separate method/index operands,
+and the application-shaped method chain. The wrapper composes in output,
+generic-tag attribute, condition, instance-method argument, and array-value
+contexts. The pinned recorder checks names, event order, and argument counts;
+controlled full-engine `cat` renders check value grouping. Malformed missing
+brace, missing operand, and duplicate-colon probes are rejected by Smarty while
+Tree-sitter retains a later output. See [trees](../test/corpus/braced-modifier-arguments.txt),
+[reference/compiler/recovery/edit checks](../test/braced-modifier-arguments.test.mjs),
+and [Task 049 evidence](tasks/049-braced-modifier-arguments.md#implementation-evidence).
 
 ## Task 039 braced expressions in conditions
 
@@ -497,9 +513,9 @@ historical totals because Task 017 adds a modifier-only atom/context pairing.
 
 ## Planned current-template gap coverage (2026-10-17)
 
-The current FBS/HDB audit added six bounded tasks. Tasks 046–048 are implemented
+The current FBS/HDB audit added six bounded tasks. Tasks 046–049 are implemented
 and independently reviewed; their verified compositions are linked below. The
-other three remain planning briefs. The audit alone promotes no composition
+other two remain planning briefs. The audit alone promotes no composition
 cell.
 
 - [046](tasks/046-else-if-branches.md) adds a branch-header spelling; it reuses

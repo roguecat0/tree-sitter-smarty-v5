@@ -607,6 +607,17 @@ export default grammar({
       field("value", $._modified), choice(token(prec(2, /\|@{1,2}/)), "|"), field("name", $.identifier),
       repeat(seq(":", field("argument", $._modifier_argument))),
     )),
-    _modifier_argument: $ => choice($.typecast_expression, $.section_property_expression, $.variable, $.loop_metadata_expression, $.config_variable, $.member_expression, $.method_call_expression, $.function_call_expression, $.static_method_call_expression, $.index_expression, alias($._config_index, $.index_expression), $.array_literal, $.number, $.string, $.interpolated_string, $.parenthesized_expression, $.boolean, $.null, $.class_constant_expression, $.identifier, alias($._modifier_identifier, $.identifier)),
+    _modifier_argument: $ => choice(
+      prec.dynamic(10, alias($._braced_modifier_argument, $.output)),
+      $.typecast_expression, $.section_property_expression, $.variable, $.loop_metadata_expression, $.config_variable,
+      $.member_expression, $.method_call_expression, $.function_call_expression, $.static_method_call_expression,
+      $.index_expression, alias($._config_index, $.index_expression), $.array_literal, $.number, $.string,
+      $.interpolated_string, $.parenthesized_expression, $.boolean, $.null, $.class_constant_expression,
+      $.identifier, alias($._modifier_identifier, $.identifier),
+    ),
+    // A braced modifier argument is one complete expression wrapped in the
+    // same output node used for other expression wrappers. Keep it local to
+    // argument position so braces do not become general modifier primaries.
+    _braced_modifier_argument: $ => seq("{", field("value", $._expression), "}"),
   }
 });

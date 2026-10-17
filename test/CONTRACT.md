@@ -427,6 +427,23 @@ the prefix, reports the malformed region, and retains a later output. Ordinary
 reference, range, recovery, and edit checks are in [Task 036](../docs/tasks/036-modifier-at-prefix.md).
 The recorder establishes syntax and modifier event/name only, not registration
 or execution.
+
+A complete braced expression is accepted as a modifier argument and is
+represented by the existing `modifier_expression.argument` field owning an
+`output` wrapper; that wrapper spans both braces and its `value` field owns the
+inner expression. Direct modifier arguments retain their prior tree. The
+supported composition checks cover output values, generic-tag attribute values,
+`if` conditions, instance-method arguments, and array values. Tests also cover
+multiple braced arguments, arithmetic precedence, an inner modifier, a following
+outer modifier, method and index operands, and an application-shaped chained
+method value. Smarty 5.8.4 recorder checks establish syntax and modifier
+event/count only; controlled full-engine `cat` renders establish value grouping.
+Malformed missing-brace, missing-operand, and duplicate-colon examples are
+rejected by Smarty and retain a later recognizable output in Tree-sitter
+recovery. Broader wrappers, including nested tags/blocks and output attributes,
+remain unverified. See [Task 049 trees and checks](corpus/braced-modifier-arguments.txt),
+[reference/compiler/recovery/edit checks](braced-modifier-arguments.test.mjs),
+and [Task 049 evidence](../docs/tasks/049-braced-modifier-arguments.md#implementation-evidence).
 The exact Smarty predicate `is div by` is a `binary_expression` with a
 named `div_by_operator`; it is available anywhere the shared full-expression
 rule is used, including outputs, conditions, and parenthesized modifier

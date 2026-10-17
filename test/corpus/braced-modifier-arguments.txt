@@ -1,0 +1,149 @@
+==================
+Braced variable modifier argument
+==================
+{"prefix"|cat:{$id}}
+---
+(source_file
+  (output value: (modifier_expression
+    value: (string)
+    name: (identifier)
+    argument: (output value: (variable name: (identifier))))))
+
+==================
+Two braced modifier arguments retain source order
+==================
+{$x|replace:{$old}:{$new}}
+---
+(source_file
+  (output value: (modifier_expression
+    value: (variable name: (identifier))
+    name: (identifier)
+    argument: (output value: (variable name: (identifier)))
+    argument: (output value: (variable name: (identifier))))))
+
+==================
+Braced argument does not consume following modifier
+==================
+{$x|cat:{$id}|escape}
+---
+(source_file
+  (output value: (modifier_expression
+    value: (modifier_expression
+      value: (variable name: (identifier))
+      name: (identifier)
+      argument: (output value: (variable name: (identifier))))
+    name: (identifier))))
+
+==================
+Arithmetic inside braced modifier argument
+==================
+{$x|cat:{$i + 1 * 2}}
+---
+(source_file
+  (output value: (modifier_expression
+    value: (variable name: (identifier))
+    name: (identifier)
+    argument: (output value: (binary_expression
+      left: (variable name: (identifier))
+      right: (binary_expression
+        left: (number)
+        right: (number)))))))
+
+==================
+Inner modifier remains inside braced argument
+==================
+{$x|cat:{$id|escape}}
+---
+(source_file
+  (output value: (modifier_expression
+    value: (variable name: (identifier))
+    name: (identifier)
+    argument: (output value: (modifier_expression
+      value: (variable name: (identifier))
+      name: (identifier))))))
+
+==================
+Method and index operands remain distinct with braced argument
+==================
+{$row->get_id()|cat:{$id}}{$rows[$i]|cat:{$id}}
+---
+(source_file
+  (output value: (modifier_expression
+    value: (method_call_expression
+      object: (variable name: (identifier))
+      method: (identifier))
+    name: (identifier)
+    argument: (output value: (variable name: (identifier)))))
+  (output value: (modifier_expression
+    value: (index_expression
+      object: (variable name: (identifier))
+      index: (variable name: (identifier)))
+    name: (identifier)
+    argument: (output value: (variable name: (identifier))))))
+
+==================
+Braced modifier argument in generic-tag attribute
+==================
+{widget value=$x|cat:{$id}}
+---
+(source_file
+  (custom_tag name: (identifier)
+    (attribute name: (identifier) value: (modifier_expression
+      value: (variable name: (identifier))
+      name: (identifier)
+      argument: (output value: (variable name: (identifier)))))))
+
+==================
+Braced modifier argument in if condition
+==================
+{if $x|cat:{$id}}Y{/if}
+---
+(source_file
+  (if_block
+    (if_tag condition: (modifier_expression
+      value: (variable name: (identifier))
+      name: (identifier)
+      argument: (output value: (variable name: (identifier)))))
+    (text)
+    (if_close_tag)))
+
+==================
+Braced modifier argument in method argument
+==================
+{$o->f($x|cat:{$id})}
+---
+(source_file
+  (output value: (method_call_expression
+    object: (variable name: (identifier))
+    method: (identifier)
+    argument: (modifier_expression
+      value: (variable name: (identifier))
+      name: (identifier)
+      argument: (output value: (variable name: (identifier)))))))
+
+==================
+Braced modifier argument in array value
+==================
+{array("key"=>$x|cat:{$id})}
+---
+(source_file
+  (output value: (array_literal
+    (array_element key: (string) value: (modifier_expression
+      value: (variable name: (identifier))
+      name: (identifier)
+      argument: (output value: (variable name: (identifier))))))))
+
+==================
+Application-shaped method value with braced argument
+==================
+{$repair->get_attachments()->count()|cat:{$id}}
+---
+(source_file
+  (output value: (modifier_expression
+    value: (method_call_expression
+      object: (method_call_expression
+        object: (variable name: (identifier))
+        method: (identifier))
+      method: (identifier))
+    name: (identifier)
+    argument: (output value: (variable name: (identifier))))))

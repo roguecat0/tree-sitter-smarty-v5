@@ -7824,6 +7824,19 @@
       "type": "CHOICE",
       "members": [
         {
+          "type": "PREC_DYNAMIC",
+          "value": 10,
+          "content": {
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_braced_modifier_argument"
+            },
+            "named": true,
+            "value": "output"
+          }
+        },
+        {
           "type": "SYMBOL",
           "name": "typecast_expression"
         },
@@ -7916,6 +7929,27 @@
           },
           "named": true,
           "value": "identifier"
+        }
+      ]
+    },
+    "_braced_modifier_argument": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "{"
+        },
+        {
+          "type": "FIELD",
+          "name": "value",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_expression"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "}"
         }
       ]
     }
