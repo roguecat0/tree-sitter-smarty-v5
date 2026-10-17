@@ -290,7 +290,25 @@ export default grammar({
     // Conditions admit a complete braced expression as a primary operand.
     // Keep this ladder local to if/elseif so the wrapper does not broaden
     // unrelated expression contexts such as unknown-tag values or outputs.
-    _if_expression: $ => $._if_logical_or,
+    _if_expression: $ => choice(
+      $._if_logical_or, alias($._if_ternary_expression, $.ternary_expression),
+      prec(-100, $.if_ternary_recovery),
+    ),
+    // Keep the conditional operator at the shared boolean-expression boundary.
+    // Recursive arms preserve nested expressions; a nested condition needs
+    // explicit parentheses so this tree does not invent a chain association.
+    _if_ternary_expression: $ => prec.right(1, seq(
+      field("condition", $._if_logical_or), "?",
+      field("consequence", $._if_expression), ":", field("alternative", $._if_expression),
+    )),
+    // Keep an incomplete conditional local to the `if` header so its body,
+    // comments, actual close tag, and later siblings remain navigable.
+    if_ternary_recovery: $ => seq(
+      optional(field("condition", $._if_logical_or)), "?",
+      optional(field("consequence", $._if_expression)),
+      optional(seq(":", optional(field("alternative", $._if_expression)))),
+      $._output_attribute_error_marker,
+    ),
     _if_logical_or: $ => choice($._if_logical_and, alias($._if_or_expression, $.binary_expression), alias($._if_word_or_expression, $.binary_expression), alias($._if_xor_expression, $.binary_expression)),
     _if_xor_expression: $ => prec.left(-6, seq(
       field("left", $._if_logical_or), field("operator", alias($._word_xor_operator, $.word_operator)),
@@ -360,7 +378,11 @@ export default grammar({
       $._output_attribute_error_marker,
     ),
     _if_braced_expression: $ => seq("{", field("value", $._expression), "}"),
-    _expression: $ => $._logical_or,
+    _expression: $ => choice($._logical_or, alias($._ternary_expression, $.ternary_expression)),
+    _ternary_expression: $ => prec.right(1, seq(
+      field("condition", $._logical_or), "?",
+      field("consequence", $._expression), ":", field("alternative", $._expression),
+    )),
     // PHP binds word `xor` below `or`; `and`/`or` share the corresponding
     // symbolic logical levels. Smarty's lexer requires surrounding whitespace
     // for SLOGOP; the operator node retains only the source spelling.
@@ -456,7 +478,7 @@ export default grammar({
       seq("array", "(", optional(seq($.array_element, repeat(seq(",", $.array_element)), optional(","))), ")"),
     ),
     array_element: $ => choice(
-      seq(field("key", choice($._primary, $.unary_expression, $.typecast_expression)), "=>", field("value", $._expression)),
+      seq(field("key", choice($._primary, $.unary_expression, $.typecast_expression, alias($._ternary_expression, $.ternary_expression))), "=>", field("value", $._expression)),
       field("value", $._expression),
     ),
     variable: $ => seq("$", field("name", alias(token.immediate(/[a-zA-Z_][a-zA-Z0-9_]*/), $.identifier))),
@@ -493,6 +515,7 @@ export default grammar({
     // an actual compound expression make primitives expression-valued indices.
     _index_value: $ => choice(
       $._nonliteral_primary, $.unary_expression, $.typecast_expression, $.modifier_expression, $.binary_expression,
+      prec.dynamic(2, alias($._ternary_expression, $.ternary_expression)),
       alias($._xor_expression, $.binary_expression), alias($._or_expression, $.binary_expression),
       alias($._word_or_expression, $.binary_expression), alias($._and_expression, $.binary_expression),
       alias($._word_and_expression, $.binary_expression),

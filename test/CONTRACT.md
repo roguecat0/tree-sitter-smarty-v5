@@ -15,6 +15,21 @@ parentheses, left-associative arithmetic, and modifier applications. Multiplicat
 division, and remainder bind tighter than addition and subtraction. Modifier
 applications bind tighter than arithmetic in this subset.
 
+Full ternaries use `ternary_expression` with `condition`, `consequence`, and
+`alternative` fields; all operand trees and explicit parentheses stay visible.
+The condition contains the shared boolean-expression level and both arms retain
+complete expressions. Tested compositions include assignments, conditions,
+unknown-tag values, call arguments, modifier arguments, bracket indices, and
+array keys/values. An unparenthesized modifier expression binds before the
+ternary, as in `{$x|cat:$a ? $b : $c}`; parentheses make a ternary the modifier
+argument. Nested ternaries retain their explicit parenthesized trees. Smarty's
+compiler accepts unparenthesized nested ternaries, but PHP 8 rejects their
+generated code at render time; no runtime association is asserted. Shorthand
+`?:` and null-coalescing `??` are also accepted by Smarty but remain separate
+syntax gaps. See [Task 051 trees and checks](corpus/ternary-expressions.txt),
+[reference/compiler/recovery/edit checks](ternary-expressions.test.mjs), and
+[implementation evidence](../docs/tasks/051-ternary-expressions.md#implementation-evidence-2026-10-17).
+
 Every currently supported expression output accepts one or more trailing,
 case-insensitive `nocache` or `nofilter` suffixes. Each occurrence is a separate ordered
 direct `attribute` child of `output`, with an exact-spelling `identifier` in

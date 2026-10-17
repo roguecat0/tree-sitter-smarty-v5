@@ -33,7 +33,7 @@
 ((parity_by_operator) @keyword.operator (#set! priority 110))
 (["if" "elseif" "else"] @keyword.conditional (#set! priority 110))
 (["foreach" "foreachelse" "for" "forelse" "section" "sectionelse" "as" "to" "step"] @keyword.repeat (#set! priority 110))
-(["=" "=>" "->" "::" "|"] @operator (#set! priority 110))
+(["=" "=>" "->" "::" "|" "?"] @operator (#set! priority 110))
 (["(" ")" "[" "]"] @punctuation.bracket (#set! priority 110))
 (["," "." ":"] @punctuation.delimiter (#set! priority 110))
 ; Nested script/style captures can span Smarty holes in Neovim 0.11.

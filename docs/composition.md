@@ -513,9 +513,9 @@ historical totals because Task 017 adds a modifier-only atom/context pairing.
 
 ## Planned current-template gap coverage (2026-10-17)
 
-The current FBS/HDB audit added six bounded tasks. Tasks 046–050 are implemented
-and independently reviewed; Task 051 remains a planning brief. Verified
-compositions are linked below. The audit alone promotes no composition cell.
+The current FBS/HDB audit added six bounded tasks. Tasks 046–051 are implemented
+and independently reviewed. Verified compositions are linked below. The audit
+alone promotes no composition cell.
 
 - [046](tasks/046-else-if-branches.md) adds a branch-header spelling; it reuses
   condition expressions and checks nested block ownership.
@@ -573,3 +573,31 @@ space before `(`, separator-spacing errors, malformed recovery, and incremental
 qualification edits are checked in the same task. Namespaced standalone and
 class constants are Smarty-valid but remain unsupported syntax gaps. See [Task 048
 trees](../test/corpus/namespaced-static-method-calls.txt), [Node checks](../test/namespaced-static-method-calls.test.mjs), and [implementation evidence](tasks/048-namespaced-static-method-calls.md#implementation-evidence).
+
+## Task 051 conditional ternary expressions
+
+`ternary_expression` owns full `condition`, `consequence`, and `alternative`
+trees. The hand-written trees verify output operands (including arithmetic,
+comparison/word-boolean grouping, modifier arms, and both parenthesized nesting
+directions), plus these context paths:
+
+| Context | Minimized example | Verified ownership |
+| --- | --- | --- |
+| Assignment | `{$x = $a ? $b : $c}` | Ternary is `assignment_tag.value`. |
+| If condition | `{if $a ? $b : $c}Y{/if}` | Ternary is `if_tag.condition`. |
+| Unknown named attribute | `{unknown value=$a ? $b : $c}` | Ternary is `custom_tag.attribute.value`; recorder acceptance is syntax evidence only. |
+| Function/method arguments | `{call($a ? $b : $c)}` / `{$object->call($a ? $b : $c)}` | Ternary is the corresponding `argument`. |
+| Modifier argument | `{$x|cat:($a ? $b : $c)}` | Modifier argument retains the parenthesized ternary. |
+| Modifier condition | `{$x|cat:$a ? $b : $c}` | The unparenthesized modifier expression is the ternary condition, with `$a` as its argument. |
+| Index and array | `{$items[$a ? $b : $c]}` / `{[$a ? $b : $c, ($a ? $b : $c)=>$value]}` | The index, first array value, and parenthesized array key retain ternary structure. |
+
+Full-engine rendering confirms arithmetic grouping and both nested-parentheses
+forms. Smarty compiles the unparenthesized alternate-nested form, while PHP 8
+fails when rendering its generated code; the tree tests do not claim a runtime
+association. Controlled renders also show the direct modifier/ternary grouping:
+with `$x=''`, `$a=0`, `$b='B'`, `$c='C'`, the expression renders `C`, and with
+`$x='X'` it renders `B`. The parenthesized modifier argument renders `XC` for
+`$x='X'`, `$a=0`, `$c='C'`. Shorthand `?:` and null-coalescing `??` are accepted
+by Smarty's recorder and compiler, but remain outside Task 051. See [Task 051
+trees](../test/corpus/ternary-expressions.txt), [reference/compiler/recovery/edit
+checks](../test/ternary-expressions.test.mjs), and [implementation evidence](tasks/051-ternary-expressions.md#implementation-evidence-2026-10-17).

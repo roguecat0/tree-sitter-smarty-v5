@@ -1,0 +1,111 @@
+==================
+HDB rights-group ternary
+==================
+{$group_id == -1 ? $main_group_id : $group_id}
+---
+(source_file (output value: (ternary_expression condition: (binary_expression left: (variable name: (identifier)) right: (unary_expression argument: (number))) consequence: (variable name: (identifier)) alternative: (variable name: (identifier)))))
+
+==================
+Arithmetic ternary condition
+==================
+{$a + $b ? $yes : $no}
+---
+(source_file (output value: (ternary_expression condition: (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier))) consequence: (variable name: (identifier)) alternative: (variable name: (identifier)))))
+
+==================
+Arithmetic ternary consequence
+==================
+{$flag ? $a + $b : $no}
+---
+(source_file (output value: (ternary_expression condition: (variable name: (identifier)) consequence: (binary_expression left: (variable name: (identifier)) right: (variable name: (identifier))) alternative: (variable name: (identifier)))))
+
+==================
+Literal ternary arms
+==================
+{true ? "yes" : "no"}
+---
+(source_file (output value: (ternary_expression condition: (boolean) consequence: (string) alternative: (string))))
+
+==================
+Parenthesized ternary condition
+==================
+{($a ? $b : $c) ? $d : $e}
+---
+(source_file (output value: (ternary_expression condition: (parenthesized_expression (ternary_expression condition: (variable name: (identifier)) consequence: (variable name: (identifier)) alternative: (variable name: (identifier)))) consequence: (variable name: (identifier)) alternative: (variable name: (identifier)))))
+
+==================
+Parenthesized ternary alternative
+==================
+{$a ? $b : ($c ? $d : $e)}
+---
+(source_file (output value: (ternary_expression condition: (variable name: (identifier)) consequence: (variable name: (identifier)) alternative: (parenthesized_expression (ternary_expression condition: (variable name: (identifier)) consequence: (variable name: (identifier)) alternative: (variable name: (identifier)))))))
+
+==================
+Ternary comparison and boolean condition with modifier arm
+==================
+{($a > 0 and $b) ? ($yes|escape) : $no}
+---
+(source_file (output value: (ternary_expression condition: (parenthesized_expression (binary_expression left: (binary_expression left: (variable name: (identifier)) right: (number)) operator: (word_operator) right: (variable name: (identifier)))) consequence: (parenthesized_expression (modifier_expression value: (variable name: (identifier)) name: (identifier))) alternative: (variable name: (identifier)))))
+
+==================
+Ternary in assignment value
+==================
+{$x = $a ? $b : $c}
+---
+(source_file (assignment_tag target: (variable name: (identifier)) value: (ternary_expression condition: (variable name: (identifier)) consequence: (variable name: (identifier)) alternative: (variable name: (identifier)))))
+
+==================
+Ternary in if condition
+==================
+{if $a ? $b : $c}Y{/if}
+---
+(source_file (if_block (if_tag condition: (ternary_expression condition: (variable name: (identifier)) consequence: (variable name: (identifier)) alternative: (variable name: (identifier)))) (text) (if_close_tag)))
+
+==================
+Ternary in unknown tag attribute
+==================
+{unknown value=$a ? $b : $c}
+---
+(source_file (custom_tag name: (identifier) (attribute name: (identifier) value: (ternary_expression condition: (variable name: (identifier)) consequence: (variable name: (identifier)) alternative: (variable name: (identifier))))))
+
+==================
+Ternary in function argument
+==================
+{call($a ? $b : $c)}
+---
+(source_file (output value: (function_call_expression name: (identifier) argument: (ternary_expression condition: (variable name: (identifier)) consequence: (variable name: (identifier)) alternative: (variable name: (identifier))))))
+
+==================
+Ternary in method argument
+==================
+{$object->call($a ? $b : $c)}
+---
+(source_file (output value: (method_call_expression object: (variable name: (identifier)) method: (identifier) argument: (ternary_expression condition: (variable name: (identifier)) consequence: (variable name: (identifier)) alternative: (variable name: (identifier))))))
+
+==================
+Parenthesized ternary modifier argument
+==================
+{$x|cat:($a ? $b : $c)}
+---
+(source_file (output value: (modifier_expression value: (variable name: (identifier)) name: (identifier) argument: (parenthesized_expression (ternary_expression condition: (variable name: (identifier)) consequence: (variable name: (identifier)) alternative: (variable name: (identifier)))))))
+
+==================
+Direct ternary modifier argument
+==================
+{$x|cat:$a ? $b : $c}
+---
+(source_file (output value: (ternary_expression condition: (modifier_expression value: (variable name: (identifier)) name: (identifier) argument: (variable name: (identifier))) consequence: (variable name: (identifier)) alternative: (variable name: (identifier)))))
+
+==================
+Ternary in bracket index
+==================
+{$items[$a ? $b : $c]}
+---
+(source_file (output value: (index_expression object: (variable name: (identifier)) index: (ternary_expression condition: (variable name: (identifier)) consequence: (variable name: (identifier)) alternative: (variable name: (identifier))))))
+
+==================
+Ternary array value and key
+==================
+{[$a ? $b : $c, ($a ? $b : $c)=>$value]}
+---
+(source_file (output value: (array_literal (array_element value: (ternary_expression condition: (variable name: (identifier)) consequence: (variable name: (identifier)) alternative: (variable name: (identifier)))) (array_element key: (parenthesized_expression (ternary_expression condition: (variable name: (identifier)) consequence: (variable name: (identifier)) alternative: (variable name: (identifier)))) value: (variable name: (identifier))))))

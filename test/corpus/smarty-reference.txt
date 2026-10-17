@@ -178,6 +178,17 @@ smarty-5.8.4-TemplateLexer-digit-prefixed-namespace-segments
     method: (identifier))))
 
 ====================
+smarty-5.8.4-TemplateParser-ternary
+====================
+{$group_id == -1 ? $main_group_id : $group_id}
+---
+(source_file
+  (output value: (ternary_expression
+    condition: (binary_expression left: (variable name: (identifier)) right: (unary_expression argument: (number)))
+    consequence: (variable name: (identifier))
+    alternative: (variable name: (identifier)))))
+
+====================
 smarty-5.8.4-TemplateLexer-digit-prefixed-namespace-segments-later
 ====================
 {Demo\2Assets::build()}

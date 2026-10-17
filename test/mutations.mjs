@@ -78,6 +78,9 @@ const mutations = [
   { name: 'nofilter loses the output-owned suffix path', fixture: 'Simple nofilter output and following output',
     from: 'repeat1(alias($._output_suffix_attribute, $.attribute)), "}")),',
     to: 'repeat1(alias($._builtin_attribute, $.attribute)), "}")),' },
+  { name: 'ternary condition loses its field', fixture: 'HDB rights-group ternary',
+    from: 'field("condition", $._logical_or), "?",',
+    to: 'field("consequence", $._logical_or), "?",' },
 ];
 
 console.log('\nChecking that deliberate grammar bugs are caught:');
