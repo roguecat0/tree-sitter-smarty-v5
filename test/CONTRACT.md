@@ -114,8 +114,13 @@ for a real error state. See [Task 033](../docs/tasks/033-shorthand-assignment-ta
 
 Known `if` blocks are nested: `if_tag`, body nodes, optional `elseif_clause`
 nodes, optional `else_clause`, and `if_close_tag`. Conditions have a `condition`
-field. Branch clauses contain their opening tag and body nodes. Generic tags
-must not consume malformed built-in control tags.
+field. Branch clauses contain their opening tag and body nodes. Both `{elseif
+...}` and the exact lowercase, one-ASCII-space spelling `{else if ...}` use the
+existing `elseif_clause` and `elseif_tag(condition: expression)` structure; the
+spaced tag range includes its complete header. Repeated and mixed spellings
+preserve branch order and body ownership. Other whitespace or casing is not
+normalized into this alias. Generic tags must not consume malformed built-in
+control tags.
 
 Within `{if}` and `{elseif}` conditions, a complete braced expression is one
 primary operand represented as `output(value: expression)` inside the owning

@@ -165,7 +165,13 @@ export default grammar({
       prec(-100, seq("{", "if", field("condition", $._if_expression), alias($._if_header_close_recovery, $.string_fragment))),
     ),
     elseif_clause: $ => seq($.elseif_tag, repeat($._node)),
-    elseif_tag: $ => seq("{", "elseif", field("condition", $._if_expression), "}"),
+    elseif_tag: $ => choice(
+      seq("{", "elseif", field("condition", $._if_expression), "}"),
+      // Smarty's spaced alias is the exact lowercase token `else if` with one
+      // ASCII space. Keep it atomic so grammar extras cannot normalize tabs,
+      // newlines, or repeated spaces into this branch spelling.
+      seq("{", token(prec(2, "else if")), field("condition", $._if_expression), "}"),
+    ),
     else_clause: $ => seq($.else_tag, repeat($._node)),
     else_tag: _ => seq("{", "else", "}"),
     if_close_tag: _ => seq("{/", "if", "}"),

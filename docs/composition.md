@@ -370,7 +370,7 @@ argument case; direct method-argument composition remains unverified.
 | Cell | Minimized composition | Current result and evidence |
 | --- | --- | --- |
 | <a id="ev-wc-output"></a>WC-output | Output: `{$a eq $b}` | **yes:** `binary_expression` retains variable operands and a letter-only `word_operator`. [trees](../test/corpus/word-comparison-operators.txt); [checks](../test/word-comparison-operators.test.mjs) |
-| <a id="ev-wc-condition"></a>WC-condition | `if` and `elseif` comparison conditions | **yes:** both condition fields retain the full binary expression. [trees](../test/corpus/word-comparison-operators.txt); [checks](../test/word-comparison-operators.test.mjs) |
+| <a id="ev-wc-condition"></a>WC-condition | `if`, `elseif`, and spaced `else if` comparison conditions | **yes:** each condition field retains the full binary expression. Task 046 also composes method calls and word comparisons inside a spaced branch nested in `foreach`, and a braced output condition in another spaced branch. [operator trees/checks](../test/corpus/word-comparison-operators.txt); [spaced-branch trees/checks](../test/corpus/else-if-branches.txt), [Task 046 checks](../test/else-if-branches.test.mjs) |
 | <a id="ev-wc-tag-pos"></a>WC-tag-pos | `{widget $a lt $b ...}` | **yes:** the unknown tag keeps the comparison under a positional `argument`. [trees](../test/corpus/word-comparison-operators.txt); [checks](../test/word-comparison-operators.test.mjs) |
 | <a id="ev-wc-tag-attr"></a>WC-tag-attr | `{widget ... value=$a gte $b}` | **yes:** the attribute `value` contains the full comparison tree. [trees](../test/corpus/word-comparison-operators.txt); [checks](../test/word-comparison-operators.test.mjs) |
 | <a id="ev-wc-call-arg"></a>WC-call-arg | `{f($a lte $b, [...])}` | **yes:** the call retains its comparison argument; method-call arguments remain unverified. [trees](../test/corpus/word-comparison-operators.txt); [checks](../test/word-comparison-operators.test.mjs) |
@@ -488,3 +488,28 @@ the current matrix has 89 `yes`, 4 `limited`, no `no`, and 50 unverified cells.
 The recording adapter proves syntax/event acceptance only,
 not runtime binding. The separate `MOD-ID-arg` cell is not included in those
 historical totals because Task 017 adds a modifier-only atom/context pairing.
+
+## Planned current-template gap coverage (2026-10-17)
+
+The current FBS/HDB audit added six bounded tasks. Task 046 is implemented and
+independently reviewed; its verified branch-condition compositions are linked
+below. The other five remain planning briefs. The audit alone promotes no
+composition cell.
+
+- [046](tasks/046-else-if-branches.md) adds a branch-header spelling; it reuses
+  condition expressions and checks nested block ownership.
+- [047](tasks/047-tags-in-quoted-attributes.md) extends quoted-string contents;
+  probe shared string contexts and retain explicit nested tag/block structure.
+- [048](tasks/048-namespaced-static-method-calls.md) extends the static-call
+  receiver; audit shared expression routing without changing unqualified trees.
+- [049](tasks/049-braced-modifier-arguments.md) adds a wrapper specifically in
+  modifier argument position and checks ownership in enclosing expressions.
+- [050](tasks/050-output-nofilter.md) adds an output-owned suffix; it does not
+  make output attributes general expression operators.
+- [051](tasks/051-ternary-expressions.md) adds a shared expression form with
+  precedence and colon-boundary probes, including modifier arguments and arrays.
+
+Each implementation must add/update rows or context evidence for the pairs it
+actually verifies and leave other pairs explicitly unverified. The briefs name
+representative contexts, malformed boundaries and incremental edits; the audit
+alone supplies no new cross-context acceptance evidence.

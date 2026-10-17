@@ -1,0 +1,75 @@
+==================
+One spaced else if branch
+==================
+{if $a}A{else if $b}B{else}C{/if}
+---
+(source_file
+  (if_block
+    (if_tag condition: (variable name: (identifier)))
+    (text)
+    (elseif_clause
+      (elseif_tag condition: (variable name: (identifier)))
+      (text))
+    (else_clause (else_tag) (text))
+    (if_close_tag)))
+
+==================
+Repeated mixed elseif spellings
+==================
+{if $a}A{elseif $b}B{else if $c}C{elseif $d}D{else}E{/if}
+---
+(source_file
+  (if_block
+    (if_tag condition: (variable name: (identifier)))
+    (text)
+    (elseif_clause (elseif_tag condition: (variable name: (identifier))) (text))
+    (elseif_clause (elseif_tag condition: (variable name: (identifier))) (text))
+    (elseif_clause (elseif_tag condition: (variable name: (identifier))) (text))
+    (else_clause (else_tag) (text))
+    (if_close_tag)))
+
+==================
+Spaced else if composes in nested blocks
+==================
+{foreach $items as $item}{if $item->active() eq true}A{else if $item->count() gt 0}B{else}C{/if}{/foreach}{$after}
+---
+(source_file
+  (foreach_block
+    (foreach_tag source: (variable name: (identifier)) item: (variable name: (identifier)))
+    (if_block
+      (if_tag
+        condition: (binary_expression
+          left: (method_call_expression
+            object: (variable name: (identifier))
+            method: (identifier))
+          operator: (word_operator)
+          right: (boolean)))
+      (text)
+      (elseif_clause
+        (elseif_tag
+          condition: (binary_expression
+            left: (method_call_expression
+              object: (variable name: (identifier))
+              method: (identifier))
+            operator: (word_operator)
+            right: (number)))
+        (text))
+      (else_clause (else_tag) (text))
+      (if_close_tag))
+    (foreach_close_tag))
+  (output value: (variable name: (identifier))))
+
+==================
+Spaced else if with a braced condition
+==================
+{if $a}A{else if {$b}}B{/if}
+---
+(source_file
+  (if_block
+    (if_tag condition: (variable name: (identifier)))
+    (text)
+    (elseif_clause
+      (elseif_tag
+        condition: (output value: (variable name: (identifier))))
+      (text))
+    (if_close_tag)))

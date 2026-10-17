@@ -82,6 +82,20 @@ smarty-5.8.4-literal-official-js-braces
     (literal_close_tag))
   (output value: (variable name: (identifier))))
 
+==================
+smarty-5.8.4-else-if-alias
+==================
+{if $a}A{else if $b}B{/if}
+---
+(source_file
+  (if_block
+    (if_tag condition: (variable name: (identifier)))
+    (text)
+    (elseif_clause
+      (elseif_tag condition: (variable name: (identifier)))
+      (text))
+    (if_close_tag)))
+
 ====================
 smarty-5.8.4-section-required-header-else
 ====================
